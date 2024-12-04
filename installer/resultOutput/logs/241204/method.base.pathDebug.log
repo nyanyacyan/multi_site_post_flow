@@ -1,0 +1,120 @@
+2024-12-04 05:51:21,039 - INFO - levelsUp の型: <class 'int'>: 4
+2024-12-04 05:51:21,039 - DEBUG - resultOutput: /Users/nyanyacyan/Desktop/project_file/domain_search/installer/resultOutput
+2024-12-04 05:51:21,039 - WARNING - FilePath: /Users/nyanyacyan/Desktop/project_file/domain_search/installer/resultOutput/Xserver 実施履歴/False 検知履歴.txt
+2024-12-04 05:51:21,039 - DEBUG - FilePathの型: <class 'pathlib._local.PosixPath'>
+2024-12-04 05:51:21,040 - DEBUG - Xserver 実施履歴 発見
+2024-12-04 05:51:21,040 - DEBUG - FilePath: /Users/nyanyacyan/Desktop/project_file/domain_search/installer/resultOutput/Xserver 実施履歴/False 検知履歴.txt
+2024-12-04 05:51:30,789 - INFO - levelsUp の型: <class 'int'>: 4
+2024-12-04 05:51:30,790 - DEBUG - resultOutput: /Users/nyanyacyan/Desktop/project_file/domain_search/installer/resultOutput
+2024-12-04 05:51:30,790 - WARNING - FilePath: /Users/nyanyacyan/Desktop/project_file/domain_search/installer/resultOutput/Xserver 実施履歴/False 検知履歴.txt
+2024-12-04 05:51:30,790 - DEBUG - FilePathの型: <class 'pathlib._local.PosixPath'>
+2024-12-04 05:51:30,790 - DEBUG - Xserver 実施履歴 発見
+2024-12-04 05:51:30,790 - DEBUG - FilePath: /Users/nyanyacyan/Desktop/project_file/domain_search/installer/resultOutput/Xserver 実施履歴/False 検知履歴.txt
+2024-12-04 05:51:37,749 - INFO - levelsUp の型: <class 'int'>: 4
+2024-12-04 05:51:37,749 - DEBUG - resultOutput: /Users/nyanyacyan/Desktop/project_file/domain_search/installer/resultOutput
+2024-12-04 05:51:37,749 - WARNING - FilePath: /Users/nyanyacyan/Desktop/project_file/domain_search/installer/resultOutput/Xserver 実施履歴/False 検知履歴.txt
+2024-12-04 05:51:37,749 - DEBUG - FilePathの型: <class 'pathlib._local.PosixPath'>
+2024-12-04 05:51:37,749 - DEBUG - Xserver 実施履歴 発見
+2024-12-04 05:51:37,749 - DEBUG - FilePath: /Users/nyanyacyan/Desktop/project_file/domain_search/installer/resultOutput/Xserver 実施履歴/False 検知履歴.txt
+2024-12-04 05:51:45,884 - INFO - levelsUp の型: <class 'int'>: 4
+2024-12-04 05:51:45,884 - DEBUG - resultOutput: /Users/nyanyacyan/Desktop/project_file/domain_search/installer/resultOutput
+2024-12-04 05:51:45,884 - WARNING - FilePath: /Users/nyanyacyan/Desktop/project_file/domain_search/installer/resultOutput/Xserver 実施履歴/True 検知履歴.txt
+2024-12-04 05:51:45,884 - DEBUG - FilePathの型: <class 'pathlib._local.PosixPath'>
+2024-12-04 05:51:45,884 - DEBUG - Xserver 実施履歴 発見
+2024-12-04 05:51:45,884 - DEBUG - FilePath: /Users/nyanyacyan/Desktop/project_file/domain_search/installer/resultOutput/Xserver 実施履歴/True 検知履歴.txt
+2024-12-04 05:51:45,891 - INFO - levelsUp の型: <class 'int'>: 4
+2024-12-04 05:51:45,891 - DEBUG - resultOutput: /Users/nyanyacyan/Desktop/project_file/domain_search/installer/resultOutput
+2024-12-04 05:51:45,891 - WARNING - FilePath: /Users/nyanyacyan/Desktop/project_file/domain_search/installer/resultOutput/screenshot/Xserver_jihnu241204_055108.png
+2024-12-04 05:51:45,892 - DEBUG - FilePathの型: <class 'pathlib._local.PosixPath'>
+2024-12-04 05:51:45,892 - DEBUG - screenshot 発見
+2024-12-04 05:51:45,892 - DEBUG - FilePath: /Users/nyanyacyan/Desktop/project_file/domain_search/installer/resultOutput/screenshot/Xserver_jihnu241204_055108.png
+2024-12-04 05:51:54,593 - INFO - levelsUp の型: <class 'int'>: 4
+2024-12-04 05:51:54,593 - DEBUG - resultOutput: /Users/nyanyacyan/Desktop/project_file/domain_search/installer/resultOutput
+2024-12-04 05:51:54,593 - WARNING - FilePath: /Users/nyanyacyan/Desktop/project_file/domain_search/installer/resultOutput/Xserver 実施履歴/False 検知履歴.txt
+2024-12-04 05:51:54,593 - DEBUG - FilePathの型: <class 'pathlib._local.PosixPath'>
+2024-12-04 05:51:54,593 - DEBUG - Xserver 実施履歴 発見
+2024-12-04 05:51:54,593 - DEBUG - FilePath: /Users/nyanyacyan/Desktop/project_file/domain_search/installer/resultOutput/Xserver 実施履歴/False 検知履歴.txt
+2024-12-04 05:52:04,504 - INFO - levelsUp の型: <class 'int'>: 4
+2024-12-04 05:52:04,504 - DEBUG - resultOutput: /Users/nyanyacyan/Desktop/project_file/domain_search/installer/resultOutput
+2024-12-04 05:52:04,505 - WARNING - FilePath: /Users/nyanyacyan/Desktop/project_file/domain_search/installer/resultOutput/Conoha Wing 実施履歴/True 検知履歴.txt
+2024-12-04 05:52:04,505 - DEBUG - FilePathの型: <class 'pathlib._local.PosixPath'>
+2024-12-04 05:52:04,505 - DEBUG - Conoha Wing 実施履歴 発見
+2024-12-04 05:52:04,505 - DEBUG - FilePath: /Users/nyanyacyan/Desktop/project_file/domain_search/installer/resultOutput/Conoha Wing 実施履歴/True 検知履歴.txt
+2024-12-04 05:52:04,505 - INFO - levelsUp の型: <class 'int'>: 4
+2024-12-04 05:52:04,505 - DEBUG - resultOutput: /Users/nyanyacyan/Desktop/project_file/domain_search/installer/resultOutput
+2024-12-04 05:52:04,505 - WARNING - FilePath: /Users/nyanyacyan/Desktop/project_file/domain_search/installer/resultOutput/screenshot/Conoha Wing_jihnu241204_055108.png
+2024-12-04 05:52:04,505 - DEBUG - FilePathの型: <class 'pathlib._local.PosixPath'>
+2024-12-04 05:52:04,505 - DEBUG - screenshot 発見
+2024-12-04 05:52:04,505 - DEBUG - FilePath: /Users/nyanyacyan/Desktop/project_file/domain_search/installer/resultOutput/screenshot/Conoha Wing_jihnu241204_055108.png
+2024-12-04 05:52:10,119 - INFO - levelsUp の型: <class 'int'>: 4
+2024-12-04 05:52:10,119 - DEBUG - resultOutput: /Users/nyanyacyan/Desktop/project_file/domain_search/installer/resultOutput
+2024-12-04 05:52:10,119 - WARNING - FilePath: /Users/nyanyacyan/Desktop/project_file/domain_search/installer/resultOutput/Conoha Wing 実施履歴/True 検知履歴.txt
+2024-12-04 05:52:10,119 - DEBUG - FilePathの型: <class 'pathlib._local.PosixPath'>
+2024-12-04 05:52:10,119 - DEBUG - Conoha Wing 実施履歴 発見
+2024-12-04 05:52:10,119 - DEBUG - FilePath: /Users/nyanyacyan/Desktop/project_file/domain_search/installer/resultOutput/Conoha Wing 実施履歴/True 検知履歴.txt
+2024-12-04 05:52:10,119 - INFO - levelsUp の型: <class 'int'>: 4
+2024-12-04 05:52:10,120 - DEBUG - resultOutput: /Users/nyanyacyan/Desktop/project_file/domain_search/installer/resultOutput
+2024-12-04 05:52:10,120 - WARNING - FilePath: /Users/nyanyacyan/Desktop/project_file/domain_search/installer/resultOutput/screenshot/Conoha Wing_jihnu241204_055108.png
+2024-12-04 05:52:10,120 - DEBUG - FilePathの型: <class 'pathlib._local.PosixPath'>
+2024-12-04 05:52:10,120 - DEBUG - screenshot 発見
+2024-12-04 05:52:10,120 - DEBUG - FilePath: /Users/nyanyacyan/Desktop/project_file/domain_search/installer/resultOutput/screenshot/Conoha Wing_jihnu241204_055108.png
+2024-12-04 05:52:17,216 - INFO - levelsUp の型: <class 'int'>: 4
+2024-12-04 05:52:17,216 - DEBUG - resultOutput: /Users/nyanyacyan/Desktop/project_file/domain_search/installer/resultOutput
+2024-12-04 05:52:17,216 - WARNING - FilePath: /Users/nyanyacyan/Desktop/project_file/domain_search/installer/resultOutput/Conoha Wing 実施履歴/False 検知履歴.txt
+2024-12-04 05:52:17,216 - DEBUG - FilePathの型: <class 'pathlib._local.PosixPath'>
+2024-12-04 05:52:17,216 - DEBUG - Conoha Wing 実施履歴 発見
+2024-12-04 05:52:17,216 - DEBUG - FilePath: /Users/nyanyacyan/Desktop/project_file/domain_search/installer/resultOutput/Conoha Wing 実施履歴/False 検知履歴.txt
+2024-12-04 05:52:21,124 - INFO - levelsUp の型: <class 'int'>: 4
+2024-12-04 05:52:21,124 - DEBUG - resultOutput: /Users/nyanyacyan/Desktop/project_file/domain_search/installer/resultOutput
+2024-12-04 05:52:21,124 - WARNING - FilePath: /Users/nyanyacyan/Desktop/project_file/domain_search/installer/resultOutput/Conoha Wing 実施履歴/False 検知履歴.txt
+2024-12-04 05:52:21,124 - DEBUG - FilePathの型: <class 'pathlib._local.PosixPath'>
+2024-12-04 05:52:21,124 - DEBUG - Conoha Wing 実施履歴 発見
+2024-12-04 05:52:21,124 - DEBUG - FilePath: /Users/nyanyacyan/Desktop/project_file/domain_search/installer/resultOutput/Conoha Wing 実施履歴/False 検知履歴.txt
+2024-12-04 05:52:26,415 - INFO - levelsUp の型: <class 'int'>: 4
+2024-12-04 05:52:26,415 - DEBUG - resultOutput: /Users/nyanyacyan/Desktop/project_file/domain_search/installer/resultOutput
+2024-12-04 05:52:26,415 - WARNING - FilePath: /Users/nyanyacyan/Desktop/project_file/domain_search/installer/resultOutput/Conoha Wing 実施履歴/False 検知履歴.txt
+2024-12-04 05:52:26,415 - DEBUG - FilePathの型: <class 'pathlib._local.PosixPath'>
+2024-12-04 05:52:26,415 - DEBUG - Conoha Wing 実施履歴 発見
+2024-12-04 05:52:26,415 - DEBUG - FilePath: /Users/nyanyacyan/Desktop/project_file/domain_search/installer/resultOutput/Conoha Wing 実施履歴/False 検知履歴.txt
+2024-12-04 05:53:01,754 - INFO - levelsUp の型: <class 'int'>: 4
+2024-12-04 05:53:01,754 - DEBUG - resultOutput: /Users/nyanyacyan/Desktop/project_file/domain_search/installer/resultOutput
+2024-12-04 05:53:01,754 - WARNING - FilePath: /Users/nyanyacyan/Desktop/project_file/domain_search/installer/resultOutput/お名前.com 実施履歴/True 検知履歴.txt
+2024-12-04 05:53:01,754 - DEBUG - FilePathの型: <class 'pathlib._local.PosixPath'>
+2024-12-04 05:53:01,754 - DEBUG - お名前.com 実施履歴 発見
+2024-12-04 05:53:01,754 - DEBUG - FilePath: /Users/nyanyacyan/Desktop/project_file/domain_search/installer/resultOutput/お名前.com 実施履歴/True 検知履歴.txt
+2024-12-04 05:53:01,755 - INFO - levelsUp の型: <class 'int'>: 4
+2024-12-04 05:53:01,755 - DEBUG - resultOutput: /Users/nyanyacyan/Desktop/project_file/domain_search/installer/resultOutput
+2024-12-04 05:53:01,756 - WARNING - FilePath: /Users/nyanyacyan/Desktop/project_file/domain_search/installer/resultOutput/screenshot/お名前.com_jihnu241204_055108.png
+2024-12-04 05:53:01,756 - DEBUG - FilePathの型: <class 'pathlib._local.PosixPath'>
+2024-12-04 05:53:01,756 - DEBUG - screenshot 発見
+2024-12-04 05:53:01,756 - DEBUG - FilePath: /Users/nyanyacyan/Desktop/project_file/domain_search/installer/resultOutput/screenshot/お名前.com_jihnu241204_055108.png
+2024-12-04 05:53:32,526 - INFO - levelsUp の型: <class 'int'>: 4
+2024-12-04 05:53:32,527 - DEBUG - resultOutput: /Users/nyanyacyan/Desktop/project_file/domain_search/installer/resultOutput
+2024-12-04 05:53:32,527 - WARNING - FilePath: /Users/nyanyacyan/Desktop/project_file/domain_search/installer/resultOutput/お名前.com 実施履歴/True 検知履歴.txt
+2024-12-04 05:53:32,527 - DEBUG - FilePathの型: <class 'pathlib._local.PosixPath'>
+2024-12-04 05:53:32,527 - DEBUG - お名前.com 実施履歴 発見
+2024-12-04 05:53:32,527 - DEBUG - FilePath: /Users/nyanyacyan/Desktop/project_file/domain_search/installer/resultOutput/お名前.com 実施履歴/True 検知履歴.txt
+2024-12-04 05:53:32,528 - INFO - levelsUp の型: <class 'int'>: 4
+2024-12-04 05:53:32,528 - DEBUG - resultOutput: /Users/nyanyacyan/Desktop/project_file/domain_search/installer/resultOutput
+2024-12-04 05:53:32,528 - WARNING - FilePath: /Users/nyanyacyan/Desktop/project_file/domain_search/installer/resultOutput/screenshot/お名前.com_jihnu241204_055108.png
+2024-12-04 05:53:32,528 - DEBUG - FilePathの型: <class 'pathlib._local.PosixPath'>
+2024-12-04 05:53:32,528 - DEBUG - screenshot 発見
+2024-12-04 05:53:32,528 - DEBUG - FilePath: /Users/nyanyacyan/Desktop/project_file/domain_search/installer/resultOutput/screenshot/お名前.com_jihnu241204_055108.png
+2024-12-04 05:54:06,967 - INFO - levelsUp の型: <class 'int'>: 4
+2024-12-04 05:54:06,967 - DEBUG - resultOutput: /Users/nyanyacyan/Desktop/project_file/domain_search/installer/resultOutput
+2024-12-04 05:54:06,967 - WARNING - FilePath: /Users/nyanyacyan/Desktop/project_file/domain_search/installer/resultOutput/お名前.com 実施履歴/False 検知履歴.txt
+2024-12-04 05:54:06,967 - DEBUG - FilePathの型: <class 'pathlib._local.PosixPath'>
+2024-12-04 05:54:06,967 - DEBUG - お名前.com 実施履歴 発見
+2024-12-04 05:54:06,967 - DEBUG - FilePath: /Users/nyanyacyan/Desktop/project_file/domain_search/installer/resultOutput/お名前.com 実施履歴/False 検知履歴.txt
+2024-12-04 05:54:40,464 - INFO - levelsUp の型: <class 'int'>: 4
+2024-12-04 05:54:40,464 - DEBUG - resultOutput: /Users/nyanyacyan/Desktop/project_file/domain_search/installer/resultOutput
+2024-12-04 05:54:40,464 - WARNING - FilePath: /Users/nyanyacyan/Desktop/project_file/domain_search/installer/resultOutput/お名前.com 実施履歴/False 検知履歴.txt
+2024-12-04 05:54:40,464 - DEBUG - FilePathの型: <class 'pathlib._local.PosixPath'>
+2024-12-04 05:54:40,464 - DEBUG - お名前.com 実施履歴 発見
+2024-12-04 05:54:40,464 - DEBUG - FilePath: /Users/nyanyacyan/Desktop/project_file/domain_search/installer/resultOutput/お名前.com 実施履歴/False 検知履歴.txt
+2024-12-04 05:55:12,757 - INFO - levelsUp の型: <class 'int'>: 4
+2024-12-04 05:55:12,757 - DEBUG - resultOutput: /Users/nyanyacyan/Desktop/project_file/domain_search/installer/resultOutput
+2024-12-04 05:55:12,757 - WARNING - FilePath: /Users/nyanyacyan/Desktop/project_file/domain_search/installer/resultOutput/お名前.com 実施履歴/False 検知履歴.txt
+2024-12-04 05:55:12,757 - DEBUG - FilePathの型: <class 'pathlib._local.PosixPath'>
+2024-12-04 05:55:12,757 - DEBUG - お名前.com 実施履歴 発見
+2024-12-04 05:55:12,757 - DEBUG - FilePath: /Users/nyanyacyan/Desktop/project_file/domain_search/installer/resultOutput/お名前.com 実施履歴/False 検知履歴.txt

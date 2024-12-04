@@ -1,0 +1,186 @@
+2024-12-04 05:51:01,179 - INFO - ********** flowSetupChrome start **********
+2024-12-04 05:51:01,179 - DEBUG - 引数:
+args=(<method.base.chrome.ChromeManager object at 0x1162fbe00>,), kwargs={}
+2024-12-04 05:51:08,021 - DEBUG - chromeのインスタンス化に成功: flowSetupChrome
+2024-12-04 05:51:08,023 - DEBUG - 利用した変数一覧:
+{'args': (<method.base.chrome.ChromeManager object at 0x1162fbe00>,), 'kwargs': {}, 'result': <selenium.webdriver.chrome.webdriver.WebDriver (session="09d84c548b2c252d58a4f5f738a29460")>, 'func': <function ChromeManager.flowSetupChrome at 0x11632dda0>, 'self': <method.base.decorators.Decorators object at 0x1162dac10>}
+2024-12-04 05:51:12,517 - INFO - ********** clickClearInput start **********
+2024-12-04 05:51:12,517 - DEBUG - 引数:
+args=(<method.base.elementManager.ElementManager object at 0x1163f97f0>,), kwargs={'by': 'xpath', 'value': "//div[@class='search-domain__flex']//input[@type='text']", 'inputText': 'netz-okhotsk.jp'}
+2024-12-04 05:51:12,792 - WARNING - clickClearInput resultが None
+2024-12-04 05:51:12,792 - INFO - clickClearInput result:
+None
+2024-12-04 05:51:21,038 - DEBUG - 引数:
+args=(<method.base.fileWrite.AppendWrite object at 0x1163f9a90>,), kwargs={'data': '【FalseElement発見】241204_055108 : Xserver に netz-okhotsk.jp はありません。\n\n', 'subDirName': 'Xserver 実施履歴', 'fileName': 'False 検知履歴'}
+2024-12-04 05:51:21,038 - INFO - ********** append_result_text start 1回目 **********
+2024-12-04 05:51:21,040 - DEBUG - append_result_text の書込に成功
+2024-12-04 05:51:21,040 - DEBUG - 利用した変数一覧:
+{'args': (<method.base.fileWrite.AppendWrite object at 0x1163f9a90>,), 'kwargs': {'data': '【FalseElement発見】241204_055108 : Xserver に netz-okhotsk.jp はありません。\n\n', 'subDirName': 'Xserver 実施履歴', 'fileName': 'False 検知履歴'}, 'retryCount': 0, 'fileName': 'False 検知履歴', 'delay': 2, 'func': <function AppendWrite.append_result_text at 0x108a70540>, 'maxRetry': 2, 'notifyFunc': None, 'self': <method.base.decorators.Decorators object at 0x1089c2cf0>}
+2024-12-04 05:51:22,638 - INFO - ********** clickClearInput start **********
+2024-12-04 05:51:22,638 - DEBUG - 引数:
+args=(<method.base.elementManager.ElementManager object at 0x1163f97f0>,), kwargs={'by': 'xpath', 'value': "//div[@class='search-domain__flex']//input[@type='text']", 'inputText': 'chuou-niimura.jp'}
+2024-12-04 05:51:23,038 - WARNING - clickClearInput resultが None
+2024-12-04 05:51:23,038 - INFO - clickClearInput result:
+None
+2024-12-04 05:51:30,787 - DEBUG - 引数:
+args=(<method.base.fileWrite.AppendWrite object at 0x1163f9a90>,), kwargs={'data': '【FalseElement発見】241204_055108 : Xserver に chuou-niimura.jp はありません。\n\n', 'subDirName': 'Xserver 実施履歴', 'fileName': 'False 検知履歴'}
+2024-12-04 05:51:30,787 - INFO - ********** append_result_text start 1回目 **********
+2024-12-04 05:51:30,791 - DEBUG - append_result_text の書込に成功
+2024-12-04 05:51:30,791 - DEBUG - 利用した変数一覧:
+{'args': (<method.base.fileWrite.AppendWrite object at 0x1163f9a90>,), 'kwargs': {'data': '【FalseElement発見】241204_055108 : Xserver に chuou-niimura.jp はありません。\n\n', 'subDirName': 'Xserver 実施履歴', 'fileName': 'False 検知履歴'}, 'retryCount': 0, 'fileName': 'False 検知履歴', 'delay': 2, 'func': <function AppendWrite.append_result_text at 0x108a70540>, 'maxRetry': 2, 'notifyFunc': None, 'self': <method.base.decorators.Decorators object at 0x1089c2cf0>}
+2024-12-04 05:51:31,482 - INFO - ********** clickClearInput start **********
+2024-12-04 05:51:31,482 - DEBUG - 引数:
+args=(<method.base.elementManager.ElementManager object at 0x1163f97f0>,), kwargs={'by': 'xpath', 'value': "//div[@class='search-domain__flex']//input[@type='text']", 'inputText': 'kk-seh.com'}
+2024-12-04 05:51:31,850 - WARNING - clickClearInput resultが None
+2024-12-04 05:51:31,850 - INFO - clickClearInput result:
+None
+2024-12-04 05:51:37,748 - DEBUG - 引数:
+args=(<method.base.fileWrite.AppendWrite object at 0x1163f9a90>,), kwargs={'data': '【FalseElement発見】241204_055108 : Xserver に kk-seh.com はありません。\n\n', 'subDirName': 'Xserver 実施履歴', 'fileName': 'False 検知履歴'}
+2024-12-04 05:51:37,748 - INFO - ********** append_result_text start 1回目 **********
+2024-12-04 05:51:37,750 - DEBUG - append_result_text の書込に成功
+2024-12-04 05:51:37,750 - DEBUG - 利用した変数一覧:
+{'args': (<method.base.fileWrite.AppendWrite object at 0x1163f9a90>,), 'kwargs': {'data': '【FalseElement発見】241204_055108 : Xserver に kk-seh.com はありません。\n\n', 'subDirName': 'Xserver 実施履歴', 'fileName': 'False 検知履歴'}, 'retryCount': 0, 'fileName': 'False 検知履歴', 'delay': 2, 'func': <function AppendWrite.append_result_text at 0x108a70540>, 'maxRetry': 2, 'notifyFunc': None, 'self': <method.base.decorators.Decorators object at 0x1089c2cf0>}
+2024-12-04 05:51:38,391 - INFO - ********** clickClearInput start **********
+2024-12-04 05:51:38,391 - DEBUG - 引数:
+args=(<method.base.elementManager.ElementManager object at 0x1163f97f0>,), kwargs={'by': 'xpath', 'value': "//div[@class='search-domain__flex']//input[@type='text']", 'inputText': 'jihnu.com'}
+2024-12-04 05:51:38,800 - WARNING - clickClearInput resultが None
+2024-12-04 05:51:38,800 - INFO - clickClearInput result:
+None
+2024-12-04 05:51:45,883 - DEBUG - 引数:
+args=(<method.base.fileWrite.AppendWrite object at 0x1163f9a90>,), kwargs={'data': '【TrueElement発見】241204_055108: Xserver に jihnu.com にあることを検知しました\n\n', 'subDirName': 'Xserver 実施履歴', 'fileName': 'True 検知履歴'}
+2024-12-04 05:51:45,883 - INFO - ********** append_result_text start 1回目 **********
+2024-12-04 05:51:45,885 - DEBUG - append_result_text の書込に成功
+2024-12-04 05:51:45,885 - DEBUG - 利用した変数一覧:
+{'args': (<method.base.fileWrite.AppendWrite object at 0x1163f9a90>,), 'kwargs': {'data': '【TrueElement発見】241204_055108: Xserver に jihnu.com にあることを検知しました\n\n', 'subDirName': 'Xserver 実施履歴', 'fileName': 'True 検知履歴'}, 'retryCount': 0, 'fileName': 'True 検知履歴', 'delay': 2, 'func': <function AppendWrite.append_result_text at 0x108a70540>, 'maxRetry': 2, 'notifyFunc': None, 'self': <method.base.decorators.Decorators object at 0x1089c2cf0>}
+2024-12-04 05:51:47,799 - INFO - ********** clickClearInput start **********
+2024-12-04 05:51:47,799 - DEBUG - 引数:
+args=(<method.base.elementManager.ElementManager object at 0x1163f97f0>,), kwargs={'by': 'xpath', 'value': "//div[@class='search-domain__flex']//input[@type='text']", 'inputText': 'blog.tokyo'}
+2024-12-04 05:51:48,179 - WARNING - clickClearInput resultが None
+2024-12-04 05:51:48,180 - INFO - clickClearInput result:
+None
+2024-12-04 05:51:54,592 - DEBUG - 引数:
+args=(<method.base.fileWrite.AppendWrite object at 0x1163f9a90>,), kwargs={'data': '【検知できず】241204_055108: ※確認必要\nXserver にある blog.tokyo は通常とは違うステータスです（※サイト修正された可能性があります）\n\n', 'subDirName': 'Xserver 実施履歴', 'fileName': 'False 検知履歴'}
+2024-12-04 05:51:54,592 - INFO - ********** append_result_text start 1回目 **********
+2024-12-04 05:51:54,593 - DEBUG - append_result_text の書込に成功
+2024-12-04 05:51:54,593 - DEBUG - 利用した変数一覧:
+{'args': (<method.base.fileWrite.AppendWrite object at 0x1163f9a90>,), 'kwargs': {'data': '【検知できず】241204_055108: ※確認必要\nXserver にある blog.tokyo は通常とは違うステータスです（※サイト修正された可能性があります）\n\n', 'subDirName': 'Xserver 実施履歴', 'fileName': 'False 検知履歴'}, 'retryCount': 0, 'fileName': 'False 検知履歴', 'delay': 2, 'func': <function AppendWrite.append_result_text at 0x108a70540>, 'maxRetry': 2, 'notifyFunc': None, 'self': <method.base.decorators.Decorators object at 0x1089c2cf0>}
+2024-12-04 05:51:59,006 - INFO - ********** clickClearInput start **********
+2024-12-04 05:51:59,007 - DEBUG - 引数:
+args=(<method.base.elementManager.ElementManager object at 0x1163f97f0>,), kwargs={'by': 'xpath', 'value': "//div[@class='boxDomainForm_input']//input[@type='text']", 'inputText': 'jihnu.com'}
+2024-12-04 05:52:00,163 - WARNING - clickClearInput resultが None
+2024-12-04 05:52:00,163 - INFO - clickClearInput result:
+None
+2024-12-04 05:52:04,504 - DEBUG - 引数:
+args=(<method.base.fileWrite.AppendWrite object at 0x1163f9a90>,), kwargs={'data': '【TrueElement発見】241204_055108: Conoha Wing に jihnu.com にあることを検知しました\n\n', 'subDirName': 'Conoha Wing 実施履歴', 'fileName': 'True 検知履歴'}
+2024-12-04 05:52:04,504 - INFO - ********** append_result_text start 1回目 **********
+2024-12-04 05:52:04,505 - DEBUG - append_result_text の書込に成功
+2024-12-04 05:52:04,505 - DEBUG - 利用した変数一覧:
+{'args': (<method.base.fileWrite.AppendWrite object at 0x1163f9a90>,), 'kwargs': {'data': '【TrueElement発見】241204_055108: Conoha Wing に jihnu.com にあることを検知しました\n\n', 'subDirName': 'Conoha Wing 実施履歴', 'fileName': 'True 検知履歴'}, 'retryCount': 0, 'fileName': 'True 検知履歴', 'delay': 2, 'func': <function AppendWrite.append_result_text at 0x108a70540>, 'maxRetry': 2, 'notifyFunc': None, 'self': <method.base.decorators.Decorators object at 0x1089c2cf0>}
+2024-12-04 05:52:06,704 - INFO - ********** clickClearInput start **********
+2024-12-04 05:52:06,705 - DEBUG - 引数:
+args=(<method.base.elementManager.ElementManager object at 0x1163f97f0>,), kwargs={'by': 'xpath', 'value': "//div[@class='boxDomainForm_input']//input[@type='text']", 'inputText': 'jihnu.com'}
+2024-12-04 05:52:07,805 - WARNING - clickClearInput resultが None
+2024-12-04 05:52:07,805 - INFO - clickClearInput result:
+None
+2024-12-04 05:52:10,118 - DEBUG - 引数:
+args=(<method.base.fileWrite.AppendWrite object at 0x1163f9a90>,), kwargs={'data': '【TrueElement発見】241204_055108: Conoha Wing に jihnu.com にあることを検知しました\n\n', 'subDirName': 'Conoha Wing 実施履歴', 'fileName': 'True 検知履歴'}
+2024-12-04 05:52:10,119 - INFO - ********** append_result_text start 1回目 **********
+2024-12-04 05:52:10,119 - DEBUG - append_result_text の書込に成功
+2024-12-04 05:52:10,119 - DEBUG - 利用した変数一覧:
+{'args': (<method.base.fileWrite.AppendWrite object at 0x1163f9a90>,), 'kwargs': {'data': '【TrueElement発見】241204_055108: Conoha Wing に jihnu.com にあることを検知しました\n\n', 'subDirName': 'Conoha Wing 実施履歴', 'fileName': 'True 検知履歴'}, 'retryCount': 0, 'fileName': 'True 検知履歴', 'delay': 2, 'func': <function AppendWrite.append_result_text at 0x108a70540>, 'maxRetry': 2, 'notifyFunc': None, 'self': <method.base.decorators.Decorators object at 0x1089c2cf0>}
+2024-12-04 05:52:12,345 - INFO - ********** clickClearInput start **********
+2024-12-04 05:52:12,346 - DEBUG - 引数:
+args=(<method.base.elementManager.ElementManager object at 0x1163f97f0>,), kwargs={'by': 'xpath', 'value': "//div[@class='boxDomainForm_input']//input[@type='text']", 'inputText': 'blog.com'}
+2024-12-04 05:52:13,624 - WARNING - clickClearInput resultが None
+2024-12-04 05:52:13,624 - INFO - clickClearInput result:
+None
+2024-12-04 05:52:17,216 - DEBUG - 引数:
+args=(<method.base.fileWrite.AppendWrite object at 0x1163f9a90>,), kwargs={'data': '【FalseElement発見】241204_055108 : Conoha Wing に blog.com はありません。\n\n', 'subDirName': 'Conoha Wing 実施履歴', 'fileName': 'False 検知履歴'}
+2024-12-04 05:52:17,216 - INFO - ********** append_result_text start 1回目 **********
+2024-12-04 05:52:17,217 - DEBUG - append_result_text の書込に成功
+2024-12-04 05:52:17,217 - DEBUG - 利用した変数一覧:
+{'args': (<method.base.fileWrite.AppendWrite object at 0x1163f9a90>,), 'kwargs': {'data': '【FalseElement発見】241204_055108 : Conoha Wing に blog.com はありません。\n\n', 'subDirName': 'Conoha Wing 実施履歴', 'fileName': 'False 検知履歴'}, 'retryCount': 0, 'fileName': 'False 検知履歴', 'delay': 2, 'func': <function AppendWrite.append_result_text at 0x108a70540>, 'maxRetry': 2, 'notifyFunc': None, 'self': <method.base.decorators.Decorators object at 0x1089c2cf0>}
+2024-12-04 05:52:17,833 - INFO - ********** clickClearInput start **********
+2024-12-04 05:52:17,833 - DEBUG - 引数:
+args=(<method.base.elementManager.ElementManager object at 0x1163f97f0>,), kwargs={'by': 'xpath', 'value': "//div[@class='boxDomainForm_input']//input[@type='text']", 'inputText': 'blog.tokyo'}
+2024-12-04 05:52:18,957 - WARNING - clickClearInput resultが None
+2024-12-04 05:52:18,957 - INFO - clickClearInput result:
+None
+2024-12-04 05:52:21,124 - DEBUG - 引数:
+args=(<method.base.fileWrite.AppendWrite object at 0x1163f9a90>,), kwargs={'data': '【FalseElement発見】241204_055108 : Conoha Wing に blog.tokyo はありません。\n\n', 'subDirName': 'Conoha Wing 実施履歴', 'fileName': 'False 検知履歴'}
+2024-12-04 05:52:21,124 - INFO - ********** append_result_text start 1回目 **********
+2024-12-04 05:52:21,125 - DEBUG - append_result_text の書込に成功
+2024-12-04 05:52:21,125 - DEBUG - 利用した変数一覧:
+{'args': (<method.base.fileWrite.AppendWrite object at 0x1163f9a90>,), 'kwargs': {'data': '【FalseElement発見】241204_055108 : Conoha Wing に blog.tokyo はありません。\n\n', 'subDirName': 'Conoha Wing 実施履歴', 'fileName': 'False 検知履歴'}, 'retryCount': 0, 'fileName': 'False 検知履歴', 'delay': 2, 'func': <function AppendWrite.append_result_text at 0x108a70540>, 'maxRetry': 2, 'notifyFunc': None, 'self': <method.base.decorators.Decorators object at 0x1089c2cf0>}
+2024-12-04 05:52:22,599 - INFO - ********** clickClearInput start **********
+2024-12-04 05:52:22,599 - DEBUG - 引数:
+args=(<method.base.elementManager.ElementManager object at 0x1163f97f0>,), kwargs={'by': 'xpath', 'value': "//div[@class='boxDomainForm_input']//input[@type='text']", 'inputText': 'blog.tokyo'}
+2024-12-04 05:52:23,717 - WARNING - clickClearInput resultが None
+2024-12-04 05:52:23,718 - INFO - clickClearInput result:
+None
+2024-12-04 05:52:26,414 - DEBUG - 引数:
+args=(<method.base.fileWrite.AppendWrite object at 0x1163f9a90>,), kwargs={'data': '【FalseElement発見】241204_055108 : Conoha Wing に blog.tokyo はありません。\n\n', 'subDirName': 'Conoha Wing 実施履歴', 'fileName': 'False 検知履歴'}
+2024-12-04 05:52:26,414 - INFO - ********** append_result_text start 1回目 **********
+2024-12-04 05:52:26,416 - DEBUG - append_result_text の書込に成功
+2024-12-04 05:52:26,416 - DEBUG - 利用した変数一覧:
+{'args': (<method.base.fileWrite.AppendWrite object at 0x1163f9a90>,), 'kwargs': {'data': '【FalseElement発見】241204_055108 : Conoha Wing に blog.tokyo はありません。\n\n', 'subDirName': 'Conoha Wing 実施履歴', 'fileName': 'False 検知履歴'}, 'retryCount': 0, 'fileName': 'False 検知履歴', 'delay': 2, 'func': <function AppendWrite.append_result_text at 0x108a70540>, 'maxRetry': 2, 'notifyFunc': None, 'self': <method.base.decorators.Decorators object at 0x1089c2cf0>}
+2024-12-04 05:52:29,937 - INFO - ********** clickClearInput start **********
+2024-12-04 05:52:29,937 - DEBUG - 引数:
+args=(<method.base.elementManager.ElementManager object at 0x1163f97f0>,), kwargs={'by': 'xpath', 'value': "//div[@class='searchWithoutPulldown']//input[@type='text']", 'inputText': 'jihnu.com'}
+2024-12-04 05:52:30,134 - WARNING - clickClearInput resultが None
+2024-12-04 05:52:30,135 - INFO - clickClearInput result:
+None
+2024-12-04 05:53:01,753 - DEBUG - 引数:
+args=(<method.base.fileWrite.AppendWrite object at 0x1163f9a90>,), kwargs={'data': '【TrueElement発見】241204_055108: お名前.com に jihnu.com にあることを検知しました\n\n', 'subDirName': 'お名前.com 実施履歴', 'fileName': 'True 検知履歴'}
+2024-12-04 05:53:01,753 - INFO - ********** append_result_text start 1回目 **********
+2024-12-04 05:53:01,755 - DEBUG - append_result_text の書込に成功
+2024-12-04 05:53:01,755 - DEBUG - 利用した変数一覧:
+{'args': (<method.base.fileWrite.AppendWrite object at 0x1163f9a90>,), 'kwargs': {'data': '【TrueElement発見】241204_055108: お名前.com に jihnu.com にあることを検知しました\n\n', 'subDirName': 'お名前.com 実施履歴', 'fileName': 'True 検知履歴'}, 'retryCount': 0, 'fileName': 'True 検知履歴', 'delay': 2, 'func': <function AppendWrite.append_result_text at 0x108a70540>, 'maxRetry': 2, 'notifyFunc': None, 'self': <method.base.decorators.Decorators object at 0x1089c2cf0>}
+2024-12-04 05:53:05,230 - INFO - ********** clickClearInput start **********
+2024-12-04 05:53:05,230 - DEBUG - 引数:
+args=(<method.base.elementManager.ElementManager object at 0x1163f97f0>,), kwargs={'by': 'xpath', 'value': "//div[@class='searchWithoutPulldown']//input[@type='text']", 'inputText': 'jihnu.com'}
+2024-12-04 05:53:05,346 - WARNING - clickClearInput resultが None
+2024-12-04 05:53:05,346 - INFO - clickClearInput result:
+None
+2024-12-04 05:53:32,523 - DEBUG - 引数:
+args=(<method.base.fileWrite.AppendWrite object at 0x1163f9a90>,), kwargs={'data': '【TrueElement発見】241204_055108: お名前.com に jihnu.com にあることを検知しました\n\n', 'subDirName': 'お名前.com 実施履歴', 'fileName': 'True 検知履歴'}
+2024-12-04 05:53:32,524 - INFO - ********** append_result_text start 1回目 **********
+2024-12-04 05:53:32,528 - DEBUG - append_result_text の書込に成功
+2024-12-04 05:53:32,528 - DEBUG - 利用した変数一覧:
+{'args': (<method.base.fileWrite.AppendWrite object at 0x1163f9a90>,), 'kwargs': {'data': '【TrueElement発見】241204_055108: お名前.com に jihnu.com にあることを検知しました\n\n', 'subDirName': 'お名前.com 実施履歴', 'fileName': 'True 検知履歴'}, 'retryCount': 0, 'fileName': 'True 検知履歴', 'delay': 2, 'func': <function AppendWrite.append_result_text at 0x108a70540>, 'maxRetry': 2, 'notifyFunc': None, 'self': <method.base.decorators.Decorators object at 0x1089c2cf0>}
+2024-12-04 05:53:35,232 - INFO - ********** clickClearInput start **********
+2024-12-04 05:53:35,232 - DEBUG - 引数:
+args=(<method.base.elementManager.ElementManager object at 0x1163f97f0>,), kwargs={'by': 'xpath', 'value': "//div[@class='searchWithoutPulldown']//input[@type='text']", 'inputText': 'netz-okhotsk.jp'}
+2024-12-04 05:53:35,345 - WARNING - clickClearInput resultが None
+2024-12-04 05:53:35,345 - INFO - clickClearInput result:
+None
+2024-12-04 05:54:06,966 - DEBUG - 引数:
+args=(<method.base.fileWrite.AppendWrite object at 0x1163f9a90>,), kwargs={'data': '【FalseElement発見】241204_055108 : お名前.com に netz-okhotsk.jp はありません。\n\n', 'subDirName': 'お名前.com 実施履歴', 'fileName': 'False 検知履歴'}
+2024-12-04 05:54:06,966 - INFO - ********** append_result_text start 1回目 **********
+2024-12-04 05:54:06,968 - DEBUG - append_result_text の書込に成功
+2024-12-04 05:54:06,968 - DEBUG - 利用した変数一覧:
+{'args': (<method.base.fileWrite.AppendWrite object at 0x1163f9a90>,), 'kwargs': {'data': '【FalseElement発見】241204_055108 : お名前.com に netz-okhotsk.jp はありません。\n\n', 'subDirName': 'お名前.com 実施履歴', 'fileName': 'False 検知履歴'}, 'retryCount': 0, 'fileName': 'False 検知履歴', 'delay': 2, 'func': <function AppendWrite.append_result_text at 0x108a70540>, 'maxRetry': 2, 'notifyFunc': None, 'self': <method.base.decorators.Decorators object at 0x1089c2cf0>}
+2024-12-04 05:54:08,626 - INFO - ********** clickClearInput start **********
+2024-12-04 05:54:08,626 - DEBUG - 引数:
+args=(<method.base.elementManager.ElementManager object at 0x1163f97f0>,), kwargs={'by': 'xpath', 'value': "//div[@class='searchWithoutPulldown']//input[@type='text']", 'inputText': 'netz-okhotsk.jp'}
+2024-12-04 05:54:08,741 - WARNING - clickClearInput resultが None
+2024-12-04 05:54:08,741 - INFO - clickClearInput result:
+None
+2024-12-04 05:54:40,463 - DEBUG - 引数:
+args=(<method.base.fileWrite.AppendWrite object at 0x1163f9a90>,), kwargs={'data': '【FalseElement発見】241204_055108 : お名前.com に netz-okhotsk.jp はありません。\n\n', 'subDirName': 'お名前.com 実施履歴', 'fileName': 'False 検知履歴'}
+2024-12-04 05:54:40,463 - INFO - ********** append_result_text start 1回目 **********
+2024-12-04 05:54:40,465 - DEBUG - append_result_text の書込に成功
+2024-12-04 05:54:40,465 - DEBUG - 利用した変数一覧:
+{'args': (<method.base.fileWrite.AppendWrite object at 0x1163f9a90>,), 'kwargs': {'data': '【FalseElement発見】241204_055108 : お名前.com に netz-okhotsk.jp はありません。\n\n', 'subDirName': 'お名前.com 実施履歴', 'fileName': 'False 検知履歴'}, 'retryCount': 0, 'fileName': 'False 検知履歴', 'delay': 2, 'func': <function AppendWrite.append_result_text at 0x108a70540>, 'maxRetry': 2, 'notifyFunc': None, 'self': <method.base.decorators.Decorators object at 0x1089c2cf0>}
+2024-12-04 05:54:41,495 - INFO - ********** clickClearInput start **********
+2024-12-04 05:54:41,495 - DEBUG - 引数:
+args=(<method.base.elementManager.ElementManager object at 0x1163f97f0>,), kwargs={'by': 'xpath', 'value': "//div[@class='searchWithoutPulldown']//input[@type='text']", 'inputText': 'blog.tokyo'}
+2024-12-04 05:54:41,604 - WARNING - clickClearInput resultが None
+2024-12-04 05:54:41,604 - INFO - clickClearInput result:
+None
+2024-12-04 05:55:12,756 - DEBUG - 引数:
+args=(<method.base.fileWrite.AppendWrite object at 0x1163f9a90>,), kwargs={'data': '【FalseElement発見】241204_055108 : お名前.com に blog.tokyo はありません。\n\n', 'subDirName': 'お名前.com 実施履歴', 'fileName': 'False 検知履歴'}
+2024-12-04 05:55:12,756 - INFO - ********** append_result_text start 1回目 **********
+2024-12-04 05:55:12,758 - DEBUG - append_result_text の書込に成功
+2024-12-04 05:55:12,758 - DEBUG - 利用した変数一覧:
+{'args': (<method.base.fileWrite.AppendWrite object at 0x1163f9a90>,), 'kwargs': {'data': '【FalseElement発見】241204_055108 : お名前.com に blog.tokyo はありません。\n\n', 'subDirName': 'お名前.com 実施履歴', 'fileName': 'False 検知履歴'}, 'retryCount': 0, 'fileName': 'False 検知履歴', 'delay': 2, 'func': <function AppendWrite.append_result_text at 0x108a70540>, 'maxRetry': 2, 'notifyFunc': None, 'self': <method.base.decorators.Decorators object at 0x1089c2cf0>}

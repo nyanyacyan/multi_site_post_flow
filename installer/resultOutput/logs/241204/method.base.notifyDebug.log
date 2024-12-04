@@ -1,0 +1,50 @@
+2024-12-04 05:51:46,227 - DEBUG - 
+ img_MB_size: 0.2106618881225586
+ max_mb_size: 5
+2024-12-04 05:51:46,227 - DEBUG - 
+ data: {'message': '\n    **Xserver** に **jihnu.com** があることを確認できました！\n\n    詳細はスクリーンショットにてご確認ください。\n    '}
+ resize_image_path: /Users/nyanyacyan/Desktop/project_file/domain_search/installer/resultOutput/screenshot/Xserver_jihnu241204_055108.png
+ end_point: https://api.chatwork.com/v2
+ url: https://api.chatwork.com/v2/rooms/379549769/files
+ headers: {'X-ChatWorkToken': 'fb0410138ee1f4c493b1094f23e310cd'}
+2024-12-04 05:51:47,210 - DEBUG - 送信成功
+2024-12-04 05:52:04,843 - DEBUG - 
+ img_MB_size: 0.1939373016357422
+ max_mb_size: 5
+2024-12-04 05:52:04,843 - DEBUG - 
+ data: {'message': '\n    **Conoha Wing** に **jihnu.com** があることを確認できました！\n\n    詳細はスクリーンショットにてご確認ください。\n    '}
+ resize_image_path: /Users/nyanyacyan/Desktop/project_file/domain_search/installer/resultOutput/screenshot/Conoha Wing_jihnu241204_055108.png
+ end_point: https://api.chatwork.com/v2
+ url: https://api.chatwork.com/v2/rooms/379549769/files
+ headers: {'X-ChatWorkToken': 'fb0410138ee1f4c493b1094f23e310cd'}
+2024-12-04 05:52:05,655 - DEBUG - 送信成功
+2024-12-04 05:52:10,289 - DEBUG - 
+ img_MB_size: 0.1938304901123047
+ max_mb_size: 5
+2024-12-04 05:52:10,289 - DEBUG - 
+ data: {'message': '\n    **Conoha Wing** に **jihnu.com** があることを確認できました！\n\n    詳細はスクリーンショットにてご確認ください。\n    '}
+ resize_image_path: /Users/nyanyacyan/Desktop/project_file/domain_search/installer/resultOutput/screenshot/Conoha Wing_jihnu241204_055108.png
+ end_point: https://api.chatwork.com/v2
+ url: https://api.chatwork.com/v2/rooms/379549769/files
+ headers: {'X-ChatWorkToken': 'fb0410138ee1f4c493b1094f23e310cd'}
+2024-12-04 05:52:11,309 - DEBUG - 送信成功
+2024-12-04 05:53:02,004 - DEBUG - 
+ img_MB_size: 0.2106313705444336
+ max_mb_size: 5
+2024-12-04 05:53:02,004 - DEBUG - 
+ data: {'message': '\n    **お名前.com** に **jihnu.com** があることを確認できました！\n\n    詳細はスクリーンショットにてご確認ください。\n    '}
+ resize_image_path: /Users/nyanyacyan/Desktop/project_file/domain_search/installer/resultOutput/screenshot/お名前.com_jihnu241204_055108.png
+ end_point: https://api.chatwork.com/v2
+ url: https://api.chatwork.com/v2/rooms/379549769/files
+ headers: {'X-ChatWorkToken': 'fb0410138ee1f4c493b1094f23e310cd'}
+2024-12-04 05:53:02,774 - DEBUG - 送信成功
+2024-12-04 05:53:32,729 - DEBUG - 
+ img_MB_size: 0.2106313705444336
+ max_mb_size: 5
+2024-12-04 05:53:32,729 - DEBUG - 
+ data: {'message': '\n    **お名前.com** に **jihnu.com** があることを確認できました！\n\n    詳細はスクリーンショットにてご確認ください。\n    '}
+ resize_image_path: /Users/nyanyacyan/Desktop/project_file/domain_search/installer/resultOutput/screenshot/お名前.com_jihnu241204_055108.png
+ end_point: https://api.chatwork.com/v2
+ url: https://api.chatwork.com/v2/rooms/379549769/files
+ headers: {'X-ChatWorkToken': 'fb0410138ee1f4c493b1094f23e310cd'}
+2024-12-04 05:53:33,884 - DEBUG - 送信成功
