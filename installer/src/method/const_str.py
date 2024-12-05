@@ -55,7 +55,7 @@ class Extension(Enum):
 # ----------------------------------------------------------------------------------
 # サイトURL
 
-class GameClubInfo(Enum):
+class MAClubInfo(Enum):
     LOGIN_URL='https://gameclub.jp/signin'
     HOME_URL='https://www.xdomain.ne.jp/'
     TARGET_URL=''
@@ -77,7 +77,7 @@ class GameClubInfo(Enum):
 # ----------------------------------------------------------------------------------
 # サイトURL
 
-class GameClubInfo(Enum):
+class rrmtClubInfo(Enum):
     LOGIN_URL='https://gameclub.jp/signin'
     HOME_URL='https://www.xdomain.ne.jp/'
     TARGET_URL=''
@@ -95,49 +95,10 @@ class GssInfo(Enum):
 
     URL_COL='site_url'
 
-    DOMAIN_COL=[
-        'domain_1',
-        'domain_2',
-        'domain_3',
-        'domain_4',
-        'domain_5',
-    ]
-
-
-    SEARCH_XPATH_COL=[
-        'search_input_xpath',
-        'search_click_xpath',
-    ]
-
-
-    TRUE_XPATH=[
-        'true_xpath_1',
-        'true_xpath_2',
-        'true_xpath_3',
-    ]
-
-
-    FALSE_XPATH=[
-        'false_xpath_1',
-        'false_xpath_2',
-        'false_xpath_3',
-    ]
 
 
 # ----------------------------------------------------------------------------------
 
-
-class GssColumnsName(Enum):
-    SITE_ID='SITE_ID'
-    SITE_NAME='site_name'
-    SITE_VALUE='site_url'
-
-    DOMAIN_ID='domain_ID'
-    DOMAIN_NAME='domain_name'
-    DOMAIN_VALUE='domain_value'
-
-
-# ----------------------------------------------------------------------------------
 
 class TableName(Enum):
     Cookie='cookiesDB'
