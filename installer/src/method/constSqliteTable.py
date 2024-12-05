@@ -3,19 +3,19 @@
 
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 # import
-
+from enum import Enum
 
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 # **********************************************************************************
 
 
-class TableSchemas:
+class TableSchemas(Enum):
 
 
 # ----------------------------------------------------------------------------------
 # サブ辞書
 
-    COOKIES_TABLE_COLUMNS = {
+    GAME_CLUB_COOKIES_TABLE_COLUMNS = {
         "id": "INTEGER PRIMARY KEY AUTOINCREMENT",
         "name": "TEXT NOT NULL",
         "value": "TEXT NOT NULL",
@@ -32,225 +32,53 @@ class TableSchemas:
 # priorityは優先順位→若い番号ほど順位が高い
 
 
-    TEXT_TABLE_COLUMNS = {
+    MA_CLUB_COOKIES_TABLE_COLUMNS = {
         "id": "INTEGER PRIMARY KEY AUTOINCREMENT",
         "name": "TEXT NOT NULL",
-        "createTime": "TEXT NOT NULL",
-
-        "url": "TEXT NOT NULL",
-        "trainName": "TEXT NOT NULL",
-        "station": "TEXT NOT NULL",
-        "walking": "TEXT NOT NULL",
-        "stationWord": "TEXT NOT NULL",
-
-        "ad": "TEXT NOT NULL",
-        "area": "TEXT NOT NULL",
-        "item": "TEXT NOT NULL",
-        "address": "TEXT NOT NULL",
-        "rent": "TEXT NOT NULL",
-        "managementCost": "TEXT NOT NULL",
-        "deposit": "TEXT",
-        "keyMoney": "TEXT",
-
-        "secondComment": "TEXT",
-        "thirdComment": "TEXT",
-        "fourthComment": "TEXT",
-        "selectItems": "TEXT",
+        "value": "TEXT NOT NULL",
+        "domain": "TEXT",
+        "path": "TEXT",
+        "expires": "INTEGER",
+        "maxAge": "INTEGER",
+        "createTime": "INTEGER NOT NULL",
     }
 
-
-    SORT_TEXT_KEY = [
-        'id',
-        'name',
-        'createTime',
-        'url',
-        'trainName',
-        'stationWord',
-        'ad',
-        'area',
-        'address',
-        'rent',
-        'managementCost',
-        'secondComment',
-        'thirdComment',
-        'fourthComment',
-        'selectItems',
-        "deposit",
-        "keyMoney",
-    ]
 
 # ----------------------------------------------------------------------------------
 # サブ辞書
 
-    IMAGE_TABLE_COLUMNS = {
-        "id": "INTEGER PRIMARY KEY",
+    RRMT_CLUB_COOKIES_TABLE_COLUMNS = {
+        "id": "INTEGER PRIMARY KEY AUTOINCREMENT",
         "name": "TEXT NOT NULL",
-        "createTime": "TEXT NOT NULL",
-        "url": "TEXT NOT NULL",
-        "間取り": "TEXT NOT NULL",
-        "外観": "TEXT NOT NULL",
-        "玄関": "TEXT",
-        "リビング": "TEXT",
-        "キッチン": "TEXT",
-        "ベッドルーム": "TEXT",
-        "風呂画像": "TEXT",
-        "エントランス": "TEXT",
-        "セキュリティ": "TEXT",
-        "ロビー": "TEXT",
-        "宅配BOX": "TEXT",
-        "駐輪場": "TEXT",
-        "洗面所": "TEXT",
-        "トイレ": "TEXT",
-        "ウォークインクロゼット": "TEXT",
-        "リビングルーム": "TEXT",
-        "シューズインクローゼット": "TEXT",
-        "周辺画像": "TEXT",
-        "他共有部分": "TEXT",
-        "他設備": "TEXT",
-        "その他": "TEXT",
-        "収納": "TEXT",
-        '※その他': "TEXT",
-        '※その他_1': "TEXT",
-        '※その他_2': "TEXT",
-        '※その他_3': "TEXT",
-        '※その他_4': "TEXT",
-        "※カラータイプ異なります": "TEXT",
-        "※カラータイプ異なります_1": "TEXT",
-        "※カラータイプ異なります_2": "TEXT",
-        "※カラータイプ異なります_3": "TEXT",
-        "※カラータイプ異なります_4": "TEXT",
-        "※カラータイプ異なります_5": "TEXT",
-        "※カラータイプ異なります_6": "TEXT",
-        "※カラータイプ異なります_7": "TEXT",
-        "※カラータイプ異なります_8": "TEXT",
-        "※カラータイプ異なります_9": "TEXT",
-        "※カラータイプ異なります_10": "TEXT",
+        "value": "TEXT NOT NULL",
+        "domain": "TEXT",
+        "path": "TEXT",
+        "expires": "INTEGER",
+        "maxAge": "INTEGER",
+        "createTime": "INTEGER NOT NULL",
     }
-
-
-    SORT_IMAGE_KEY = [
-        'id',
-        'name',
-        'createTime',
-        'url',
-        '間取り',
-        '外観',
-        '玄関',
-        'リビング',
-        'キッチン',
-        'ベッドルーム',
-        '風呂画像',
-        'エントランス',
-        'セキュリティ',
-        'ロビー',
-        '宅配BOX',
-        '駐輪場',
-        '洗面所',
-        'バス',
-        'トイレ',
-        'ウォークインクロゼット',
-        'リビングルーム',
-        'シューズインクローゼット',
-        '周辺画像',
-        '他共有部分',
-        '他設備',
-        '収納',
-        '※その他',
-        '※その他_1',
-        '※その他_2',
-        '※その他_3',
-        '※その他_4',
-        '※カラータイプ異なります',
-        '※カラータイプ異なります_1',
-        '※カラータイプ異なります_2',
-        '※カラータイプ異なります_3',
-        '※カラータイプ異なります_4',
-        '※カラータイプ異なります_5',
-        '※カラータイプ異なります_6',
-        '※カラータイプ異なります_7',
-        '※カラータイプ異なります_8',
-        '※カラータイプ異なります_9',
-        '※カラータイプ異なります_10',
-    ]
 
 
 # ----------------------------------------------------------------------------------
 #* メイン辞書
 
     TABLE_PATTERN = {
-        "cookiesDB": COOKIES_TABLE_COLUMNS,
-        "text": TEXT_TABLE_COLUMNS,
-        "image": IMAGE_TABLE_COLUMNS
+        "game_club_cookies": GAME_CLUB_COOKIES_TABLE_COLUMNS,
+        "ma_club_cookies": MA_CLUB_COOKIES_TABLE_COLUMNS,
+        "rrmt_club_cookies": RRMT_CLUB_COOKIES_TABLE_COLUMNS
     }
 
 
 # ----------------------------------------------------------------------------------
-# 写真の優先度
-
-    IMAGE_PRIORITY_2 = [
-        '間取り',
-        'エントランス',
-        'ロビー',
-        '玄関',
-        '他設備',
-        '※カラータイプ異なります',
-        '※カラータイプ異なります_1',
-        '※カラータイプ異なります_2',
-        '※カラータイプ異なります_3',
-        '※カラータイプ異なります_4',
-        '※カラータイプ異なります_5',
-        '※カラータイプ異なります_6',
-        '※カラータイプ異なります_7',
-        '※カラータイプ異なります_8',
-        '※カラータイプ異なります_9',
-        '※カラータイプ異なります_10',
-    ]
-
-    IMAGE_PRIORITY_3 = [
-        'リビング',
-        'ロビー',
-        'ベッドルーム',
-        'ベランダ',
-        '※カラータイプ異なります',
-        '※カラータイプ異なります_1',
-        '※カラータイプ異なります_2',
-        '※カラータイプ異なります_3',
-        '※カラータイプ異なります_4',
-        '※カラータイプ異なります_5',
-        '※カラータイプ異なります_6',
-        '※カラータイプ異なります_7',
-        '※カラータイプ異なります_8',
-        '※カラータイプ異なります_9',
-    ]
 
 
-    IMAGE_PRIORITY_4 = [
-        'セキュリティ',
-        'シューズインクローゼット',
-        'ウォークインクロゼット',
-        'パウダールーム',
-        'バス',
-        'キッチン',
-        'ベッドルーム',
-        'バス',
-        '洗面所',
-        '収納',
-        '宅配BOX',
-        '駐輪場',
-        '他共有部分',
-        '※その他',
-        '※その他_1',
-        '※その他_2',
-        '※その他_3',
-        '※その他_4',
-        '※カラータイプ異なります',
-        '※カラータイプ異なります_1',
-        '※カラータイプ異なります_2',
-        '※カラータイプ異なります_3',
-        '※カラータイプ異なります_4',
-        '※カラータイプ異なります_5',
-        '※カラータイプ異なります_6',
-        '※カラータイプ異なります_7',
-        '※カラータイプ異なります_8',
-        '※カラータイプ異なります_9',
-    ]
+    BASE_COOKIES_TABLE_COLUMNS = (
+        "id",
+        "name",
+        "value",
+        "domain",
+        "path",
+        "expires",
+        "maxAge",
+        "createTime"
+    )

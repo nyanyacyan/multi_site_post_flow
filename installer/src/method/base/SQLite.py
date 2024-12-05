@@ -16,7 +16,7 @@ from .utils import Logger
 from .path import BaseToPath
 from .errorHandlers import NetworkHandler
 from .decorators import Decorators
-from ..const import Extension
+from ..const_str import Extension
 from ..constSqliteTable import TableSchemas
 
 decoInstance = Decorators(debugMode=True)
@@ -213,7 +213,7 @@ class SQLite:
 # columnData[1]=columns名
 
     @decoInstance.funcBase
-    def columnsExists(self, tableName: str):
+    def columnsExists(self, tableName: str) -> List[str]:
         sql = f"PRAGMA table_info({tableName});"
         columnsStatus = self.SQLPromptBase(sql=sql, fetch='all')
         self.logger.debug(f"columnsStatus: {columnsStatus}")
@@ -255,12 +255,12 @@ class SQLite:
 # SQLiteへ入れ込む
 
     @decoInstance.funcBase
-    def insertData(self, tableName: str, col: tuple, values: tuple):
+    def insertData(self, tableName: str, cols: tuple, values: tuple):
         # valuesのカウントをしてその分「？」を追加して結合
         placeholders = ', '.join(['?' for _ in values])
         self.logger.debug(f"values: {values}")
 
-        sql = f"INSERT INTO {tableName} {col} VALUES ({placeholders})"
+        sql = f"INSERT INTO {tableName} {cols} VALUES ({placeholders})"
 
         # 最終はIDを返すようにしてる
         insertId = self.SQLPromptBase(sql=sql, values=values, fetch=None)

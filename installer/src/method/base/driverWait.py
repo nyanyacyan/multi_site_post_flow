@@ -3,7 +3,7 @@
 
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 # import
-
+from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
@@ -71,4 +71,13 @@ class Wait:
 
 
 # ----------------------------------------------------------------------------------
+# 次のページに移動後にページがちゃんと開いてる状態か全体を確認してチェックする
+
+    def jsPageChecker(self, chrome: WebDriver, timeout: int = 10):
+            if WebDriverWait(chrome, timeout).until(lambda driver: driver.execute_script('return document.readyState')=='complete'):
+                self.logger.debug(f"{__name__} ページが更新OK")
+
+
+# ----------------------------------------------------------------------------------
+
 # **********************************************************************************

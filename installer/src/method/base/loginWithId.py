@@ -4,6 +4,7 @@
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 # import
 import time
+from typing import Dict, List
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.common.exceptions import TimeoutException
 
@@ -12,6 +13,9 @@ from .utils import Logger
 from .elementManager import ElementManager
 from .driverWait import Wait
 from .driverDeco import jsCompleteWaitDeco, InputDeco, ClickDeco
+from .SQLite import SQLite
+
+from ..constSqliteTable import TableSchemas
 
 decoInstance = jsCompleteWaitDeco(debugMode=True)
 decoInstanceInput = InputDeco(debugMode=True)
@@ -35,13 +39,14 @@ class LoginID:
         # インスタンス
         self.element = ElementManager(chrome=chrome, debugMode=debugMode)
         self.wait = Wait(chrome=self.chrome, debugMode=debugMode)
+        self.sqlite = SQLite(debugMode=debugMode)
 
 
 # ----------------------------------------------------------------------------------
 # IDログイン
 # loginInfoはconstから取得
     @decoInstance.jsCompleteWaitRetry()
-    def flowLoginID(self, url: str, loginInfo: dict, delay: int = 2):
+    def flowLoginID(self, url: str, loginInfo: dict):
 
         # サイトを開いてCookieを追加
         # self.openSite(url=url)
@@ -55,12 +60,29 @@ class LoginID:
 
         # 検索ページなどが出てくる対策
         # PCのスペックに合わせて設定
-        time.sleep(delay)
+        self.wait.jsPageChecker(chrome=self.chrome, timeout=10)
 
         # ログイン後に別のサイトへアクセスしてることを考慮して
         # self.openSite(url=url)
 
         return self.loginCheck(url)
+
+
+# ----------------------------------------------------------------------------------
+
+
+    def flow_cookie_save(self, url: str, loginInfo: dict, tableName: str, columnsName: tuple):
+        self.flowLoginID(url=url, loginInfo=loginInfo)
+
+        cookie = self._getCookie()
+
+        self.canValueInCookie(cookie=cookie)
+
+        self.insertCookieData(cookie=cookie, tableName=tableName, columnsName=columnsName)
+
+        table_data_cols = self.sqlite.columnsExists(tableName=tableName)
+
+        self.logger.info(f"cookieをDBへ保存完了")
 
 
 # ----------------------------------------------------------------------------------
@@ -114,6 +136,7 @@ class LoginID:
         self.logger.debug(f"\nurl: {url}\ncurrentUrl: {self.currentUrl()}")
         if url == self.currentUrl():
             self.logger.info(f"{__name__}: ログインに成功")
+            self.wait.jsPageChecker(chrome=self.chrome)
             return True
         else:
             self.logger.error(f"{__name__}: ログインに失敗")
@@ -154,6 +177,51 @@ class LoginID:
 
     def bypassOpenSite(self):
         return self.chrome.get(self.homeUrl)
+
+
+# ----------------------------------------------------------------------------------
+
+
+    def _getCookie(self):
+        cookies = self.chrome.get_cookies()
+        cookie = cookies[0]
+        self.logger.debug(f"\ncookies(元データ→リスト): {cookies}\ncookie（元データリストの1つ目の辞書）: {cookie}")
+        return cookie
+
+
+# ----------------------------------------------------------------------------------
+# Cookieの値が入っているか確認
+
+    @decoInstance.funcBase
+    def canValueInCookie(self, cookie: Dict):
+        if not cookie.get('name') or not cookie.get('value'):
+            self.logger.warning(f"cookieに必要な情報が記載されてません {cookie}")
+            return None
+        else:
+            return cookie
+
+
+# ----------------------------------------------------------------------------------
+# 有効期限をクリアしたmethod
+# DBよりcookie情報を取得する
+
+    @decoInstance.funcBase
+    def insertCookieData(self, cookie: Dict, tableName: str, columnsNames: tuple = TableSchemas.BASE_COOKIES_TABLE_COLUMNS.value):
+        cookieName = cookie['name']
+        cookieValue = cookie.get('value')
+        cookieDomain = cookie.get('domain')
+        cookiePath = cookie.get('path')
+        cookieExpires = cookie.get('expiry')
+        cookieMaxAge = cookie.get('max-age')  # expiresよりも優先される、〇〇秒間、持たせる権限
+        cookieCreateTime = int(time.time())
+
+        # 値をtuple化
+        values = (cookieName, cookieValue, cookieDomain, cookiePath, cookieExpires, cookieMaxAge, cookieCreateTime)
+        self.logger.info(f"values:\n{values}")
+
+        # データを入れ込む
+        self.sqlite.insertData(tableName=tableName, cols=columnsNames, values=values)
+        return cookie
 
 
 # ----------------------------------------------------------------------------------
