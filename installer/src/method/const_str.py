@@ -55,8 +55,8 @@ class Extension(Enum):
 # ----------------------------------------------------------------------------------
 # サイトURL
 
-class SiteUrl(Enum):
-    LOGIN_URL='https://auth.es-account.com/u/login?state=hKFo2SB3QVZpdlM5eG9sR1JaTlVKTER3STFzZ1dkRWxOSmxmZ6Fur3VuaXZlcnNhbC1sb2dpbqN0aWTZIFVOMHBPX0F5eTFNdWRIdWVVNFVOOXgzX0RqbDBvSV9Po2NpZNkgYUlTZzRxQmxHWEpYZHpoZklSTnNwZFZMTkdtY3JsU2s'
+class GameClubInfo(Enum):
+    LOGIN_URL='https://gameclub.jp/signin'
     HOME_URL='https://www.xdomain.ne.jp/'
     TARGET_URL=''
 
@@ -64,8 +64,28 @@ class SiteUrl(Enum):
 
 
 # ----------------------------------------------------------------------------------
+# サイトURL
+
+class GameClubInfo(Enum):
+    LOGIN_URL='https://gameclub.jp/signin'
+    HOME_URL='https://www.xdomain.ne.jp/'
+    TARGET_URL=''
+
+    GSS_URL=''
 
 
+# ----------------------------------------------------------------------------------
+# サイトURL
+
+class GameClubInfo(Enum):
+    LOGIN_URL='https://gameclub.jp/signin'
+    HOME_URL='https://www.xdomain.ne.jp/'
+    TARGET_URL=''
+
+    GSS_URL=''
+
+
+# ----------------------------------------------------------------------------------
 class GssInfo(Enum):
     SITE='https://docs.google.com/spreadsheets/d/1PJd_nTjYDh_jfxSJ4vNaQ13be90IHrBqVQ7srjPYu1A/export?format=csv&gid=0'
 
