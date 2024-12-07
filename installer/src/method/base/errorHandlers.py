@@ -11,7 +11,7 @@ import gspread
 import aiohttp
 from selenium.common.exceptions import WebDriverException
 
-from googleapiclient import errors
+from googleapiclient import errors  # pip install google-api-python-client
 from typing import Callable, Optional, Any
 
 # 自作モジュール

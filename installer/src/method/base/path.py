@@ -12,7 +12,7 @@ from datetime import datetime
 # 自作モジュール
 # import const
 from .utils import Logger
-from ..const_domain_search import Dir, SubDir, Extension
+from const_str import Dir, SubDir, Extension
 from .errorHandlers import AccessFileNotFoundError
 
 

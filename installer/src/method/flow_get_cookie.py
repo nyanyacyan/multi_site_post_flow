@@ -8,8 +8,8 @@
 import os, time, asyncio
 
 # 自作モジュール
-from .base.utils import Logger
-from .base.chrome import ChromeManager
+from base.utils import Logger
+from base.chrome import ChromeManager
 
 
 
@@ -27,7 +27,6 @@ class Flow:
         # chrome
         self.chromeManager = ChromeManager(debugMode=debugMode)
         self.chrome = self.chromeManager.flowSetupChrome()
-
         # const
 
 
