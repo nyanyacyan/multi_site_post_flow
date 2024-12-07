@@ -17,7 +17,7 @@ from .base.chrome import ChromeManager
 # **********************************************************************************
 # 一連の流れ
 
-class Flow:
+class FlowNewItem:
     def __init__(self, debugMode=True):
 
         # logger

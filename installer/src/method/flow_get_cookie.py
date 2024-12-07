@@ -10,6 +10,7 @@ import os, time, asyncio
 # 自作モジュール
 from base.utils import Logger
 from base.chrome import ChromeManager
+from base.loginWithId import LoginID
 
 
 
@@ -17,7 +18,7 @@ from base.chrome import ChromeManager
 # **********************************************************************************
 # 一連の流れ
 
-class Flow:
+class FlowGetCookie:
     def __init__(self, debugMode=True):
 
         # logger
@@ -27,11 +28,12 @@ class Flow:
         # chrome
         self.chromeManager = ChromeManager(debugMode=debugMode)
         self.chrome = self.chromeManager.flowSetupChrome()
+
         # const
 
 
-
         # インスタンス
+        self.id_login = LoginID(chrome=self.chrome, debugMode=debugMode)
 
 
 
@@ -40,7 +42,12 @@ class Flow:
 #todo 各メソッドをまとめる
 
     async def process(self):
-        await self.gss_to_notify.flowProcess()
+        await self.id_login.flow_cookie_save(
+            url=,
+            loginInfo=,
+            tableName=,
+            columnsName=
+        )
 
 
 

@@ -3,7 +3,7 @@
 
 # ----------------------------------------------------------------------------------
 # import
-import tkinter as tk
+import tkinter as tk  # python -m tkinter このコマンドで使えるかどうか確認できる
 from tkinter import messagebox
 from typing import Callable, Optional
 

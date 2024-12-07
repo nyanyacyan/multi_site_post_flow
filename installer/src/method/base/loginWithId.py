@@ -72,12 +72,13 @@ class LoginID:
 
 
     def flow_cookie_save(self, url: str, loginInfo: dict, tableName: str, columnsName: tuple):
+        # ログインの実施
         self.flowLoginID(url=url, loginInfo=loginInfo)
 
+        # Cookieの取得
         cookie = self._getCookie()
 
-        self.canValueInCookie(cookie=cookie)
-
+        # テーブルにCookie情報を入れ込む
         self.insertCookieData(cookie=cookie, tableName=tableName, columnsName=columnsName)
 
         table_data_cols = self.sqlite.columnsExists(tableName=tableName)
@@ -186,7 +187,8 @@ class LoginID:
         cookies = self.chrome.get_cookies()
         cookie = cookies[0]
         self.logger.debug(f"\ncookies(元データ→リスト): {cookies}\ncookie（元データリストの1つ目の辞書）: {cookie}")
-        return cookie
+        checked_cookie = self.canValueInCookie(cookie=cookie)
+        return checked_cookie
 
 
 # ----------------------------------------------------------------------------------
@@ -218,6 +220,11 @@ class LoginID:
         # 値をtuple化
         values = (cookieName, cookieValue, cookieDomain, cookiePath, cookieExpires, cookieMaxAge, cookieCreateTime)
         self.logger.info(f"values:\n{values}")
+
+        # テーブルの存在確認
+        # TODO DBの名称をtitleにする
+        # TODO 複数のDBを作成するのではなく、1つにしてバックアップするように変更→ない場合には作成する
+        # TODO DBがあるかどうかを確認する→テーブルがあるか確認をする
 
         # データを入れ込む
         self.sqlite.insertData(tableName=tableName, cols=columnsNames, values=values)
