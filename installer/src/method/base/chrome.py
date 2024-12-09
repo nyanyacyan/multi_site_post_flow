@@ -11,9 +11,9 @@ from webdriver_manager.chrome import ChromeDriverManager  # pip install webdrive
 
 # 自作モジュール
 from .utils import Logger
-# from ..const import FileName
-# from .path import BaseToPath
+from .path import BaseToPath
 from .decorators import Decorators
+from ..const_str import FileName
 
 decoInstance = Decorators(debugMode=True)
 
@@ -33,7 +33,7 @@ class ChromeManager:
         self.chrome = None
 
         # インスタンス
-        # self.path = BaseToPath(debugMode=debugMode)
+        self.path = BaseToPath(debugMode=debugMode)
 
 
 # ----------------------------------------------------------------------------------
@@ -87,13 +87,13 @@ class ChromeManager:
         chromeOptions.add_argument('--lang=ja-JP')
 
         # ヘッドレスでの場合に「user-agent」を設定することでエラーを返すものを通すことができる
-        chromeOptions.add_argument('user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.63 Safari/537.36')
-        # chromeOptions.add_extension(self.path.getReadFilePath(fileName=FileName.chromeOpIFrame.value))  # iframe対策の広告ブロッカー
-        # chromeOptions.add_extension(self.path.getReadFilePath(fileName=FileName.chromeOpCaptcha.value))  # CAPTCHA
+        # chromeOptions.add_argument('user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.63 Safari/537.36')
+        chromeOptions.add_extension(self.path.getReadFilePath(fileName=FileName.CHROME_OP_IFRAME.value))  # iframe対策の広告ブロッカー
+        chromeOptions.add_extension(self.path.getReadFilePath(fileName=FileName.CHROME_OP_CAPTCHA.value))  # CAPTCHA
 
-        chromeOptions.add_argument("--disable-extensions")
-        chromeOptions.add_argument("--disable-popup-blocking")
-        chromeOptions.add_argument("--disable-translate")
+        # chromeOptions.add_argument("--disable-extensions")
+        # chromeOptions.add_argument("--disable-popup-blocking")
+        # chromeOptions.add_argument("--disable-translate")
 
         # chromeOptions.add_argument("--disable-blink-features")
         # chromeOptions.add_argument("--remote-debugging-port=9222")

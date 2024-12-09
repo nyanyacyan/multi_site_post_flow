@@ -13,17 +13,36 @@ from enum import Enum
 
 class LoginInfo(Enum):
 
-    GAME_CLUB_ID_BY=""
-    GAME_CLUB_PASS_BY=""
-    GAME_CLUB_ID_PASS=""
-    GAME_CLUB_PASS_PASS=""
+    SITE_PATTERNS = {
+        'GAME_CLUB':{
+            'ID_BY': 'xpath',
+            'ID_VALUE' : '',
+            'PASS_BY': 'xpath',
+            'PASS_VALUE': '',
+            'BTN_BY': 'xpath',
+            'BTN_VALUE': '',
+            'LOGIN_AFTER_ELEMENT_BY': 'xpath',
+            'LOGIN_AFTER_ELEMENT_VALUE': '',
+        },
+        'MA_CLUB':{
+            'ID_BY': 'xpath',
+            'ID_VALUE' : '',
+            'PASS_BY': 'xpath',
+            'PASS_VALUE': '',
+            'BTN_BY': 'xpath',
+            'BTN_VALUE': '',
+            'LOGIN_AFTER_ELEMENT_BY': 'xpath',
+            'LOGIN_AFTER_ELEMENT_VALUE': '',
+        },
+        'RRMT_CLUB':{
+            'ID_BY': 'xpath',
+            'ID_VALUE' : '',
+            'PASS_BY': 'xpath',
+            'PASS_VALUE': '',
+            'BTN_BY': 'xpath',
+            'BTN_VALUE': '',
+            'LOGIN_AFTER_ELEMENT_BY': 'xpath',
+            'LOGIN_AFTER_ELEMENT_VALUE': '',
+        },
+    }
 
-    MA_CLUB_ID_BY=""
-    MA_CLUB_PASS_BY=""
-    MA_CLUB_ID_PASS=""
-    MA_CLUB_PASS_PASS=""
-
-    RRMT_CLUB_ID_BY=""
-    RRMT_CLUB_PASS_BY=""
-    RRMT_CLUB_ID_PASS=""
-    RRMT_CLUB_PASS_PASS=""

@@ -16,6 +16,7 @@ from .driverDeco import jsCompleteWaitDeco, InputDeco, ClickDeco
 from .SQLite import SQLite
 
 from ..constSqliteTable import TableSchemas
+from ..const_element import LoginInfo
 
 decoInstance = jsCompleteWaitDeco(debugMode=True)
 decoInstanceInput = InputDeco(debugMode=True)
@@ -26,15 +27,13 @@ decoInstanceClick = ClickDeco(debugMode=True)
 # **********************************************************************************
 
 
-class LoginID:
-    def __init__(self, chrome: WebDriver, loginUrl: str, homeUrl: str, debugMode=True):
+class SingleSiteIDLogin:
+    def __init__(self, chrome: WebDriver, debugMode=True):
         # logger
         self.getLogger = Logger(__name__, debugMode=debugMode)
         self.logger = self.getLogger.getLogger()
 
         self.chrome = chrome
-        self.loginUrl = loginUrl
-        self.homeUrl = homeUrl
 
         # インスタンス
         self.element = ElementManager(chrome=chrome, debugMode=debugMode)
@@ -43,37 +42,12 @@ class LoginID:
 
 
 # ----------------------------------------------------------------------------------
-# IDログイン
-# loginInfoはconstから取得
-    @decoInstance.jsCompleteWaitRetry()
-    def flowLoginID(self, url: str, loginInfo: dict):
+# Cookieログイン
+# reCAPTCHA OK → 調整必要 → 待機時間を180秒
 
-        # サイトを開いてCookieを追加
-        # self.openSite(url=url)
-        # time.sleep(delay)
-
-        self.inputId(by=loginInfo['idBy'], value=loginInfo['idValue'], inputText=loginInfo['idText'])
-
-        self.inputPass(by=loginInfo['passBy'], value=loginInfo['passValue'], inputText=loginInfo['passText'])
-
-        self.clickLoginBtn(by=loginInfo['btnBy'], value=loginInfo['btnValue'])
-
-        # 検索ページなどが出てくる対策
-        # PCのスペックに合わせて設定
-        self.wait.jsPageChecker(chrome=self.chrome, timeout=10)
-
-        # ログイン後に別のサイトへアクセスしてることを考慮して
-        # self.openSite(url=url)
-
-        return self.loginCheck(url)
-
-
-# ----------------------------------------------------------------------------------
-
-
-    def flow_cookie_save(self, url: str, loginInfo: dict, tableName: str, columnsName: tuple):
+    def flow_cookie_save(self, login_url: str, loginInfo: dict, tableName: str, columnsName: tuple, timeout: int =180):
         # ログインの実施
-        self.flowLoginID(url=url, loginInfo=loginInfo)
+        self.flowLoginID(login_url=login_url, loginInfo=loginInfo, timeout=timeout)
 
         # Cookieの取得
         cookie = self._getCookie()
@@ -83,15 +57,44 @@ class LoginID:
 
         table_data_cols = self.sqlite.columnsExists(tableName=tableName)
 
-        self.logger.info(f"cookieをDBへ保存完了")
+        if 'name' in table_data_cols:
+            self.logger.info(f"DBの入力完了: {table_data_cols}")
+            return True
+        else:
+            self.logger.error(f"DBの保存に失敗: {table_data_cols}")
+            return False
+
+
+# ----------------------------------------------------------------------------------
+# IDログイン
+# reCAPTCHA OK
+
+    def flowLoginID(self, login_url: str, loginInfo: dict, timeout: int):
+
+        # サイトを開いてCookieを追加
+        self.openSite(login_url=login_url)
+
+        self.inputId(by=loginInfo['ID_BY'], value=loginInfo['ID_VALUE'], inputText=loginInfo['idText'])
+
+        self.inputPass(by=loginInfo['PASS_BY'], value=loginInfo['PASS_VALUE'], inputText=loginInfo['passText'])
+
+        self.clickLoginBtn(by=loginInfo['BTN_BY'], value=loginInfo['BTN_VALUE'])
+
+        # 検索ページなどが出てくる対策
+        # PCのスペックに合わせて設定
+        self.wait.jsPageChecker(chrome=self.chrome, timeout=10)
+
+        # reCAPTCHA対策を完了確認
+        return self.login_element_check(by=loginInfo['LOGIN_AFTER_ELEMENT_BY'], value=loginInfo['LOGIN_AFTER_ELEMENT_VALUE'], timeout=timeout)
 
 
 # ----------------------------------------------------------------------------------
 
 
+
     @decoInstance.jsCompleteWait
-    def openSite(self, url: str):
-        return self.chrome.get(url=url)
+    def openSite(self, login_url: str):
+        return self.chrome.get(url=login_url)
 
 
 # ----------------------------------------------------------------------------------
@@ -133,14 +136,28 @@ class LoginID:
 # ----------------------------------------------------------------------------------
 
 
-    def loginCheck(self, url: str):
+    def loginUrlCheck(self, url: str):
         self.logger.debug(f"\nurl: {url}\ncurrentUrl: {self.currentUrl()}")
         if url == self.currentUrl():
             self.logger.info(f"{__name__}: ログインに成功")
-            self.wait.jsPageChecker(chrome=self.chrome)
+            self.wait.loadPageWait(chrome=self.chrome, timeout=10)
             return True
         else:
             self.logger.error(f"{__name__}: ログインに失敗")
+            return False
+
+
+# ----------------------------------------------------------------------------------
+
+
+    def login_element_check(self, by: str, value: str, timeout: int):
+        try:
+            self.wait.loadPageWait(by=by, value=value, timeout=timeout)
+            self.logger.info(f"{__name__}: ログインに成功")
+            return True
+
+        except TimeoutException:
+            self.logger.error(f"{__name__}: reCAPTCHAの処理時間に {timeout} 秒以上 かかってしまいましたためtimeout")
             return False
 
 
@@ -229,6 +246,33 @@ class LoginID:
         # データを入れ込む
         self.sqlite.insertData(tableName=tableName, cols=columnsNames, values=values)
         return cookie
+
+
+# ----------------------------------------------------------------------------------
+# **********************************************************************************
+
+
+class MultiSiteIDLogin(SingleSiteIDLogin):
+    def __init__(self, chrome, debugMode=True):
+        super().__init__(chrome, debugMode)
+
+
+# ----------------------------------------------------------------------------------
+
+
+    def _set_pattern(self, site_name: str):
+        login_pattern_dict = LoginInfo.SITE_PATTERNS.value
+        login_info = login_pattern_dict[site_name]
+        self.logger.info(f"login_info: {login_info}")
+
+        return login_info
+
+
+# ----------------------------------------------------------------------------------
+
+
+    def flow_cookie_save_cap(self, login_url, loginInfo, cap_after_element_by, cap_after_element_path, tableName, columnsName, cap_timeout = 180):
+        return super().flow_cookie_save_cap(login_url, loginInfo, cap_after_element_by, cap_after_element_path, tableName, columnsName, cap_timeout)
 
 
 # ----------------------------------------------------------------------------------

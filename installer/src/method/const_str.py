@@ -30,7 +30,8 @@ class SubDir(Enum):
 #! 基本必須
 
 class FileName(Enum):
-    RESULT_FILE='result_summary'
+    CHROME_OP_CAPTCHA='hlifkpholllijblknnmbfagnkjneagid.crx'
+    CHROME_OP_IFRAME='uBlock-Origin.crx'
 
 
 
@@ -48,6 +49,14 @@ class Extension(Enum):
     DB='.db'
     PNG='.png'
 
+
+# ----------------------------------------------------------------------------------
+
+
+class SiteName(Enum):
+    GAME_CLUB='GAME_CLUB'
+    MA_CLUB='MA_CLUB'
+    RRMT_CLUB='RRMT_CLUB'
 
 
 # ----------------------------------------------------------------------------------
