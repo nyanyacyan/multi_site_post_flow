@@ -16,8 +16,10 @@ from .decorators import Decorators
 from .driverDeco import jsCompleteWaitDeco, InputDeco, ClickDeco
 from .SQLite import SQLite
 
+
 from constSqliteTable import TableSchemas
 from const_element import LoginInfo
+from const_str import StatusName
 
 decoInstance = Decorators(debugMode=True)
 decoJsInstance = jsCompleteWaitDeco(debugMode=True)
@@ -71,7 +73,7 @@ class SingleSiteIDLogin:
 # IDログイン
 # reCAPTCHA OK
 
-    def flowLoginID(self, login_url: str, loginInfo: dict, timeout: int, captcha: bool = False):
+    def flowLoginID(self, login_url: str, loginInfo: dict, timeout: int, captcha: bool = False, max_count: int = 3):
         self.logger.debug(f'loginInfo: {loginInfo}')
 
         # サイトを開いてCookieを追加
@@ -81,8 +83,28 @@ class SingleSiteIDLogin:
 
         self.inputPass(by=loginInfo['PASS_BY'], value=loginInfo['PASS_VALUE'], inputText=loginInfo['PASS_TEXT'])
 
-        if captcha == True:
-            # TODO ここにreCAPTCHAの状態確認するようにするメソッドを追加
+        # if captcha == True:
+        #     # display:noneを解除
+        #     self.element.unlockDisplayNone()
+
+        #     recapcha = self.element.getElement(by=loginInfo['RECAPTCHA_CHECKBOX_BY'], value=loginInfo['RECAPTCHA_CHECKBOX_VALUE'])
+        #     status = recapcha.get_attribute(StatusName.RECAPTCHA_CHECKBOX.value)
+        #     self.logger.debug(f'status: {status}')
+
+        #     retry_count = 0
+        #     while retry_count < max_count:
+        #         if status == True:
+        #             self.logger.debug(f'reCAPTCHA処理は成功してます: {status}')
+        #             break
+        #         else:
+        #             self.logger.error(f'まだreCAPTCHA処理が終わってません: {status}')
+        #             retry_count += 1
+        #             time.sleep(60)
+        #             continue
+
+        #     if retry_count == max_count and status != True:
+        #         self.logger.error(f'reCAPTCHA処理がタイムアウトしました。最大リトライ回数に達しました。: {status}')
+        #         raise TimeoutError('reCAPTCHA処理がタイムアウトしました。最大リトライ回数に達しました。')
 
 
         self.clickLoginBtn(by=loginInfo['BTN_BY'], value=loginInfo['BTN_VALUE'])
@@ -135,8 +157,8 @@ class SingleSiteIDLogin:
 # ----------------------------------------------------------------------------------
 # ログインボタン押下
 
-    @decoInstanceClick.clickWait
     def clickLoginBtn(self, by: str, value: str):
+        self.logger.debug(f'value: {value}')
         return self.element.clickElement(by=by, value=value)
 
 

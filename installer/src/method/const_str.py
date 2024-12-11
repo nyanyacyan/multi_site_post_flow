@@ -53,6 +53,13 @@ class Extension(Enum):
 # ----------------------------------------------------------------------------------
 
 
+class StatusName(Enum):
+    RECAPTCHA_CHECKBOX='aria-checked'
+
+
+# ----------------------------------------------------------------------------------
+
+
 class SiteName(Enum):
     GAME_CLUB='GAME_CLUB'
     MA_CLUB='MA_CLUB'

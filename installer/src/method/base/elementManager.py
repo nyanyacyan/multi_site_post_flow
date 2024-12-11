@@ -285,7 +285,7 @@ class ElementManager:
 
 
 # ----------------------------------------------------------------------------------
-
+# display:noneを解除
 
     def unlockDisplayNone(self):
         elements = self._searchDisplayNone
