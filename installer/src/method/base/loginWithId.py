@@ -12,13 +12,15 @@ from selenium.common.exceptions import TimeoutException
 from .utils import Logger
 from .elementManager import ElementManager
 from .driverWait import Wait
+from .decorators import Decorators
 from .driverDeco import jsCompleteWaitDeco, InputDeco, ClickDeco
 from .SQLite import SQLite
 
-from ..constSqliteTable import TableSchemas
-from ..const_element import LoginInfo
+from constSqliteTable import TableSchemas
+from const_element import LoginInfo
 
-decoInstance = jsCompleteWaitDeco(debugMode=True)
+decoInstance = Decorators(debugMode=True)
+decoJsInstance = jsCompleteWaitDeco(debugMode=True)
 decoInstanceInput = InputDeco(debugMode=True)
 decoInstanceClick = ClickDeco(debugMode=True)
 
@@ -45,9 +47,9 @@ class SingleSiteIDLogin:
 # Cookieログイン
 # reCAPTCHA OK → 調整必要 → 待機時間を180秒
 
-    def flow_cookie_save(self, login_url: str, loginInfo: dict, tableName: str, columnsName: tuple, timeout: int =180):
+    def flow_cookie_save(self, login_url: str, loginInfo: dict, tableName: str, columnsName: tuple, timeout: int =180, captcha: bool = False):
         # ログインの実施
-        self.flowLoginID(login_url=login_url, loginInfo=loginInfo, timeout=timeout)
+        self.flowLoginID(login_url=login_url, loginInfo=loginInfo, timeout=timeout, captcha=captcha)
 
         # Cookieの取得
         cookie = self._getCookie()
@@ -69,14 +71,19 @@ class SingleSiteIDLogin:
 # IDログイン
 # reCAPTCHA OK
 
-    def flowLoginID(self, login_url: str, loginInfo: dict, timeout: int):
+    def flowLoginID(self, login_url: str, loginInfo: dict, timeout: int, captcha: bool = False):
+        self.logger.debug(f'loginInfo: {loginInfo}')
 
         # サイトを開いてCookieを追加
         self.openSite(login_url=login_url)
 
-        self.inputId(by=loginInfo['ID_BY'], value=loginInfo['ID_VALUE'], inputText=loginInfo['idText'])
+        self.inputId(by=loginInfo['ID_BY'], value=loginInfo['ID_VALUE'], inputText=loginInfo['ID_TEXT'])
 
-        self.inputPass(by=loginInfo['PASS_BY'], value=loginInfo['PASS_VALUE'], inputText=loginInfo['passText'])
+        self.inputPass(by=loginInfo['PASS_BY'], value=loginInfo['PASS_VALUE'], inputText=loginInfo['PASS_TEXT'])
+
+        if captcha == True:
+            # TODO ここにreCAPTCHAの状態確認するようにするメソッドを追加
+
 
         self.clickLoginBtn(by=loginInfo['BTN_BY'], value=loginInfo['BTN_VALUE'])
 
@@ -92,7 +99,7 @@ class SingleSiteIDLogin:
 
 
 
-    @decoInstance.jsCompleteWait
+    @decoJsInstance.jsCompleteWait
     def openSite(self, login_url: str):
         return self.chrome.get(url=login_url)
 

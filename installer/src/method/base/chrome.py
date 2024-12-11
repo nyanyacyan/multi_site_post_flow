@@ -13,7 +13,7 @@ from webdriver_manager.chrome import ChromeDriverManager  # pip install webdrive
 from .utils import Logger
 from .path import BaseToPath
 from .decorators import Decorators
-from ..const_str import FileName
+from const_str import FileName
 
 decoInstance = Decorators(debugMode=True)
 
@@ -88,8 +88,8 @@ class ChromeManager:
 
         # ヘッドレスでの場合に「user-agent」を設定することでエラーを返すものを通すことができる
         # chromeOptions.add_argument('user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.63 Safari/537.36')
-        chromeOptions.add_extension(self.path.getReadFilePath(fileName=FileName.CHROME_OP_IFRAME.value))  # iframe対策の広告ブロッカー
-        chromeOptions.add_extension(self.path.getReadFilePath(fileName=FileName.CHROME_OP_CAPTCHA.value))  # CAPTCHA
+        chromeOptions.add_extension(self.path.getInputDataFilePath(fileName=FileName.CHROME_OP_IFRAME.value))  # iframe対策の広告ブロッカー
+        chromeOptions.add_extension(self.path.getInputDataFilePath(fileName=FileName.CHROME_OP_CAPTCHA.value))  # CAPTCHA
 
         # chromeOptions.add_argument("--disable-extensions")
         # chromeOptions.add_argument("--disable-popup-blocking")

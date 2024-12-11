@@ -11,7 +11,7 @@ from selenium.common.exceptions import ElementClickInterceptedException
 
 # 自作モジュール
 from .utils import Logger
-from ..const_domain_search import NGWordList, Address
+
 from .decorators import Decorators
 from .textManager import TextManager
 from .driverDeco import ClickDeco
@@ -153,6 +153,7 @@ class ElementManager:
         element = self.getElement(by=by, value=value)
         try:
             element.click()
+            self.logger.debug(f'クリック完了しました: {value}')
         except ElementClickInterceptedException:
             self.logger.debug(f'popupなどでClickができません: {element}')
             self.chrome.execute_script("arguments[0].click();", element)

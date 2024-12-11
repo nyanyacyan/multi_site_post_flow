@@ -16,8 +16,8 @@ from .utils import Logger
 from .path import BaseToPath
 from .errorHandlers import NetworkHandler
 from .decorators import Decorators
-from ..const_str import Extension
-from ..constSqliteTable import TableSchemas
+from const_str import Extension
+from constSqliteTable import TableSchemas
 
 decoInstance = Decorators(debugMode=True)
 
