@@ -3,6 +3,7 @@
 
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 # import
+import time
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.remote.webelement import WebElement
 from datetime import datetime
@@ -128,6 +129,8 @@ class ElementManager:
 
 
 # ----------------------------------------------------------------------------------
+
+
     @decoInstance.funcBase
     def clickClearInput(self, by: str, value: str, inputText: str):
         self.clickWait.canWaitClick(chrome=self.chrome, by=by, value=value, timeout=3)
@@ -160,6 +163,30 @@ class ElementManager:
 
         self.clickWait.jsPageChecker(chrome=self.chrome)
         return
+
+
+# ----------------------------------------------------------------------------------
+
+
+    def recaptcha_click_element(self, by: str, value: str, max_retry: int = 40, delay: int = 5):
+        self.clickWait.canWaitClick(chrome=self.chrome, by=by, value=value, timeout=3)
+        element = self.getElement(by=by, value=value)
+
+        retry_count = 0
+        while retry_count < max_retry:
+            try:
+                element.click()
+                self.logger.debug(f'クリック完了しました: {value}')
+                break
+
+            except ElementClickInterceptedException:
+                retry_count += 1
+                self.logger.debug(f'画像選択する reCAPTCHA発生中（{retry_count}回目）{delay}秒ごとに継続監視中')
+                time.sleep(delay)
+                continue
+
+        return self.clickWait.jsPageChecker(chrome=self.chrome)
+
 
 
 # ----------------------------------------------------------------------------------

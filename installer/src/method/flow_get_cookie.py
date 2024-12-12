@@ -52,8 +52,7 @@ class FlowGetCookie:
             login_url=self.login_info['LOGIN_URL'],
             loginInfo=self.login_info,
             tableName=self.login_info['TABLE_NAME'],
-            columnsName=TableSchemas.BASE_COOKIES_TABLE_COLUMNS.value,
-            captcha=True
+            columnsNames=TableSchemas.BASE_COOKIES_TABLE_COLUMNS.value,
         )
 
         return self.logger.debug(f'bool: {bool}')
@@ -94,13 +93,13 @@ class RRMTClubGetCookieFlow(FlowGetCookie):
 if __name__ == '__main__':
     async def test_flows():
         game_club_flow = GameClubClubGetCookieFlow()
-        ma_club_flow = MAClubGetCookieFlow()
-        rrmt_club_flow = RRMTClubGetCookieFlow()
+        # ma_club_flow = MAClubGetCookieFlow()
+        # rrmt_club_flow = RRMTClubGetCookieFlow()
 
         await asyncio.gather(
             game_club_flow.process(),
-            ma_club_flow.process(),
-            rrmt_club_flow.process()
+            # ma_club_flow.process(),
+            # rrmt_club_flow.process()
         )
 
     asyncio.run(test_flows())

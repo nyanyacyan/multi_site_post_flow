@@ -42,18 +42,142 @@ class SQLite:
 
 
 # ----------------------------------------------------------------------------------
-# ①DBデータの存在確認
+# SQLiteへ入れ込む
+# TODO DBファイルにテーブルが有るかどうかを確認→基本は1サイトにつき１つのDBファイル
+# TODO 流れの確認→PathからDBファイルの確認→テーブルがあるか確認→入れ込み
 
-    def boolFilePath(self, extension: str = Extension.DB.value):
+    @decoInstance.funcBase
+    def _insert_data(self, db_file_name: str, tableName: str, cols: tuple, values: tuple):
+        # DBファイルの存在を確認して処理する
+        db_path = self.DB_file_exists(db_file_name=db_file_name)
+
+        # テーブルにあるColumnの確認
+        columnNames = self.columnsExists(tableName=tableName)
+
+        # valuesのカウントをしてその分「？」を追加して結合
+        placeholders = ', '.join(['?' for _ in values])
+        self.logger.warning(f"\ncolumnNames: {columnNames}\nvalues: {values}")
+
+        sql = f"INSERT INTO {tableName} {cols} VALUES ({placeholders})"
+
+        # 最終はIDを返すようにしてる
+        insertId = self._SQL_Prompt_Base(db_path, sql=sql, values=values, fetch=None)
+
+        self.logger.debug(f"{tableName} の行データ: {insertId}")
+        self.logger.info(f"【success】{tableName} テーブルにデータを追加に成功")
+
+        # SQLiteにデータが入ったか確認
+        sqlCheck = f"SELECT * FROM {tableName}"
+        allData = self.SQLPromptBase(sql=sqlCheck, fetch='all')
+        self.logger.debug(f"{tableName} の全データ: {allData}")
+        return insertId
+
+
+# ----------------------------------------------------------------------------------
+# values: tuple = () > パラメータが何もなかったら空にするという意味
+
+    @decoInstance.sqliteErrorHandler
+    def _SQL_Prompt_Base(self, db_path: str, sql: str, values: tuple = (), fetch: str = None):
+        conn = self._get_DB_connect(db_path)
+        if not conn:
+            return None
+
+        try:
+            cursor = self._executeSQL(conn=conn, sql=sql, values=values)
+
+            if fetch == 'one':
+                self.logger.debug(f"[one] c.fetchone()が実行されました")
+                return cursor.fetchone()
+
+            elif fetch == 'all':
+                self.logger.debug(f"[all] c.fetchall()が実行されました")
+                return cursor.fetchall()
+
+            # データ抽出以外の処理を実施した場合
+            else:
+                conn.commit()
+                self.logger.info(f"コミットの実施をしました")
+                return cursor.lastrowid
+
+        finally:
+            self.logger.debug("connを閉じました")
+            conn.close()
+
+
+# ----------------------------------------------------------------------------------
+# DBがなかったら作成する→複数のDBファイルを作成しないpattern
+# ファイル名は指定できるようにする
+
+    def DB_file_exists(self, db_file_name: str, extension: str = Extension.DB.value):
         dbDirPath = self.path.getResultDBDirPath()
         self.logger.debug(f"dbDirPath: {type(dbDirPath)}")
+
+        dbFilePath = dbDirPath / f"{db_file_name}{extension}"
+
+        if not dbFilePath.exists():
+            self.logger.warning(f'{db_file_name}{extension}ファイルがないので新しく作成します。: {dbFilePath}')
+            dbFilePath.touch()
+        else:
+            self.logger.info(f'指定のDBファイルの確認発見: ファイル名（{db_file_name}{extension}）: {dbFilePath}')
+        return dbFilePath
+
+
+# ----------------------------------------------------------------------------------
+# テーブルのすべてのカラムを取得する
+# PRAGMA table_infoはそのテーブルのColumn情報を取得する
+# →1つ目のリストはcolumnID、２つ目column名、３つ目データ型、４つ目はカラムがNULLを許可するかどうかを示す（1はNOT NULL、0はNULL許可）
+# ５→columnに指定されたデフォルト値
+# columnData[1]=columns名
+
+    @decoInstance.funcBase
+    def _columns_Exists(self, tableName: str, db_path: str) -> List[str]:
+        sql = f"PRAGMA table_info({tableName});"
+        columnsStatus = self._SQL_Prompt_Base(db_path=db_path, sql=sql, fetch='all')
+        self.logger.debug(f"columnsStatus: {columnsStatus}")
+
+        columnNames = [columnData[1] for columnData in columnsStatus]
+        self.logger.warning(f"{tableName} テーブルにあるすべてのColumn: {columnNames}")
+        return columnNames
+
+
+# ----------------------------------------------------------------------------------
+
+    @decoInstance.sqliteErrorHandler
+    def _get_DB_connect(self, db_path: str) -> sqlite3.Connection:
+        conn = sqlite3.connect(db_path)
+        conn.row_factory = sqlite3.Row  # 行を辞書形式で取得できるようにする
+        return conn
+
+
+# ----------------------------------------------------------------------------------
+# 実行するSQL文にて定義して実行まで行う
+
+    @decoInstance.sqliteErrorHandler
+    def _execute_SQL(self, conn: sqlite3.Connection, sql: str, values: tuple = ()) -> sqlite3.Cursor:
+        cursor = conn.cursor()  # DBとの接続オブジェクトを受け取って通信ができるようにする
+        cursor.execute(sql, values)  # 実行するSQL文にて定義して実行まで行う
+        return cursor
+
+
+# ----------------------------------------------------------------------------------
+# ①DBデータの存在確認
+
+    def boolFilePath_clean(self, extension: str = Extension.DB.value):
+        dbDirPath = self.path.getResultDBDirPath()
+        self.logger.debug(f"dbDirPath: {type(dbDirPath)}")
+
+        # DBディレクトリがない場合には作成
         if not dbDirPath.exists():
             self.logger.error(f"ディレクトリが存在しません{dbDirPath}")
         self.logger.debug(f"dbDirPath: {dbDirPath}")
         dbFilePath = dbDirPath / f"{self.currentDate}{extension}"
         self.logger.warning(f"dbFilePath: {dbFilePath}")
+
+        # dbファイルを検知
         if dbFilePath.exists():
             self.logger.info(f"DBファイルが見つかりました: {dbFilePath}")
+
+            # ファイルが多くあるのかを検知して適正化
             self.cleanWriteFiles(filePath=dbFilePath, extension=extension, keepWrites=5)
             return True
         else:
@@ -82,6 +206,7 @@ class SQLite:
         ]
         self.logger.info(f"writeFiles :{writeFiles}")
 
+        # 指定数より数が多かったら削除
         if len(writeFiles) > keepWrites:
             sortWriteFiles = writeFiles.sort()
             self.logger.debug(f"sortWriteFiles: {sortWriteFiles}")
@@ -219,7 +344,7 @@ class SQLite:
         self.logger.debug(f"columnsStatus: {columnsStatus}")
 
         columnNames = [columnData[1] for columnData in columnsStatus]
-        self.logger.info(f"columnNames: {columnNames}")
+        self.logger.warning(f"{tableName} テーブルにあるすべてのColumn: {columnNames}")
         return columnNames
 
 
@@ -256,9 +381,12 @@ class SQLite:
 
     @decoInstance.funcBase
     def insertData(self, tableName: str, cols: tuple, values: tuple):
+        # テーブルにあるColumnの確認
+        columnNames = self.columnsExists(tableName=tableName)
+
         # valuesのカウントをしてその分「？」を追加して結合
         placeholders = ', '.join(['?' for _ in values])
-        self.logger.debug(f"values: {values}")
+        self.logger.warning(f"\ncolumnNames: {columnNames}\nvalues: {values}")
 
         sql = f"INSERT INTO {tableName} {cols} VALUES ({placeholders})"
 

@@ -49,15 +49,15 @@ class SingleSiteIDLogin:
 # Cookieログイン
 # reCAPTCHA OK → 調整必要 → 待機時間を180秒
 
-    def flow_cookie_save(self, login_url: str, loginInfo: dict, tableName: str, columnsName: tuple, timeout: int =180, captcha: bool = False):
+    def flow_cookie_save(self, login_url: str, loginInfo: dict, tableName: str, columnsNames: tuple, timeout: int =180):
         # ログインの実施
-        self.flowLoginID(login_url=login_url, loginInfo=loginInfo, timeout=timeout, captcha=captcha)
+        self.flowLoginID(login_url=login_url, loginInfo=loginInfo, timeout=timeout)
 
         # Cookieの取得
         cookie = self._getCookie()
 
         # テーブルにCookie情報を入れ込む
-        self.insertCookieData(cookie=cookie, tableName=tableName, columnsName=columnsName)
+        self.insertCookieData(cookie=cookie, tableName=tableName, columnsNames=columnsNames)
 
         table_data_cols = self.sqlite.columnsExists(tableName=tableName)
 
@@ -73,7 +73,7 @@ class SingleSiteIDLogin:
 # IDログイン
 # reCAPTCHA OK
 
-    def flowLoginID(self, login_url: str, loginInfo: dict, timeout: int, captcha: bool = False, max_count: int = 3):
+    def flowLoginID(self, login_url: str, loginInfo: dict, timeout: int):
         self.logger.debug(f'loginInfo: {loginInfo}')
 
         # サイトを開いてCookieを追加
@@ -83,31 +83,8 @@ class SingleSiteIDLogin:
 
         self.inputPass(by=loginInfo['PASS_BY'], value=loginInfo['PASS_VALUE'], inputText=loginInfo['PASS_TEXT'])
 
-        # if captcha == True:
-        #     # display:noneを解除
-        #     self.element.unlockDisplayNone()
-
-        #     recapcha = self.element.getElement(by=loginInfo['RECAPTCHA_CHECKBOX_BY'], value=loginInfo['RECAPTCHA_CHECKBOX_VALUE'])
-        #     status = recapcha.get_attribute(StatusName.RECAPTCHA_CHECKBOX.value)
-        #     self.logger.debug(f'status: {status}')
-
-        #     retry_count = 0
-        #     while retry_count < max_count:
-        #         if status == True:
-        #             self.logger.debug(f'reCAPTCHA処理は成功してます: {status}')
-        #             break
-        #         else:
-        #             self.logger.error(f'まだreCAPTCHA処理が終わってません: {status}')
-        #             retry_count += 1
-        #             time.sleep(60)
-        #             continue
-
-        #     if retry_count == max_count and status != True:
-        #         self.logger.error(f'reCAPTCHA処理がタイムアウトしました。最大リトライ回数に達しました。: {status}')
-        #         raise TimeoutError('reCAPTCHA処理がタイムアウトしました。最大リトライ回数に達しました。')
-
-
-        self.clickLoginBtn(by=loginInfo['BTN_BY'], value=loginInfo['BTN_VALUE'])
+        # クリックを繰り返しPOPUPがなくなるまで繰り返す
+        self.click_login_btn_in_recaptcha(by=loginInfo['BTN_BY'], value=loginInfo['BTN_VALUE'])
 
         # 検索ページなどが出てくる対策
         # PCのスペックに合わせて設定
@@ -163,7 +140,15 @@ class SingleSiteIDLogin:
 
 
 # ----------------------------------------------------------------------------------
+# ログインボタン押下
+# reCAPTCHA
 
+    def click_login_btn_in_recaptcha(self, by: str, value: str):
+        self.logger.debug(f'value: {value}')
+        return self.element.recaptcha_click_element(by=by, value=value)
+
+
+# ----------------------------------------------------------------------------------
 
     def loginUrlCheck(self, url: str):
         self.logger.debug(f"\nurl: {url}\ncurrentUrl: {self.currentUrl()}")
@@ -240,7 +225,7 @@ class SingleSiteIDLogin:
 # ----------------------------------------------------------------------------------
 # Cookieの値が入っているか確認
 
-    @decoInstance.funcBase
+
     def canValueInCookie(self, cookie: Dict):
         if not cookie.get('name') or not cookie.get('value'):
             self.logger.warning(f"cookieに必要な情報が記載されてません {cookie}")
@@ -253,8 +238,8 @@ class SingleSiteIDLogin:
 # 有効期限をクリアしたmethod
 # DBよりcookie情報を取得する
 
-    @decoInstance.funcBase
-    def insertCookieData(self, cookie: Dict, tableName: str, columnsNames: tuple = TableSchemas.BASE_COOKIES_TABLE_COLUMNS.value):
+    # @decoInstance.funcBase
+    def insertCookieData(self, cookie: Dict, tableName: str, columnsNames: tuple):
         cookieName = cookie['name']
         cookieValue = cookie.get('value')
         cookieDomain = cookie.get('domain')
