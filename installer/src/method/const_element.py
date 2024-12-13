@@ -17,6 +17,7 @@ class LoginInfo(Enum):
 
     SITE_PATTERNS = {
         'GAME_CLUB':{
+            'SITE_NAME': 'GAME_CLUB',
             'LOGIN_URL': 'https://gameclub.jp/signin',
             'HOME_URL': 'https://gameclub.jp/mypage',
             'TABLE_NAME': 'GAME_CLUB_COOKIES_TABLE_COLUMNS',
@@ -34,6 +35,7 @@ class LoginInfo(Enum):
             'RECAPTCHA_CHECKBOX_VALUE': "recaptcha-anchor",
         },
         'MA_CLUB':{
+            'SITE_NAME': 'MA_CLUB',
             'LOGIN_URL': 'https://maclub.jp/signin',
             'HOME_URL': 'https://maclub.jp/mypage',
             'TABLE_NAME': 'MA_CLUB_COOKIES_TABLE_COLUMNS',
@@ -51,6 +53,7 @@ class LoginInfo(Enum):
             'RECAPTCHA_CHECKBOX_VALUE': "recaptcha-anchor",
         },
         'RRMT_CLUB':{
+            'SITE_NAME': 'RRMT_CLUB',
             'LOGIN_URL': 'https://rmt.club/user-login',
             'HOME_URL': 'https://www.xdomain.ne.jp/',
             'TABLE_NAME': 'RRMT_CLUB_COOKIES_TABLE_COLUMNS',

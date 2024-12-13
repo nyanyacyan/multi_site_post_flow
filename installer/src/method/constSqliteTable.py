@@ -15,7 +15,7 @@ class TableSchemas(Enum):
 # ----------------------------------------------------------------------------------
 # サブ辞書
 
-    GAME_CLUB_COOKIES_TABLE_COLUMNS = {
+    GAME_CLUB = {
         "id": "INTEGER PRIMARY KEY AUTOINCREMENT",
         "name": "TEXT NOT NULL",
         "value": "TEXT NOT NULL",
@@ -32,7 +32,7 @@ class TableSchemas(Enum):
 # priorityは優先順位→若い番号ほど順位が高い
 
 
-    MA_CLUB_COOKIES_TABLE_COLUMNS = {
+    MA_CLUB = {
         "id": "INTEGER PRIMARY KEY AUTOINCREMENT",
         "name": "TEXT NOT NULL",
         "value": "TEXT NOT NULL",
@@ -47,7 +47,7 @@ class TableSchemas(Enum):
 # ----------------------------------------------------------------------------------
 # サブ辞書
 
-    RRMT_CLUB_COOKIES_TABLE_COLUMNS = {
+    RRMT_CLUB = {
         "id": "INTEGER PRIMARY KEY AUTOINCREMENT",
         "name": "TEXT NOT NULL",
         "value": "TEXT NOT NULL",
@@ -63,9 +63,9 @@ class TableSchemas(Enum):
 #* メイン辞書
 
     TABLE_PATTERN = {
-        "game_club_cookies": GAME_CLUB_COOKIES_TABLE_COLUMNS,
-        "ma_club_cookies": MA_CLUB_COOKIES_TABLE_COLUMNS,
-        "rrmt_club_cookies": RRMT_CLUB_COOKIES_TABLE_COLUMNS
+        "GAME_CLUB": GAME_CLUB,
+        "MA_CLUB": MA_CLUB,
+        "RRMT_CLUB": RRMT_CLUB
     }
 
 

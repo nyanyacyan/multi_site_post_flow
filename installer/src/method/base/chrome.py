@@ -3,7 +3,7 @@
 # testOK
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 # import
-import subprocess
+import subprocess, shutil
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
@@ -52,6 +52,7 @@ class ChromeManager:
     @property
     def getChromeDriverPath(self):
         # ChromeDriverManagerでインストールされたChromeDriverのパスを取得
+        # shutil.rmtree(ChromeDriverManager().cache_path, ignore_errors=True)
         return ChromeDriverManager().install()
 
 

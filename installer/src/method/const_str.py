@@ -23,6 +23,7 @@ class SubDir(Enum):
     pickles='pickles'
     cookies='cookies'
     DBSubDir='DB'
+    DB_BUCK_UP= 'DB_buck_up'
     SCREEN_SHOT='screenshot'
 
 
@@ -30,6 +31,7 @@ class SubDir(Enum):
 #! 基本必須
 
 class FileName(Enum):
+    DB_FILE_NAME='multi_site_data'
     CHROME_OP_CAPTCHA='hlifkpholllijblknnmbfagnkjneagid.crx'
     CHROME_OP_IFRAME='uBlock-Origin.crx'
 

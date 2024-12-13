@@ -193,12 +193,24 @@ class BaseToPath:
 
 
 # ----------------------------------------------------------------------------------
-
 # Result > SubDir > 0101.db
 
-    def getResultDBDirPath(self, subDirName: str=SubDir.DBSubDir.value):
+    def getResultDBDirPath(self, subDirName: str=SubDir.DBSubDir.value, extension: str = Extension.DB.value):
         resultOutputPath = self.getResultOutputPath()
+
         dirPath = resultOutputPath / subDirName
+        self.isDirExists(path=dirPath)
+        self.logger.debug(f"dirPath: {dirPath}")
+
+        return dirPath
+
+
+# ----------------------------------------------------------------------------------
+# Result > SubDir > backup > fileName0101.db
+
+    def getResultDBBuckUpDirPath(self, db_file_name: str, db_buck_up_dir_name: str = SubDir.DB_BUCK_UP.value, subDirName: str=SubDir.DB_BUCK_UP.value, extension: str = Extension.DB.value):
+        db_Path = self.getResultOutputPath()
+        dirPath = db_Path / subDirName / db_buck_up_dir_name / db_file_name + extension
         self.isDirExists(path=dirPath)
         self.logger.debug(f"dirPath: {dirPath}")
 

@@ -14,12 +14,12 @@ from .elementManager import ElementManager
 from .driverWait import Wait
 from .decorators import Decorators
 from .driverDeco import jsCompleteWaitDeco, InputDeco, ClickDeco
-from .SQLite import SQLite
+from .sql_insert import SqliteInsert
 
 
 from constSqliteTable import TableSchemas
 from const_element import LoginInfo
-from const_str import StatusName
+from const_str import StatusName, FileName
 
 decoInstance = Decorators(debugMode=True)
 decoJsInstance = jsCompleteWaitDeco(debugMode=True)
@@ -42,13 +42,15 @@ class SingleSiteIDLogin:
         # インスタンス
         self.element = ElementManager(chrome=chrome, debugMode=debugMode)
         self.wait = Wait(chrome=self.chrome, debugMode=debugMode)
-        self.sqlite = SQLite(debugMode=debugMode)
+        self.sqlite_insert = SqliteInsert(debugMode=debugMode)
+
 
 
 # ----------------------------------------------------------------------------------
 # Cookieログイン
 # reCAPTCHA OK → 調整必要 → 待機時間を180秒
 
+    @decoInstance.funcBase
     def flow_cookie_save(self, login_url: str, loginInfo: dict, tableName: str, columnsNames: tuple, timeout: int =180):
         # ログインの実施
         self.flowLoginID(login_url=login_url, loginInfo=loginInfo, timeout=timeout)
@@ -57,16 +59,15 @@ class SingleSiteIDLogin:
         cookie = self._getCookie()
 
         # テーブルにCookie情報を入れ込む
-        self.insertCookieData(cookie=cookie, tableName=tableName, columnsNames=columnsNames)
+        self.insertCookieData(
+            cookie=cookie,
+            db_file_name=FileName.DB_FILE_NAME.value,
+            all_tables_column_info=TableSchemas.TABLE_PATTERN.value,
+            tableName=tableName,
+            columnsNames=columnsNames
+        )
 
-        table_data_cols = self.sqlite.columnsExists(tableName=tableName)
 
-        if 'name' in table_data_cols:
-            self.logger.info(f"DBの入力完了: {table_data_cols}")
-            return True
-        else:
-            self.logger.error(f"DBの保存に失敗: {table_data_cols}")
-            return False
 
 
 # ----------------------------------------------------------------------------------
@@ -239,7 +240,7 @@ class SingleSiteIDLogin:
 # DBよりcookie情報を取得する
 
     # @decoInstance.funcBase
-    def insertCookieData(self, cookie: Dict, tableName: str, columnsNames: tuple):
+    def insertCookieData(self, cookie: Dict, db_file_name: str, all_tables_column_info: Dict, tableName: str, columnsNames: tuple):
         cookieName = cookie['name']
         cookieValue = cookie.get('value')
         cookieDomain = cookie.get('domain')
@@ -258,7 +259,7 @@ class SingleSiteIDLogin:
         # TODO DBがあるかどうかを確認する→テーブルがあるか確認をする
 
         # データを入れ込む
-        self.sqlite.insertData(tableName=tableName, cols=columnsNames, values=values)
+        self.sqlite_insert._insert_data(db_file_name=db_file_name, all_tables_column_info=all_tables_column_info, tableName=tableName, columnNames=columnsNames, values=values)
         return cookie
 
 
