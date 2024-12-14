@@ -260,7 +260,7 @@ class SqliteInsert:
             else:
                 conn.commit()
                 self.logger.info(f"コミットの実施をしました")
-                return cursor.lastrowid
+                return None
 
         finally:
             self.logger.debug("connを閉じました")
@@ -315,20 +315,70 @@ class SqliteInsert:
 # ----------------------------------------------------------------------------------
 # TODO テーブル確認
 
-    def _table_exists(self, table_names: str, ):
-        pass
+
+
+
+
+# ----------------------------------------------------------------------------------
+
+
+    def _get_table_names(self, db_path: str):
+        sql_prompt = SqlitePromptExists.TABLES_EXISTS.value
+        current_table_names = self.sql_process(db_path=db_path, sql_prompt=sql_prompt, fetch='all')
+
+        # SQLのレスポンスは[('GAME_CLUB',), ('MA_CLUB',), ('RRMT_CLUB',)]ため変換
+        current_table_name_list = [row[0] for row in current_table_names]
+        self.logger.info(f'\ncurrent_table_names: {current_table_name_list}')
+        return current_table_name_list
+
+
+# ----------------------------------------------------------------------------------
+# すべてのtable_patternにあるテーブルを作成する
+
+    def _all_table_create(self, db_path: str, table_pattern_info: Dict):
+        for tableName, cols_info in table_pattern_info.items():
+            self._table_and_col_create(tableName=tableName, cols_info=cols_info, db_path=db_path)
+        return None
+
+# ----------------------------------------------------------------------------------
+# tableを作成
+
+    def _table_and_col_create(self, tableName: str, cols_info: Dict, db_path: str):
+        # cols_info を SQL(str) の形式に変換
+        str_cols_info = ", ".join([f"{col} {dtype}" for col, dtype in cols_info.items()])
+
+        sql_prompt = SqlitePromptExists.TABLES_CREATE.value.format(tableName=tableName, cols_info=str_cols_info)
+        self.sql_process(db_path=db_path, sql_prompt=sql_prompt, fetch='all')
+        self.logger.info(f'{tableName} tableを作成完了')
+        return None
+
+
+# ----------------------------------------------------------------------------------
+# columnの整合チェック
+
+    def _result_table_check(self, db_path: str, check_table_name_list: List):
+        # すべてのテーブル名を取得
+        current_table_name_list = self._get_table_names(db_path=db_path)
+
+        # resultとmsgを受け取って返す
+        result, msg = self._current_element_check(current_list=current_table_name_list, check_list=check_table_name_list)
+
+        if result:
+            self.logger.info(f'table :整合OK: {msg}')
+        else:
+            self.logger.error(f'table 相違あり: {msg}')
+        return result
 
 
 # ----------------------------------------------------------------------------------
 # columnの確認をして真偽値を返す
 
-    def _result_col_check(self, tableName: str, db_path: str):
+    def _result_col_check(self, tableName: str, db_path: str, check_col_list: List):
         # table_cols_infoからcol_name_listを生成
         col_name_list = self._get_column_name(tableName=tableName, db_path=db_path)
-        check_col_list = list(TableSchemas.BASE_COOKIES_TABLE_COLUMNS.value)
 
         # resultとmsgを受け取って返す
-        result, msg = self._col_check(cols_in_table=col_name_list, check_col_list=check_col_list)
+        result, msg = self._current_element_check(cols_in_table=col_name_list, check_col_list=check_col_list)
 
         if result:
             self.logger.info(f'column、整合OK: {msg}')
@@ -359,19 +409,17 @@ class SqliteInsert:
 # ----------------------------------------------------------------------------------
 # columnの整合チェック
 
-    def _col_check(self, cols_in_table: Dict, check_col_list: List):
-        cols_list_in_table = [col_key for col_key in cols_in_table.keys()]
-
+    def _current_element_check(self, current_list: List, check_list: List):
         # 不足しているカラム
-        missing_columns = [col for col in check_col_list if col not in cols_list_in_table]
+        missing_element = [col for col in check_list if col not in current_list]
 
         # 余分なカラム（期待されていないカラム）
-        extra_columns = [col for col in cols_list_in_table if col not in check_col_list]
+        extra_element = [col for col in current_list if col not in check_list]
 
-        if missing_columns:
-            return False, f"テーブルに不足してるcolumnがあります: {', '.join(missing_columns)}"
-        elif extra_columns:
-            return False, f"テーブルに不必要なcolumnがあります: {', '.join(extra_columns)}"
+        if missing_element:
+            return False, f"不足している要素があります: {', '.join(missing_element)}"
+        elif extra_element:
+            return False, f"不必要な要素があります: {', '.join(extra_element)}"
         else:
             return True, f"columnチェックOK"
 
