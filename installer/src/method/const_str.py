@@ -23,7 +23,7 @@ class SubDir(Enum):
     pickles='pickles'
     cookies='cookies'
     DBSubDir='DB'
-    DB_BUCK_UP= 'DB_buck_up'
+    BUCK_UP= 'buck_up'
     SCREEN_SHOT='screenshot'
 
 
