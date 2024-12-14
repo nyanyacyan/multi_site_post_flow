@@ -320,11 +320,40 @@ class SqliteInsert:
 
 
 # ----------------------------------------------------------------------------------
-# TODO Column確認
+# columnの確認をして真偽値を返す
 
-    def _get_table_cols(self, tableName: str, db_path: str):
+    def _result_col_check(self, tableName: str, db_path: str):
+        # table_cols_infoからcol_name_listを生成
+        col_name_list = self._get_column_name(tableName=tableName, db_path=db_path)
+        check_col_list = list(TableSchemas.BASE_COOKIES_TABLE_COLUMNS.value)
+
+        # resultとmsgを受け取って返す
+        result, msg = self._col_check(cols_in_table=col_name_list, check_col_list=check_col_list)
+
+        if result:
+            self.logger.info(f'column、整合OK: {msg}')
+        else:
+            self.logger.error(f'table内にあるcolumnに相違あり: {msg}')
+        return result
+
+# ----------------------------------------------------------------------------------
+# table_cols_infoを取得 [columnのID, column名, columnのtype, notnullの制約, PrimaryKeyの成約]を持ったcolumns
+
+    def _get_table_cols_info(self, tableName: str, db_path: str):
         sql_prompt = SqlitePromptExists.COLUMNS_EXISTS.value.format(tableName)
-        self.sql_process(db_path=db_path, sql_prompt=sql_prompt, fetch='all')
+        table_cols_info = self.sql_process(db_path=db_path, sql_prompt=sql_prompt, fetch='all')
+        self.logger.info(f'table_cols_info: {table_cols_info}')
+        return table_cols_info
+
+
+# ----------------------------------------------------------------------------------
+# table_cols_infoからcol_name_listを生成
+
+    def _get_column_name(self, tableName: str, db_path: str):
+        table_cols_info = self._get_table_cols_info(tableName=tableName, db_path=db_path)
+        col_name_list = [col_info['name'] for col_info in table_cols_info]
+        self.logger.info(f'col_name_list: {col_name_list}')
+        return col_name_list
 
 
 # ----------------------------------------------------------------------------------
