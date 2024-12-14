@@ -16,8 +16,9 @@ from .utils import Logger
 from .path import BaseToPath
 from .errorHandlers import NetworkHandler
 from .decorators import Decorators
-from const_str import Extension, SubDir
+from const_str import Extension
 from constSqliteTable import TableSchemas
+from const_sql_comment import SqlitePromptExists
 
 decoInstance = Decorators(debugMode=True)
 
@@ -319,13 +320,17 @@ class SqliteInsert:
 
 
 # ----------------------------------------------------------------------------------
-
 # TODO Column確認
 
-# ----------------------------------------------------------------------------------
-# column_infoの整理
+    def _get_table_cols(self, tableName: str, db_path: str):
+        sql_prompt = SqlitePromptExists.COLUMNS_EXISTS.value.format(tableName)
+        self.sql_process(db_path=db_path, sql_prompt=sql_prompt, fetch='all')
 
-    def _change_column_info(self, cols_in_table: Dict, check_col_list: List):
+
+# ----------------------------------------------------------------------------------
+# columnの整合チェック
+
+    def _col_check(self, cols_in_table: Dict, check_col_list: List):
         cols_list_in_table = [col_key for col_key in cols_in_table.keys()]
 
         # 不足しているカラム
@@ -334,11 +339,12 @@ class SqliteInsert:
         # 余分なカラム（期待されていないカラム）
         extra_columns = [col for col in cols_list_in_table if col not in check_col_list]
 
-        return {
-            "missing": missing_columns,
-            "extra": extra_columns,
-        }
-
+        if missing_columns:
+            return False, f"テーブルに不足してるcolumnがあります: {', '.join(missing_columns)}"
+        elif extra_columns:
+            return False, f"テーブルに不必要なcolumnがあります: {', '.join(extra_columns)}"
+        else:
+            return True, f"columnチェックOK"
 
 
 # -----------------------

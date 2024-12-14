@@ -13,7 +13,6 @@ from method.base.utils import Logger
 from installer.src.method.flow_get_cookie import Flow
 
 
-
 # ------------------------------------------------------------------------------
 
 
