@@ -14,7 +14,7 @@ from .elementManager import ElementManager
 from .driverWait import Wait
 from .decorators import Decorators
 from .driverDeco import jsCompleteWaitDeco, InputDeco, ClickDeco
-from .sql_insert import SqliteInsert
+from .sql_io_manager import SqliteInsert
 
 
 from constSqliteTable import TableSchemas

@@ -18,3 +18,7 @@ class SqlitePrompt(Enum):
     COLUMNS_EXISTS="PRAGMA table_info({table_name});"
 
     INSERT="INSERT INTO {table_name} {table_column_names} VALUES ({placeholders}"
+
+    SELECT_LAST_ROW="SELECT * FROM {table_name} ORDER BY id DESC LIMIT 1"
+
+    TRANSACTION="BEGIN TRANSACTION;"

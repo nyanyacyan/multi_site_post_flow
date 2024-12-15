@@ -3,7 +3,7 @@
 # テストOK
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 # import
-import os, sqlite3
+import os, sqlite3, traceback
 from typing import Any
 from pathlib import Path
 from datetime import datetime
@@ -14,7 +14,7 @@ from typing import Dict, Any, List, Tuple, Literal, Union
 from .utils import Logger
 from .path import BaseToPath
 from .errorHandlers import NetworkHandler
-from .sql_base import SqliteBase
+from .Archive.sql_base import SqliteBase
 from .decorators import Decorators
 from const_str import Extension
 from constSqliteTable import TableSchemas
@@ -29,7 +29,7 @@ decoInstance = Decorators(debugMode=True)
 
 
 class SqliteExistsHandler:
-    def __init__(self, debugMode=True):
+    def __init__(self, db_file_name: str, table_pattern_info: Dict, debugMode=True):
 
         # logger
         self.getLogger = Logger(__name__, debugMode=debugMode)
@@ -40,11 +40,42 @@ class SqliteExistsHandler:
         self.path = BaseToPath(debugMode=debugMode)
         self.sql_base = SqliteBase(debugMode=debugMode)
 
+        # 必要情報
+        self.table_pattern_info = table_pattern_info  # スキーマ情報を保持
         self.currentDate = datetime.now().strftime("%y%m%d")
-        self.tablePattern = TableSchemas.TABLE_PATTERN.value
+        self.db_file_name = db_file_name
+        self.conn = None  # 接続オブジェクトを保持するために空の箱を用意
+
+        # db_path
+        self.db_path = self.sql_base._db_path(db_file_name=self.db_file_name)
 
 
 # ----------------------------------------------------------------------------------
+# with構文を使ったときに最初に実行される処理
+
+    def __enter__(self):
+        # DBファイルに接続開始
+        self.conn = sqlite3.connect(self.db_path)
+        self.conn.row_factory = sqlite3.Row
+        return self
+
+
+# ----------------------------------------------------------------------------------
+# with構文を使ったときに最後に実行される処理
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        if exc_type:
+            self.conn.rollback()
+            self.logger.error(f'SQL実行中にエラーが発生（ロールバック実施）: {exc_value}')
+        else:
+            self.conn.commit()
+            self.logger.info('コミット（確定）を実施しました')
+
+        self.conn.close()  # 接続を閉じる
+
+
+# ----------------------------------------------------------------------------------
+
 
 #! --------------------
 # flow
@@ -52,13 +83,27 @@ class SqliteExistsHandler:
 
 # ----------------------------------------------------------------------------------
 # DBを使う前に整っているのかを確認
+#! with構文を使って実行がひつよう
 
-    def flow_db_start_check(self, db_file_name: str, table_pattern_info: Dict):
-        self._db_file_exists(db_file_name=db_file_name, table_pattern_info=table_pattern_info)
 
-        self._table_exists(db_file_name=db_file_name, table_pattern_info=table_pattern_info)
+    def flow_db_start_check(self):
+        try:
+            # 1. DBファイルの存在確認
+            self.logger.info("DB初期化処理を開始します")
+            self._db_file_exists()
 
-        self._all_table_col_exists(db_file_name=db_file_name, table_pattern_info=table_pattern_info)
+            # 2. テーブルの存在確認
+            self._table_exists()
+
+            # 3. 各テーブルのカラム整合性確認
+            self._all_table_col_exists()
+
+            self.logger.info("DB初期化処理が正常に完了しました")
+
+        except Exception as e:
+            self.logger.error(f"DB初期化処理中にエラー発生: {e}")
+            self.logger.error(traceback.format_exc())
+            raise
 
 
 # ----------------------------------------------------------------------------------
@@ -70,18 +115,12 @@ class SqliteExistsHandler:
 # ----------------------------------------------------------------------------------
 # DBファイル確認
 
-    def _db_file_exists(self, db_file_name: str, table_pattern_info: Dict):
-        db_file_path = self.sql_base._db_path(db_file_name=db_file_name)
-        if not db_file_path.exists():
-            self.logger.warning(
-                f"DBファイル({db_file_name})がないため作成: {db_file_path}"
-            )
-            # ここにテーブル作成処理
-            self._all_table_create(db_file_name=db_file_name, table_pattern_info=table_pattern_info)
-
+    def _db_file_exists(self):
+        if not Path(self.db_path).exists():
+            self.logger.warning(f"DBファイル({self.db_path})がないため作成")
+            self._all_table_create()
         else:
-            self.logger.info(f"DBファイル({db_file_name})を発見: {db_file_path}")
-            return None
+            self.logger.info(f"DBファイル({self.db_path})を発見")
 
 
 # ----------------------------------------------------------------------------------
@@ -93,28 +132,28 @@ class SqliteExistsHandler:
 # ----------------------------------------------------------------------------------
 # テーブル確認
 
-    def _table_exists(self, db_file_name: str, table_pattern_info: Dict):
-        result = self._result_table_check(db_file_name=db_file_name, table_pattern_info=table_pattern_info)
+    def _table_exists(self):
+        result = self._result_table_check()
 
         # テーブルが無い場合
         if result is None:
-            self._all_table_create(db_file_name=db_file_name, table_pattern_info=table_pattern_info)
+            self._all_table_create()
 
-        if result == False:
+        elif not result:
             raise ValueError('指定のtableと乖離があります（乖離情報は別途上記に記載）')
 
-        return self.logger.info(f'table状態は整ってます: {table_pattern_info}')
+        return self.logger.info(f'table状態は整ってます')
 
 
 
 # ----------------------------------------------------------------------------------
 # tableの名前を取得
 
-    def _get_table_names(self, db_file_name: str):
+    def _get_table_names(self):
         sql_prompt = SqlitePrompt.TABLES_EXISTS.value
-        current_table_names = self.sql_base.sql_process(
-            db_file_name=db_file_name, sql_prompt=sql_prompt, fetch="all"
-        )
+        cursor = self.conn.cursor()
+        cursor.execute(sql_prompt)
+        current_table_names = cursor.fetchall()  # すべてのテーブル名
 
         # SQLのレスポンスは[('GAME_CLUB',), ('MA_CLUB',), ('RRMT_CLUB',)]ため変換
         current_table_name_list = [row[0] for row in current_table_names]
@@ -125,29 +164,23 @@ class SqliteExistsHandler:
 # ----------------------------------------------------------------------------------
 # すべてのtable_patternにあるテーブルを作成する
 
-    def _all_table_create(self, db_file_name: str, table_pattern_info: Dict):
+    def _all_table_create(self):
         # 新しくテーブルを作成する
-        self.logger.info(f'すべてのテーブルを作成開始: {table_pattern_info}')
-        for tableName, cols_info in table_pattern_info.items():
-            self._table_and_col_create(
-                tableName=tableName, cols_info=cols_info, db_file_name=db_file_name
-            )
+        self.logger.info(f'すべてのテーブルを作成開始')
+        for tableName, cols_info in self.table_pattern_info.items():
+            self._table_and_col_create(tableName=tableName, cols_info=cols_info)
         return None
 
 
 # ----------------------------------------------------------------------------------
 # tableを作成
 
-    def _table_and_col_create(self, tableName: str, cols_info: Dict, db_file_name: str):
+    def _table_and_col_create(self, tableName: str, cols_info: Dict):
         # cols_info を SQL(str) の形式に変換
-        str_cols_info = ", ".join(
-            [f"{col} {dtype}" for col, dtype in cols_info.items()]
-        )
+        str_cols_info = ", ".join([f"{col} {dtype}" for col, dtype in cols_info.items()])
 
-        sql_prompt = SqlitePrompt.TABLES_CREATE.value.format(
-            tableName=tableName, cols_info=str_cols_info
-        )
-        self.sql_base.sql_process(db_file_name=db_file_name, sql_prompt=sql_prompt)
+        sql_prompt = SqlitePrompt.TABLES_CREATE.value.format(tableName=tableName, cols_info=str_cols_info)
+        self.conn.execute(sql_prompt)
         self.logger.info(f"{tableName} tableを作成完了")
         return None
 
@@ -155,16 +188,16 @@ class SqliteExistsHandler:
 # ----------------------------------------------------------------------------------
 # tableの整合チェック
 
-    def _result_table_check(self, db_file_name: str, table_pattern_info: Dict):
+    def _result_table_check(self):
         # すべてのテーブル名を取得
-        current_table_name_list = self._get_table_names(db_file_name=db_file_name)
+        current_table_name_list = self._get_table_names()
 
         if not current_table_name_list:
             self.logger.warning(f'table がないため新しく作成: {current_table_name_list}')
             return None
 
         # table_pattern_infoからtable_nameだけを取り出す
-        check_table_name_list = [table_name for table_name in table_pattern_info.keys()]
+        check_table_name_list = list(self.table_pattern_info.keys())
 
         # resultとmsgを受け取って返す
         result, msg = self._current_element_check(
@@ -187,11 +220,11 @@ class SqliteExistsHandler:
 # ----------------------------------------------------------------------------------
 # すべてのテーブルに入っているcolumnをチェック
 
-    def _all_table_col_exists(self, table_pattern_info: Dict, db_file_name: str):
+    def _all_table_col_exists(self):
         false_tables_col_info = []
         table_name_list = []
-        for table_name, check_col_list in table_pattern_info.items():
-            current_col_name_list = self._get_column_name(tableName=table_name, db_file_name=db_file_name)
+        for table_name, check_col_list in self.table_pattern_info.items():
+            current_col_name_list = self._get_column_name(tableName=table_name)
             result, msg = self._current_element_check(current_list=current_col_name_list, check_list=check_col_list)
 
             # table_name_listに追加
@@ -210,25 +243,20 @@ class SqliteExistsHandler:
 
 
 # ----------------------------------------------------------------------------------
-# table_cols_infoを取得 [columnのID, column名, columnのtype, notnullの制約, PrimaryKeyの成約]を持ったcolumns
-
-    def _get_table_cols_info(self, tableName: str, db_file_name: str):
-        sql_prompt = SqlitePrompt.COLUMNS_EXISTS.value.format(tableName)
-        table_cols_info = self.sql_base.sql_process(db_file_name=db_file_name, sql_prompt=sql_prompt, fetch="all")
-        self.logger.info(f"table_cols_info: {table_cols_info}")
-        return table_cols_info
-
-
-# ----------------------------------------------------------------------------------
 # table_cols_infoからcol_name_listを生成
 
-    def _get_column_name(self, tableName: str, db_file_name: str):
-        table_cols_info = self._get_table_cols_info(
-            tableName=tableName, db_file_name=db_file_name
-        )
-        col_name_list = [col_info["name"] for col_info in table_cols_info]
-        self.logger.info(f"col_name_list: {col_name_list}")
-        return col_name_list
+    def _get_column_name(self, table_name: str):
+        sql_prompt = SqlitePrompt.COLUMNS_EXISTS.value.format(table_name)
+        cursor = self.conn.cursor()
+        cursor.execute(sql_prompt)
+
+        # 全tableにあるcol_infoを取得
+        table_cols_info = cursor.fetchall()
+
+        # col_infoにある中からcol_nameを取得してリスト化
+        check_col_list = [col_info["name"] for col_info in table_cols_info]
+        self.logger.debug(f'check_col_list: {check_col_list}')
+        return check_col_list
 
 
 # ----------------------------------------------------------------------------------
@@ -236,17 +264,17 @@ class SqliteExistsHandler:
 
     def _current_element_check(self, current_list: List, check_list: List):
         # 不足しているカラム
-        missing_element = [col for col in check_list if col not in current_list]
+        missing = [item for item in check_list if item not in current_list]
 
         # 余分なカラム（期待されていないカラム）
-        extra_element = [col for col in current_list if col not in check_list]
+        extra = [item for item in current_list if item not in check_list]
 
-        if missing_element:
-            return False, f"不足している要素があります: {', '.join(missing_element)}"
-        elif extra_element:
-            return False, f"不必要な要素があります: {', '.join(extra_element)}"
+        if missing:
+            return False, f"不足している要素があります: {', '.join(missing)}"
+        elif extra:
+            return False, f"不必要な要素があります: {', '.join(extra)}"
         else:
-            return True, f"columnチェックOK"
+            return True, f"整合性OK"
 
 
 # ----------------------------------------------------------------------------------
