@@ -18,7 +18,7 @@ from .sql_base import SqliteBase
 from .decorators import Decorators
 from const_str import Extension
 from constSqliteTable import TableSchemas
-from const_sql_comment import SqlitePromptExists
+from const_sql_comment import SqlitePrompt
 
 decoInstance = Decorators(debugMode=True)
 
@@ -111,7 +111,7 @@ class SqliteExistsHandler:
 # tableの名前を取得
 
     def _get_table_names(self, db_file_name: str):
-        sql_prompt = SqlitePromptExists.TABLES_EXISTS.value
+        sql_prompt = SqlitePrompt.TABLES_EXISTS.value
         current_table_names = self.sql_base.sql_process(
             db_file_name=db_file_name, sql_prompt=sql_prompt, fetch="all"
         )
@@ -144,7 +144,7 @@ class SqliteExistsHandler:
             [f"{col} {dtype}" for col, dtype in cols_info.items()]
         )
 
-        sql_prompt = SqlitePromptExists.TABLES_CREATE.value.format(
+        sql_prompt = SqlitePrompt.TABLES_CREATE.value.format(
             tableName=tableName, cols_info=str_cols_info
         )
         self.sql_base.sql_process(db_file_name=db_file_name, sql_prompt=sql_prompt)
@@ -213,7 +213,7 @@ class SqliteExistsHandler:
 # table_cols_infoを取得 [columnのID, column名, columnのtype, notnullの制約, PrimaryKeyの成約]を持ったcolumns
 
     def _get_table_cols_info(self, tableName: str, db_file_name: str):
-        sql_prompt = SqlitePromptExists.COLUMNS_EXISTS.value.format(tableName)
+        sql_prompt = SqlitePrompt.COLUMNS_EXISTS.value.format(tableName)
         table_cols_info = self.sql_base.sql_process(db_file_name=db_file_name, sql_prompt=sql_prompt, fetch="all")
         self.logger.info(f"table_cols_info: {table_cols_info}")
         return table_cols_info
