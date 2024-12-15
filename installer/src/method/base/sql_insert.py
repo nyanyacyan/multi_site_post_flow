@@ -16,6 +16,8 @@ from .utils import Logger
 from .path import BaseToPath
 from .errorHandlers import NetworkHandler
 from .decorators import Decorators
+from .sql_base import SqliteBase
+from .sql_exists import SqliteExistsHandler
 from const_str import Extension
 from constSqliteTable import TableSchemas
 from const_sql_comment import SqlitePromptExists
@@ -40,7 +42,8 @@ class SqliteInsert:
         self.path = BaseToPath(debugMode=debugMode)
         self.currentDate = datetime.now().strftime('%y%m%d')
         self.tablePattern = TableSchemas.TABLE_PATTERN.value
-
+        self.sql_base = SqliteBase(debugMode=debugMode)
+        self.sql_exists = SqliteExistsHandler(debugMode=debugMode)
 
 # ----------------------------------------------------------------------------------
 # SQLiteへ入れ込む
@@ -51,10 +54,6 @@ class SqliteInsert:
     def _insert_data(self, db_file_name: str, all_tables_column_info: Dict, tableName: str, columnNames: tuple, values: tuple):
         # DBファイルの存在を確認して処理する
         db_path = self.DB_file_exists(db_file_name=db_file_name, all_tables_column_info=all_tables_column_info)
-
-        # テーブルにあるColumnの確認
-        table_columnNames = self._columns_Exists(db_path=db_path, all_tables_column_info=all_tables_column_info, tableName=tableName, columnNames=columnNames)
-        self.logger.debug(f'\ncolumnNames: {columnNames}\ntable_columnNames: {table_columnNames}')
 
         # valuesのカウントをしてその分「？」を追加して結合
         placeholders = ', '.join(['?' for _ in values])

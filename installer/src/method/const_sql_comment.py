@@ -17,3 +17,4 @@ class SqlitePromptExists(Enum):
 
     COLUMNS_EXISTS="PRAGMA table_info({table_name});"
 
+    INSERT="INSERT INTO {tableName} {table_columnNames} VALUES ({placeholders}"

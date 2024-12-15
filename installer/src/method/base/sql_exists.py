@@ -47,13 +47,13 @@ class SqliteExistsHandler:
 # ----------------------------------------------------------------------------------
 
 #! --------------------
-# DBファイル
+# flow
 #! --------------------
 
 # ----------------------------------------------------------------------------------
 # DBを使う前に整っているのかを確認
 
-    def db_start_check(self, db_file_name: str, table_pattern_info: Dict):
+    def flow_db_start_check(self, db_file_name: str, table_pattern_info: Dict):
         self._db_file_exists(db_file_name=db_file_name, table_pattern_info=table_pattern_info)
 
         self._table_exists(db_file_name=db_file_name, table_pattern_info=table_pattern_info)
@@ -76,7 +76,7 @@ class SqliteExistsHandler:
             self.logger.warning(
                 f"DBファイル({db_file_name})がないため作成: {db_file_path}"
             )
-            # TODO ここにテーブル作成処理
+            # ここにテーブル作成処理
             self._all_table_create(db_file_name=db_file_name, table_pattern_info=table_pattern_info)
 
         else:
@@ -91,7 +91,7 @@ class SqliteExistsHandler:
 #! --------------------
 
 # ----------------------------------------------------------------------------------
-# TODO テーブル確認
+# テーブル確認
 
     def _table_exists(self, db_file_name: str, table_pattern_info: Dict):
         result = self._result_table_check(db_file_name=db_file_name, table_pattern_info=table_pattern_info)
