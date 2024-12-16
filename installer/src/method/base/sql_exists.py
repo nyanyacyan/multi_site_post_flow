@@ -63,10 +63,12 @@ class SqliteExistsHandler:
 # ----------------------------------------------------------------------------------
 # with構文を使ったときに最後に実行される処理
 
-    def __exit__(self, exc_type, exc_value, traceback):
+    def __exit__(self, exc_type, exc_value, exc_traceback):
         if exc_type:
             self.conn.rollback()
             self.logger.error(f'SQL実行中にエラーが発生（ロールバック実施）: {exc_value}')
+            self.logger.debug(''.join(traceback.format_tb(exc_traceback)))
+
         else:
             self.conn.commit()
             self.logger.info('コミット（確定）を実施しました')
