@@ -14,7 +14,8 @@ from .elementManager import ElementManager
 from .driverWait import Wait
 from .decorators import Decorators
 from .driverDeco import jsCompleteWaitDeco, InputDeco, ClickDeco
-from .sql_io_manager import SqliteInsert
+from .sql_exists import SqliteExistsHandler
+from .sql_io_manager import SqliteInsert, SqliteUpdate, SqliteRead
 
 
 from constSqliteTable import TableSchemas
@@ -42,8 +43,10 @@ class SingleSiteIDLogin:
         # インスタンス
         self.element = ElementManager(chrome=chrome, debugMode=debugMode)
         self.wait = Wait(chrome=self.chrome, debugMode=debugMode)
-        self.sqlite_insert = SqliteInsert(debugMode=debugMode)
 
+        self.db_file_name=FileName.DB_FILE_NAME.value
+        self.table_pattern_info=TableSchemas.TABLE_PATTERN.value
+        self.logger.debug(f'\nself.db_file_name: {self.db_file_name}\nself.table_pattern_info: {self.table_pattern_info}')
 
 
 # ----------------------------------------------------------------------------------
@@ -52,6 +55,10 @@ class SingleSiteIDLogin:
 
     @decoInstance.funcBase
     def flow_cookie_save(self, login_url: str, loginInfo: dict, tableName: str, columnsNames: tuple, timeout: int =180):
+        # DBファイルの初期化確認
+        with SqliteExistsHandler(db_file_name=self.db_file_name, table_pattern_info=self.table_pattern_info) as sqlite_exists:
+            sqlite_exists.flow_db_start_check()
+
         # ログインの実施
         self.flowLoginID(login_url=login_url, loginInfo=loginInfo, timeout=timeout)
 
@@ -62,7 +69,7 @@ class SingleSiteIDLogin:
         self.insertCookieData(
             cookie=cookie,
             db_file_name=FileName.DB_FILE_NAME.value,
-            all_tables_column_info=TableSchemas.TABLE_PATTERN.value,
+            table_pattern_info=TableSchemas.TABLE_PATTERN.value,
             tableName=tableName,
             columnsNames=columnsNames
         )
@@ -240,7 +247,7 @@ class SingleSiteIDLogin:
 # DBよりcookie情報を取得する
 
     # @decoInstance.funcBase
-    def insertCookieData(self, cookie: Dict, db_file_name: str, all_tables_column_info: Dict, tableName: str, columnsNames: tuple):
+    def insertCookieData(self, cookie: Dict, db_file_name: str, table_pattern_info: Dict, tableName: str, columnsNames: tuple):
         cookieName = cookie['name']
         cookieValue = cookie.get('value')
         cookieDomain = cookie.get('domain')
@@ -254,12 +261,10 @@ class SingleSiteIDLogin:
         self.logger.info(f"values:\n{values}")
 
         # テーブルの存在確認
-        # TODO DBの名称をtitleにする
-        # TODO 複数のDBを作成するのではなく、1つにしてバックアップするように変更→ない場合には作成する
-        # TODO DBがあるかどうかを確認する→テーブルがあるか確認をする
+
 
         # データを入れ込む
-        self.sqlite_insert._insert_data(db_file_name=db_file_name, all_tables_column_info=all_tables_column_info, tableName=tableName, columnNames=columnsNames, values=values)
+        self.sqlite_insert._insert_data(db_file_name=db_file_name, table_pattern_info=table_pattern_info, tableName=tableName, columnNames=columnsNames, values=values)
         return cookie
 
 

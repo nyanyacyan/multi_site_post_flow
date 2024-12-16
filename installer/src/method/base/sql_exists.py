@@ -169,21 +169,21 @@ class SqliteExistsHandler:
     def _all_table_create(self):
         # 新しくテーブルを作成する
         self.logger.info(f'すべてのテーブルを作成開始')
-        for tableName, cols_info in self.table_pattern_info.items():
-            self._table_and_col_create(tableName=tableName, cols_info=cols_info)
+        for table_name, cols_info in self.table_pattern_info.items():
+            self._table_and_col_create(table_name=table_name, cols_info=cols_info)
         return None
 
 
 # ----------------------------------------------------------------------------------
 # tableを作成
 
-    def _table_and_col_create(self, tableName: str, cols_info: Dict):
+    def _table_and_col_create(self, table_name: str, cols_info: Dict):
         # cols_info を SQL(str) の形式に変換
         str_cols_info = ", ".join([f"{col} {dtype}" for col, dtype in cols_info.items()])
 
-        sql_prompt = SqlitePrompt.TABLES_CREATE.value.format(tableName=tableName, cols_info=str_cols_info)
+        sql_prompt = SqlitePrompt.TABLES_CREATE.value.format(table_name=table_name, cols_info=str_cols_info)
         self.conn.execute(sql_prompt)
-        self.logger.info(f"{tableName} tableを作成完了")
+        self.logger.info(f"{table_name} tableを作成完了")
         return None
 
 
@@ -226,7 +226,7 @@ class SqliteExistsHandler:
         false_tables_col_info = []
         table_name_list = []
         for table_name, check_col_list in self.table_pattern_info.items():
-            current_col_name_list = self._get_column_name(tableName=table_name)
+            current_col_name_list = self._get_column_name(table_name=table_name)
             result, msg = self._current_element_check(current_list=current_col_name_list, check_list=check_col_list)
 
             # table_name_listに追加
@@ -248,7 +248,7 @@ class SqliteExistsHandler:
 # table_cols_infoからcol_name_listを生成
 
     def _get_column_name(self, table_name: str):
-        sql_prompt = SqlitePrompt.COLUMNS_EXISTS.value.format(table_name)
+        sql_prompt = SqlitePrompt.COLUMNS_EXISTS.value.format(table_name=table_name)
         cursor = self.conn.cursor()
         cursor.execute(sql_prompt)
 
@@ -257,7 +257,7 @@ class SqliteExistsHandler:
 
         # col_infoにある中からcol_nameを取得してリスト化
         check_col_list = [col_info["name"] for col_info in table_cols_info]
-        self.logger.debug(f'check_col_list: {check_col_list}')
+        self.logger.debug(f'{table_name} check_col_list: {check_col_list}')
         return check_col_list
 
 

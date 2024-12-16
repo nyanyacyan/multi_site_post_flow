@@ -11,7 +11,7 @@ from enum import Enum
 
 
 class SqlitePrompt(Enum):
-    TABLES_CREATE="CREATE TABLE IF NOT EXISTS {table_name} ({column_info});"
+    TABLES_CREATE="CREATE TABLE IF NOT EXISTS {table_name} ({cols_info});"
 
     TABLES_EXISTS="SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%';"
 

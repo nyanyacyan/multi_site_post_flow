@@ -3,11 +3,12 @@
 # testOK
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 # import
-import subprocess, shutil
+import os, subprocess, shutil
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager  # pip install webdriver-manager
+
 
 # 自作モジュール
 from .utils import Logger
@@ -39,8 +40,22 @@ class ChromeManager:
 # ----------------------------------------------------------------------------------
 
 
+    def clear_cache(self):
+        # webdriver_manager のデフォルトキャッシュパスを削除
+        cache_path = os.path.expanduser("~/.wdm")
+        if os.path.exists(cache_path):
+            shutil.rmtree(cache_path, ignore_errors=True)
+            print(f"キャッシュを削除しました: {cache_path}")
+        else:
+            print(f"キャッシュディレクトリが見つかりません: {cache_path}")
+
+
+# ----------------------------------------------------------------------------------
+
+
     @decoInstance.chromeSetup
     def flowSetupChrome(self):
+        self.clear_cache()
         service = Service(self.getChromeDriverPath)
         chrome = webdriver.Chrome(service=service, options=self.setupChromeOption)
         return chrome
@@ -52,7 +67,6 @@ class ChromeManager:
     @property
     def getChromeDriverPath(self):
         # ChromeDriverManagerでインストールされたChromeDriverのパスを取得
-        # shutil.rmtree(ChromeDriverManager().cache_path, ignore_errors=True)
         return ChromeDriverManager().install()
 
 
