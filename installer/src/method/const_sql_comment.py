@@ -17,8 +17,12 @@ class SqlitePrompt(Enum):
 
     COLUMNS_EXISTS="PRAGMA table_info({table_name});"
 
+    TRANSACTION="BEGIN TRANSACTION;"
+
     INSERT="INSERT INTO {table_name} {table_column_names} VALUES ({placeholders}"
 
-    SELECT_LAST_ROW="SELECT * FROM {table_name} ORDER BY id DESC LIMIT 1"
+    UPDATE="UPDATE {table_name} SET {update_placeholders} WHERE {filter_keys_placeholders}"
 
-    TRANSACTION="BEGIN TRANSACTION;"
+    READ="SELECT * FROM {table_name}"
+
+    READ_WHERE=" WHERE {filter_keys_placeholders}"
