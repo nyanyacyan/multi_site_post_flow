@@ -19,7 +19,7 @@ class SqlitePrompt(Enum):
 
     TRANSACTION="BEGIN TRANSACTION;"
 
-    INSERT="INSERT INTO {table_name} {table_column_names} VALUES ({placeholders}"
+    INSERT="INSERT INTO {table_name} ({table_column_names}) VALUES ({placeholders})"
 
     UPDATE="UPDATE {table_name} SET {update_placeholders} WHERE {filter_keys_placeholders}"
 

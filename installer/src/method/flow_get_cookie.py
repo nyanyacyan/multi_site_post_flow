@@ -48,7 +48,7 @@ class FlowGetCookie:
 
     async def process(self):
         # ログインからCookieをDBへ保存
-        bool = await self.id_login.flow_cookie_save(
+        await self.id_login.flow_cookie_save(
             login_url=self.login_info['LOGIN_URL'],
             loginInfo=self.login_info,
             tableName=self.login_info['TABLE_NAME'],

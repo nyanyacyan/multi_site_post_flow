@@ -93,7 +93,7 @@ class SqliteInsert:
 
             # 命令文の構築
             insert_sql_prompt = SqlitePrompt.INSERT.value.format(table_name=table_name, table_column_names=insert_data_keys, placeholders=placeholders)
-            self.logger.debug(f'insert_sql_prompt: {insert_sql_prompt}')
+            self.logger.debug(f"insert_sql_prompt: {insert_sql_prompt}")
 
             # 処理の実行
             cursor.execute(insert_sql_prompt, insert_data_values)

@@ -65,16 +65,41 @@ class SingleSiteIDLogin:
         # Cookieの取得
         cookie = self._getCookie()
 
-        # テーブルにCookie情報を入れ込む
-        self.insertCookieData(
-            cookie=cookie,
-            db_file_name=FileName.DB_FILE_NAME.value,
-            table_pattern_info=TableSchemas.TABLE_PATTERN.value,
-            tableName=tableName,
-            columnsNames=columnsNames
-        )
+        # CookieデータがDBの項目に入れられるように整理する
+        sorted_cookie = self._sort_cookie(cookie=cookie)
+        self.logger.info(f'sorted_cookie: {sorted_cookie}')
 
+        # ここに指定のテーブルのnameによって分岐
+        with SqliteRead(db_file_name=self.db_file_name, table_pattern_info=self.table_pattern_info) as sqlite_read:
+            table_all_data = sqlite_read._read_data(table_name=tableName)
 
+        # テーブルデータから行ごとにデータを抽出
+        rows = [row for row in table_all_data]
+        self.logger.debug(f'rows: {rows}')
+
+        # テーブルにデータがない場合をチェック
+        if not rows:
+            self.logger.warning(f"{tableName} テーブルに既存のデータがありません")
+            table_cookie_name = None
+        else:
+            table_cookie_name = rows[0].get('name')  # 'name' キーが存在しない場合を考慮
+
+        # Cookieデータをリストとして渡す
+        cookie_data_list = sorted_cookie if isinstance(sorted_cookie, list) else [sorted_cookie]
+
+        # Cookie情報が入っているかどうかで分岐
+        if table_cookie_name:
+            # 入っている場合にはアップデートを実施
+            filter_keys = {"name": table_cookie_name}
+            with SqliteUpdate(db_file_name=self.db_file_name, table_pattern_info=self.table_pattern_info) as sqlite_update:
+                sqlite_update._update_data(update_data_list=cookie_data_list, table_name=tableName, filter_keys=filter_keys)
+            self.logger.info(f"{tableName} のCookieデータを更新しました")
+
+        else:
+            # テーブルに情報がまだ入ってないため挿入
+            with SqliteInsert(db_file_name=self.db_file_name, table_pattern_info=self.table_pattern_info) as sqlite_insert:
+                sqlite_insert._insert_data(insert_data_list=cookie_data_list, table_name=tableName)
+            self.logger.info(f"{tableName} に新しくCookieデータを挿入しました")
 
 
 # ----------------------------------------------------------------------------------
@@ -243,29 +268,22 @@ class SingleSiteIDLogin:
 
 
 # ----------------------------------------------------------------------------------
-# 有効期限をクリアしたmethod
-# DBよりcookie情報を取得する
+# CookieデータをDBにいれられるように整理
 
     # @decoInstance.funcBase
-    def insertCookieData(self, cookie: Dict, db_file_name: str, table_pattern_info: Dict, tableName: str, columnsNames: tuple):
-        cookieName = cookie['name']
-        cookieValue = cookie.get('value')
-        cookieDomain = cookie.get('domain')
-        cookiePath = cookie.get('path')
-        cookieExpires = cookie.get('expiry')
-        cookieMaxAge = cookie.get('max-age')  # expiresよりも優先される、〇〇秒間、持たせる権限
-        cookieCreateTime = int(time.time())
+    def _sort_cookie(self, cookie: Dict):
+        db_cookie_info = {
+            'name': cookie['name'],
+            'value': cookie.get('value'),
+            'domain': cookie.get('domain'),
+            'path': cookie.get('path'),
+            'expires': cookie.get('expiry'),
+            'maxAge': cookie.get('max-age'),  # expiresよりも優先される、〇〇秒間、持たせる権限
+            'createTime': int(time.time())
+        }
+        self.logger.debug(f'db_cookie_info: {db_cookie_info}')
 
-        # 値をtuple化
-        values = (cookieName, cookieValue, cookieDomain, cookiePath, cookieExpires, cookieMaxAge, cookieCreateTime)
-        self.logger.info(f"values:\n{values}")
-
-        # テーブルの存在確認
-
-
-        # データを入れ込む
-        self.sqlite_insert._insert_data(db_file_name=db_file_name, table_pattern_info=table_pattern_info, tableName=tableName, columnNames=columnsNames, values=values)
-        return cookie
+        return db_cookie_info
 
 
 # ----------------------------------------------------------------------------------
