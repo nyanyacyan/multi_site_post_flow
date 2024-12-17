@@ -3,13 +3,9 @@
 # テストOK
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 # import
-import os, sqlite3, traceback
-from typing import Any
-from pathlib import Path
+import sqlite3, traceback
 from datetime import datetime
-from typing import Dict, Any, List, Tuple, Literal, Union
-
-
+from typing import Dict
 
 # 自作モジュール
 from .utils import Logger
@@ -17,17 +13,18 @@ from .path import BaseToPath
 from .errorHandlers import NetworkHandler
 from .decorators import Decorators
 from .Archive.sql_base import SqliteBase
-from .sql_exists import SqliteExistsHandler
-from const_str import Extension
-from constSqliteTable import TableSchemas
 from const_sql_comment import SqlitePrompt
 
 decoInstance = Decorators(debugMode=True)
 
 
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+#! --------------------
+# insert
+#! --------------------
 # **********************************************************************************
-# 一連の流れ
+
 
 class SqliteInsert:
     def __init__(self, db_file_name: str, table_pattern_info: Dict, debugMode=True):
@@ -116,8 +113,12 @@ class SqliteInsert:
 
 
 # ----------------------------------------------------------------------------------
+
+#! --------------------
+# update
+#! --------------------
 # **********************************************************************************
-# 一連の流れ
+
 
 class SqliteUpdate:
     def __init__(self, db_file_name: str, table_pattern_info: Dict, debugMode=True):
@@ -168,7 +169,7 @@ class SqliteUpdate:
 
 
 # ----------------------------------------------------------------------------------
-# SQLiteへ入れ込む
+# SQLiteにあるデータをアップデートする
 # update_data_listの構造  [{value: "new_value", expires: 1700000000}, {value: "new_value2", expires: 1700000001}]
 # filter_keysの構造  {name: cookie_1, date: 20240101}
 
@@ -210,6 +211,11 @@ class SqliteUpdate:
 
 
 # ----------------------------------------------------------------------------------
+
+
+#! --------------------
+# read
+#! --------------------
 # **********************************************************************************
 # 一連の流れ
 
@@ -262,7 +268,7 @@ class SqliteRead:
 
 
 # ----------------------------------------------------------------------------------
-# SQLiteへ入れ込む
+# SQLiteからデータを呼び出して取得
 # read_listの構造  [{value: "new_value", expires: 1700000000}, {value: "new_value2", expires: 1700000001}]
 # filter_keysの構造  {name: cookie_1, date: 20240101}
 
@@ -308,7 +314,13 @@ class SqliteRead:
 
 
 # ----------------------------------------------------------------------------------
-# 一連の流れ
+
+
+#! --------------------
+# backup
+#! --------------------
+# **********************************************************************************
+
 
 class SqliteBuckup:
     def __init__(self, db_file_name: str, debugMode=True):
@@ -329,7 +341,7 @@ class SqliteBuckup:
 
 
 # ----------------------------------------------------------------------------------
-# バックアップ
+# DBファイルのバックアップ
 
     def _data_buck_up(self):
         try:
