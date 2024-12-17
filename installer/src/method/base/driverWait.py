@@ -64,10 +64,12 @@ class Wait:
 # ----------------------------------------------------------------------------------
 # 指定のURLに切り替わるまで待機
 
-    def changeUrlWait(self, by: str, Url: str, timeout: int = 10):
-        if WebDriverWait(self.chrome, timeout).until(EC.url_changes(Url)):
-            self.logger.info(f"指定のURLに切り替わりました")
-        return
+    def changeUrlWait(self, target_url: str, timeout: int = 10):
+        try:
+            if WebDriverWait(self.chrome, timeout).until(EC.url_to_be(target_url)):
+                self.logger.info(f"指定のURLに切り替わりました")
+        except Exception as e:
+            self.logger.error(f"指定のURLに切り替わりませんでした: {target_url}, エラー: {e}")
 
 
 # ----------------------------------------------------------------------------------

@@ -3,7 +3,7 @@
 
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 # import
-import time, asyncio
+import time, requests
 from datetime import datetime
 from typing import Dict, List
 from selenium.webdriver.chrome.webdriver import WebDriver
@@ -97,5 +97,60 @@ class SingleLoginDBCookie:
         # 一度サイトを開く
         self.selenium.openSite(url=homeUrl)
 
+        # アクセスしたいサイトにアクセスできたかどうかを確認する（コンプリートまで）
+        self.wait.changeUrlWait(target_url=homeUrl, timeout=10)
+
+
+
+
 # ----------------------------------------------------------------------------------
 
+
+    @property
+    def session(self):
+        # sessionを定義（セッションの箱を作ってるイメージ）
+        return requests.Session()
+
+
+# ----------------------------------------------------------------------------------
+
+
+    def sessionSetting(self, cookie: Dict):
+        self.logger.warning(f"cookies: {cookie}")
+        if cookie:
+            session = self.session
+            session.cookie.set(
+                name=cookie['name'],
+                value=cookie['value'],
+                domain=cookie['domain'],
+                path=cookie['path'],
+            )
+            self.logger.debug(f"Cookieの中身:\nname={cookie['name']}\nvalue={cookie['value']}\ndomain={cookie['domain']}, path={cookie['path']}")
+            return session
+        else:
+            self.logger.error(f"cookiesがありません")
+            return None
+
+
+# ----------------------------------------------------------------------------------
+
+
+    def loginCheck(self, url: str):
+        if url == self.chrome.current_url:
+            self.logger.info(f"{__name__}: ログインに成功")
+            return True
+        else:
+            self.logger.error(f"{__name__}: ログインに失敗")
+            return False
+
+
+# ----------------------------------------------------------------------------------
+# sessionログイン
+
+    def sessionLogin(self, cookies: dict, url: str):
+        session = self.sessionSetting(cookies=cookies)
+        session.get(self.homeUrl)
+        return self.loginCheck(url=url)
+
+
+# ----------------------------------------------------------------------------------

@@ -77,10 +77,8 @@ class CookieLogin:
         return self.loginCheck(url=url)
 
 
-
 # ----------------------------------------------------------------------------------
-# Session前にクリックが必要なケース
-# いい部屋生活ボタンがなければSessionに進む
+
 
     def sessionBeforeAction(self, cookies: dict, url: str, loginInfo: dict, delay: int=2, maxRetries: int = 3):
 
