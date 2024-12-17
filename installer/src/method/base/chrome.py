@@ -105,7 +105,6 @@ class ChromeManager:
         # chromeOptions.add_argument('user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.63 Safari/537.36')
         chromeOptions.add_extension(self.path.getInputDataFilePath(fileName=FileName.CHROME_OP_IFRAME.value))  # iframe対策の広告ブロッカー
         chromeOptions.add_extension(self.path.getInputDataFilePath(fileName=FileName.CHROME_OP_CAPTCHA.value))  # CAPTCHA
-
         # chromeOptions.add_argument("--disable-extensions")
         # chromeOptions.add_argument("--disable-popup-blocking")
         # chromeOptions.add_argument("--disable-translate")
@@ -126,7 +125,7 @@ class ChromeManager:
         chromeOptions.add_argument("--disable-software-rasterizer")
         chromeOptions.add_argument("--enable-features=NetworkService,NetworkServiceInProcess")
 
-        chromeOptions.add_argument("--disable-blink-features=AutomationControlled")  # ブラウザが自動化されていることを示す機能を無効化
+        chromeOptions.add_argument("--disable-blink-features=AutomationControlled")  # navigator.webdriver = falseに設定して足跡が残らないように
         chromeOptions.add_argument("--disable-infobars")  #"Chrome is being controlled by automated test software" の情報バーを無効化
 
         return chromeOptions

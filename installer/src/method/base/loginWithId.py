@@ -54,13 +54,13 @@ class SingleSiteIDLogin:
 # reCAPTCHA OK → 調整必要 → 待機時間を180秒
 
     @decoInstance.funcBase
-    async def flow_cookie_save(self, login_url: str, loginInfo: dict, tableName: str, columnsNames: tuple, timeout: int =180):
+    async def flow_cookie_save(self, login_url: str, login_info: dict, table_name: str, timeout: int =180):
         # DBファイルの初期化確認
         with SqliteExistsHandler(db_file_name=self.db_file_name, table_pattern_info=self.table_pattern_info) as sqlite_exists:
             sqlite_exists.flow_db_start_check()
 
         # ログインの実施
-        self.flowLoginID(login_url=login_url, loginInfo=loginInfo, timeout=timeout)
+        self.flowLoginID(login_url=login_url, login_info=login_info, timeout=timeout)
 
         # Cookieの取得
         cookie = self._getCookie()
@@ -71,7 +71,7 @@ class SingleSiteIDLogin:
 
         # ここに指定のテーブルのnameによって分岐
         with SqliteRead(db_file_name=self.db_file_name, table_pattern_info=self.table_pattern_info) as sqlite_read:
-            table_all_data = sqlite_read._read_data(table_name=tableName)
+            table_all_data = sqlite_read._read_data(table_name=table_name)
 
         # テーブルデータから行ごとにデータを抽出
         rows = [row for row in table_all_data]
@@ -79,7 +79,7 @@ class SingleSiteIDLogin:
 
         # テーブルにデータがない場合をチェック
         if not rows:
-            self.logger.warning(f"{tableName} テーブルに既存のデータがありません")
+            self.logger.warning(f"{table_name} テーブルに既存のデータがありません")
             table_cookie_name = None
         else:
             table_cookie_name = rows[0]['name']  # 'name' キーが存在しない場合を考慮
@@ -92,14 +92,14 @@ class SingleSiteIDLogin:
             # 入っている場合にはアップデートを実施
             filter_keys = {"name": table_cookie_name}
             with SqliteUpdate(db_file_name=self.db_file_name, table_pattern_info=self.table_pattern_info) as sqlite_update:
-                sqlite_update._update_data(update_data_list=cookie_data_list, table_name=tableName, filter_keys=filter_keys)
-            self.logger.info(f"{tableName} のCookieデータを更新しました")
+                sqlite_update._update_data(update_data_list=cookie_data_list, table_name=table_name, filter_keys=filter_keys)
+            self.logger.info(f"{table_name} のCookieデータを更新しました")
 
         else:
             # テーブルに情報がまだ入ってないため挿入
             with SqliteInsert(db_file_name=self.db_file_name, table_pattern_info=self.table_pattern_info) as sqlite_insert:
-                sqlite_insert._insert_data(insert_data_list=cookie_data_list, table_name=tableName)
-            self.logger.info(f"{tableName} に新しくCookieデータを挿入しました")
+                sqlite_insert._insert_data(insert_data_list=cookie_data_list, table_name=table_name)
+            self.logger.info(f"{table_name} に新しくCookieデータを挿入しました")
 
         # バックアップの実施
         sqlite_backup = SqliteBuckup(db_file_name=self.db_file_name)
@@ -111,25 +111,25 @@ class SingleSiteIDLogin:
 # IDログイン
 # reCAPTCHA OK
 
-    def flowLoginID(self, login_url: str, loginInfo: dict, timeout: int):
-        self.logger.debug(f'loginInfo: {loginInfo}')
+    def flowLoginID(self, login_url: str, login_info: dict, timeout: int):
+        self.logger.debug(f'login_info: {login_info}')
 
         # サイトを開いてCookieを追加
         self.openSite(login_url=login_url)
 
-        self.inputId(by=loginInfo['ID_BY'], value=loginInfo['ID_VALUE'], inputText=loginInfo['ID_TEXT'])
+        self.inputId(by=login_info['ID_BY'], value=login_info['ID_VALUE'], inputText=login_info['ID_TEXT'])
 
-        self.inputPass(by=loginInfo['PASS_BY'], value=loginInfo['PASS_VALUE'], inputText=loginInfo['PASS_TEXT'])
+        self.inputPass(by=login_info['PASS_BY'], value=login_info['PASS_VALUE'], inputText=login_info['PASS_TEXT'])
 
         # クリックを繰り返しPOPUPがなくなるまで繰り返す
-        self.click_login_btn_in_recaptcha(by=loginInfo['BTN_BY'], value=loginInfo['BTN_VALUE'])
+        self.click_login_btn_in_recaptcha(by=login_info['BTN_BY'], value=login_info['BTN_VALUE'])
 
         # 検索ページなどが出てくる対策
         # PCのスペックに合わせて設定
         self.wait.jsPageChecker(chrome=self.chrome, timeout=10)
 
         # reCAPTCHA対策を完了確認
-        return self.login_element_check(by=loginInfo['LOGIN_AFTER_ELEMENT_BY'], value=loginInfo['LOGIN_AFTER_ELEMENT_VALUE'], timeout=timeout)
+        return self.login_element_check(by=login_info['LOGIN_AFTER_ELEMENT_BY'], value=login_info['LOGIN_AFTER_ELEMENT_VALUE'], timeout=timeout)
 
 
 # ----------------------------------------------------------------------------------
@@ -216,26 +216,26 @@ class SingleSiteIDLogin:
 # ----------------------------------------------------------------------------------
 
 
-    def actionBeforeLogin(self, url: str, loginInfo: dict, delay: int=2, maxRetries: int = 3):
+    def actionBeforeLogin(self, url: str, login_info: dict, delay: int=2, maxRetries: int = 3):
         # 特定のサイトにアクセス
         self.openSite(url=url)
 
         retries = 0
         while retries < maxRetries:
             try:
-                self.clickLoginBtn(by=loginInfo['bypassIdBy'], value=loginInfo['bypassIdValue'])
-                element = self.wait.canWaitInput(by=loginInfo['idBy'], value=loginInfo['idValue'])
+                self.clickLoginBtn(by=login_info['bypassIdBy'], value=login_info['bypassIdValue'])
+                element = self.wait.canWaitInput(by=login_info['idBy'], value=login_info['idValue'])
                 time.sleep(delay)
 
                 if element:
                     # ここから通常のIDログイン
-                    self.flowLoginID(url=url, loginInfo=loginInfo, delay=delay)
+                    self.flowLoginID(url=url, login_info=login_info, delay=delay)
                     break
 
             except TimeoutException:
                 self.logger.warning(f"要素が見つからなかったため、再試行します。リトライ回数: {retries + 1}/{maxRetries}")
                 retries += 1
-                # self.clickLoginBtn(by=loginInfo['bypassIdBy'], value=loginInfo['bypassIdValue'])
+                # self.clickLoginBtn(by=login_info['bypassIdBy'], value=login_info['bypassIdValue'])
                 time.sleep(delay)  # リトライの間に少し待機して再試行する
 
         if retries == maxRetries:
@@ -314,8 +314,8 @@ class MultiSiteIDLogin(SingleSiteIDLogin):
 # ----------------------------------------------------------------------------------
 
 
-    def flow_cookie_save_cap(self, login_url, loginInfo, cap_after_element_by, cap_after_element_path, tableName, columnsName, cap_timeout = 180):
-        return super().flow_cookie_save_cap(login_url, loginInfo, cap_after_element_by, cap_after_element_path, tableName, columnsName, cap_timeout)
+    def flow_cookie_save_cap(self, login_url, login_info, cap_after_element_by, cap_after_element_path, tableName, columnsName, cap_timeout = 180):
+        return super().flow_cookie_save_cap(login_url, login_info, cap_after_element_by, cap_after_element_path, tableName, columnsName, cap_timeout)
 
 
 # ----------------------------------------------------------------------------------

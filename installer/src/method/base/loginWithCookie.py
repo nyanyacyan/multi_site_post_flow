@@ -13,8 +13,7 @@ from .utils import Logger
 from .driverWait import Wait
 from .seleniumBase import SeleniumBasicOperations
 from .cookieManager import CookieManager
-from .SQLite import SQLite
-from .loginWithId import LoginID
+from .loginWithId import SingleSiteIDLogin
 from .driverDeco import jsCompleteWaitDeco
 from .elementManager import ElementManager
 
@@ -41,8 +40,7 @@ class CookieLogin:
         self.browser = SeleniumBasicOperations(chrome=self.chrome, homeUrl=self.homeUrl, debugMode=debugMode)
         self.driverWait = Wait(chrome=self.chrome, debugMode=debugMode)
         self.cookieManager = CookieManager(chrome=self.chrome, loginUrl=self.loginUrl, homeUrl=self.homeUrl, debugMode=debugMode)
-        self.idLogin = LoginID(chrome=self.chrome, homeUrl=self.homeUrl, loginUrl=self.loginUrl, debugMode=debugMode)
-        self.sqLite = SQLite(debugMode=debugMode)
+        self.idLogin = SingleSiteIDLogin(chrome=self.chrome, homeUrl=self.homeUrl, loginUrl=self.loginUrl, debugMode=debugMode)
         self.element = ElementManager(chrome=self.chrome, debugMode=debugMode)
 
 # ----------------------------------------------------------------------------------

@@ -50,9 +50,8 @@ class FlowGetCookie:
         # ログインからCookieをDBへ保存
         await self.id_login.flow_cookie_save(
             login_url=self.login_info['LOGIN_URL'],
-            loginInfo=self.login_info,
-            tableName=self.login_info['TABLE_NAME'],
-            columnsNames=TableSchemas.BASE_COOKIES_TABLE_COLUMNS.value,
+            login_info=self.login_info,
+            table_name=self.login_info['TABLE_NAME'],
         )
 
         return self.logger.debug(f'bool: {bool}')
