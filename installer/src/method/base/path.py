@@ -195,7 +195,7 @@ class BaseToPath:
 # ----------------------------------------------------------------------------------
 # Result > SubDir > 0101.db
 
-    def getResultDBDirPath(self, subDirName: str=SubDir.DBSubDir.value, extension: str = Extension.DB.value):
+    def getResultDBDirPath(self, subDirName: str=SubDir.DBSubDir.value,):
         resultOutputPath = self.getResultOutputPath()
 
         dirPath = resultOutputPath / subDirName
@@ -206,15 +206,37 @@ class BaseToPath:
 
 
 # ----------------------------------------------------------------------------------
-# Result > SubDir > backup > fileName0101.db
+# Result > SubDir > DB > Buckup
 
-    def getResultDBBuckUpDirPath(self, subDirName: str = SubDir.BUCK_UP.value):
-        db_Path = self.getResultOutputPath()
+    def getResultDBBackUpDirPath(self, subDirName: str = SubDir.BUCK_UP.value):
+        db_Path = self.getResultDBDirPath()
         dirPath = db_Path / subDirName
         self.isDirExists(path=dirPath)
         self.logger.debug(f"dirPath: {dirPath}")
 
         return dirPath
+
+
+# ----------------------------------------------------------------------------------
+# Result > SubDir > DB > db_file_name.db
+
+    def _db_path(self, db_file_name: str, extension: str = Extension.DB.value):
+        db_dir_path = self.getResultDBDirPath()
+        self.logger.debug(f"db_dir_path: {db_dir_path}")
+        dbFilePath = db_dir_path / f"{db_file_name}{extension}"
+        self.logger.debug(f"dbFilePath: {dbFilePath}")
+        return dbFilePath
+
+
+# ----------------------------------------------------------------------------------
+# Result > SubDir > DB > Buckup > db_file_name0101.db
+
+    def _db_backup_path(self, db_file_name: str, extension: str = Extension.DB.value):
+        db_dir_path = self.getResultDBBackUpDirPath()
+        self.logger.debug(f"db_dir_path: {db_dir_path}")
+        dbFilePath = db_dir_path / f"{db_file_name}{self.currentDate}{extension}"
+        self.logger.debug(f"dbFilePath: {dbFilePath}")
+        return dbFilePath
 
 
 # ----------------------------------------------------------------------------------

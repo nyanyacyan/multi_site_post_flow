@@ -3,7 +3,7 @@
 
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 # import
-import time
+import time, asyncio
 from typing import Dict, List
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.common.exceptions import TimeoutException
@@ -15,7 +15,7 @@ from .driverWait import Wait
 from .decorators import Decorators
 from .driverDeco import jsCompleteWaitDeco, InputDeco, ClickDeco
 from .sql_exists import SqliteExistsHandler
-from .sql_io_manager import SqliteInsert, SqliteUpdate, SqliteRead
+from .sql_io_manager import SqliteInsert, SqliteUpdate, SqliteRead, SqliteBuckup
 
 
 from constSqliteTable import TableSchemas
@@ -54,7 +54,7 @@ class SingleSiteIDLogin:
 # reCAPTCHA OK → 調整必要 → 待機時間を180秒
 
     @decoInstance.funcBase
-    def flow_cookie_save(self, login_url: str, loginInfo: dict, tableName: str, columnsNames: tuple, timeout: int =180):
+    async def flow_cookie_save(self, login_url: str, loginInfo: dict, tableName: str, columnsNames: tuple, timeout: int =180):
         # DBファイルの初期化確認
         with SqliteExistsHandler(db_file_name=self.db_file_name, table_pattern_info=self.table_pattern_info) as sqlite_exists:
             sqlite_exists.flow_db_start_check()
@@ -75,14 +75,14 @@ class SingleSiteIDLogin:
 
         # テーブルデータから行ごとにデータを抽出
         rows = [row for row in table_all_data]
-        self.logger.debug(f'rows: {rows}')
+        self.logger.debug(f'rows: {[dict(row) for row in rows]}')
 
         # テーブルにデータがない場合をチェック
         if not rows:
             self.logger.warning(f"{tableName} テーブルに既存のデータがありません")
             table_cookie_name = None
         else:
-            table_cookie_name = rows[0].get('name')  # 'name' キーが存在しない場合を考慮
+            table_cookie_name = rows[0]['name']  # 'name' キーが存在しない場合を考慮
 
         # Cookieデータをリストとして渡す
         cookie_data_list = sorted_cookie if isinstance(sorted_cookie, list) else [sorted_cookie]
@@ -100,6 +100,11 @@ class SingleSiteIDLogin:
             with SqliteInsert(db_file_name=self.db_file_name, table_pattern_info=self.table_pattern_info) as sqlite_insert:
                 sqlite_insert._insert_data(insert_data_list=cookie_data_list, table_name=tableName)
             self.logger.info(f"{tableName} に新しくCookieデータを挿入しました")
+
+        # バックアップの実施
+        sqlite_backup = SqliteBuckup(db_file_name=self.db_file_name)
+        sqlite_backup._data_buck_up()
+
 
 
 # ----------------------------------------------------------------------------------

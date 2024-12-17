@@ -182,7 +182,7 @@ class SqliteUpdate:
         for update_data in update_data_list:
 
             # update_dataからcolumnとプレースホルダーに分ける
-            update_placeholders, filter_keys_placeholders, update_data_values, filter_keys_values= self._get_cols_values_placeholders(update_data=update_data, filter_keys=filter_keys)
+            update_placeholders, filter_keys_placeholders, update_data_values, filter_keys_values= self._get_cols_values_placeholders(data=update_data, filter_keys=filter_keys)
 
             # 命令文の構築
             update_sql_prompt = SqlitePrompt.UPDATE.value.format(table_name=table_name, update_placeholders=update_placeholders, filter_keys_placeholders=filter_keys_placeholders)
@@ -305,6 +305,40 @@ class SqliteRead:
         filter_keys_values = tuple(filter_keys.values())
         self.logger.debug(f'\nfilter_keys_placeholders: {filter_keys_placeholders}\nfilter_keys_values: {filter_keys_values}')
         return filter_keys_placeholders, filter_keys_values
+
+
+# ----------------------------------------------------------------------------------
+# 一連の流れ
+
+class SqliteBuckup:
+    def __init__(self, db_file_name: str, debugMode=True):
+
+        # logger
+        self.getLogger = Logger(__name__, debugMode=debugMode)
+        self.logger = self.getLogger.getLogger()
+
+        # インスタンス化
+        self.path = BaseToPath(debugMode=debugMode)
+
+        # 必要情報
+        self.db_file_name = db_file_name
+
+        # db_path
+        self.db_path = self.path._db_path(db_file_name=self.db_file_name)
+        self.db_backup_path = self.path._db_backup_path(db_file_name=self.db_file_name)
+
+
+# ----------------------------------------------------------------------------------
+# バックアップ
+
+    def _data_buck_up(self):
+        try:
+            with sqlite3.connect(self.db_path) as source_conn, sqlite3.connect(self.db_backup_path) as backup_conn:
+                source_conn.backup(backup_conn)
+                self.logger.info(f"データベースのバックアップが作成されました: {self.db_backup_path}")
+        except Exception as e:
+            self.logger.error(f"バックアップ中にエラーが発生: {e}")
+            raise
 
 
 # ----------------------------------------------------------------------------------
