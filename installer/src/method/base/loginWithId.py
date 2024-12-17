@@ -283,8 +283,11 @@ class SingleSiteIDLogin:
             'domain': cookie.get('domain'),
             'path': cookie.get('path'),
             'expires': cookie.get('expiry'),
-            'maxAge': cookie.get('max-age'),  # expiresよりも優先される、〇〇秒間、持たせる権限
-            'createTime': int(time.time())
+            'maxAge': cookie.get('max-age'),  # expiresよりも優先される、〇〇秒間持たせる権限
+            'secure': 1 if cookie.get('secure') else 0,  # secure属性（True:1, False:0）
+            'httpOnly': 1 if cookie.get('httpOnly') else 0,  # httpOnly属性（True:1, False:0）
+            'sameSite': cookie.get('sameSite', 'Lax'),  # sameSite属性のデフォルトは'Lax'
+            'createTime': int(time.time())  # 現在時刻をUnixタイムスタンプで記録
         }
         self.logger.debug(f'db_cookie_info: {db_cookie_info}')
 

@@ -23,7 +23,10 @@ class TableSchemas(Enum):
         "path": "TEXT",
         "expires": "INTEGER",
         "maxAge": "INTEGER",
-        "createTime": "INTEGER NOT NULL",
+        "secure": "INTEGER DEFAULT 0",
+        "httpOnly": "INTEGER DEFAULT 0",
+        "sameSite": "TEXT",
+        "createTime": "INTEGER NOT NULL"
     }
 
 
@@ -40,8 +43,12 @@ class TableSchemas(Enum):
         "path": "TEXT",
         "expires": "INTEGER",
         "maxAge": "INTEGER",
-        "createTime": "INTEGER NOT NULL",
+        "secure": "INTEGER DEFAULT 0",
+        "httpOnly": "INTEGER DEFAULT 0",
+        "sameSite": "TEXT",
+        "createTime": "INTEGER NOT NULL"
     }
+
 
 
 # ----------------------------------------------------------------------------------
@@ -55,8 +62,12 @@ class TableSchemas(Enum):
         "path": "TEXT",
         "expires": "INTEGER",
         "maxAge": "INTEGER",
-        "createTime": "INTEGER NOT NULL",
+        "secure": "INTEGER DEFAULT 0",
+        "httpOnly": "INTEGER DEFAULT 0",
+        "sameSite": "TEXT",
+        "createTime": "INTEGER NOT NULL"
     }
+
 
 
 # ----------------------------------------------------------------------------------
@@ -80,5 +91,8 @@ class TableSchemas(Enum):
         "path",
         "expires",
         "maxAge",
+        "secure",
+        "httpOnly",
+        "sameSite",
         "createTime"
     )
