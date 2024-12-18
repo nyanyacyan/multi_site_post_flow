@@ -139,7 +139,7 @@ class SqliteExistsHandler:
 
         # テーブルが無い場合
         if result is None:
-            self._all_table_create()
+            self._multi_table_create()
 
         elif not result:
             raise ValueError('指定のtableと乖離があります（乖離情報は別途上記に記載）')
@@ -164,13 +164,21 @@ class SqliteExistsHandler:
 
 
 # ----------------------------------------------------------------------------------
-# すべてのtable_patternにあるテーブルを作成する
+# 複数ののtable_patternにあるテーブルを作成する
 
-    def _all_table_create(self):
+    def _multi_table_create(self):
         # 新しくテーブルを作成する
-        self.logger.info(f'すべてのテーブルを作成開始')
-        for table_name, cols_info in self.table_pattern_info.items():
-            self._table_and_col_create(table_name=table_name, cols_info=cols_info)
+        self.logger.info(f'すべてのテーブルを作成開始: {self.table_pattern_info}')
+        self.logger.debug(f'self.db_file_name: {self.db_file_name}')
+        self.logger.debug(f'self.table_pattern_info: {self.table_pattern_info}')
+
+        # 複数pattern
+        if isinstance(self.table_pattern_info, list):
+            for table_name, cols_info in self.table_pattern_info.items():
+                self._table_and_col_create(table_name=table_name, cols_info=cols_info)
+        # 単発pattern
+        else:
+            self._table_and_col_create(table_name=self.db_file_name, cols_info=self.table_pattern_info)
         return None
 
 
@@ -178,10 +186,15 @@ class SqliteExistsHandler:
 # tableを作成
 
     def _table_and_col_create(self, table_name: str, cols_info: Dict):
+        self.logger.debug(f'table_name: {table_name}')
+        self.logger.debug(f'cols_info: {cols_info}')
         # cols_info を SQL(str) の形式に変換
         str_cols_info = ", ".join([f"{col} {dtype}" for col, dtype in cols_info.items()])
+        self.logger.debug(f'str_cols_info: {str_cols_info}')
 
         sql_prompt = SqlitePrompt.TABLES_CREATE.value.format(table_name=table_name, cols_info=str_cols_info)
+        self.logger.debug(f'sql_prompt: {sql_prompt}')
+
         self.conn.execute(sql_prompt)
         self.logger.info(f"{table_name} tableを作成完了")
         return None
@@ -198,8 +211,13 @@ class SqliteExistsHandler:
             self.logger.warning(f'table がないため新しく作成: {current_table_name_list}')
             return None
 
-        # table_pattern_infoからtable_nameだけを取り出す
-        check_table_name_list = list(self.table_pattern_info.keys())
+        # 複数pattern
+        if isinstance(self.table_pattern_info, list):
+            # table_pattern_infoからtable_nameだけを取り出す
+            check_table_name_list = list(self.table_pattern_info.keys())
+        # 単発pattern
+        else:
+            check_table_name_list = [self.db_file_name]
 
         # resultとmsgを受け取って返す
         result, msg = self._current_element_check(
@@ -225,16 +243,22 @@ class SqliteExistsHandler:
     def _all_table_col_exists(self):
         false_tables_col_info = []
         table_name_list = []
-        for table_name, check_col_list in self.table_pattern_info.items():
-            current_col_name_list = self._get_column_name(table_name=table_name)
-            result, msg = self._current_element_check(current_list=current_col_name_list, check_list=check_col_list)
+        if isinstance(self.table_pattern_info, list):
+            for table_name, check_col_list in self.table_pattern_info.items():
+                current_col_name_list = self._get_column_name(table_name=table_name)
+                result, msg = self._current_element_check(current_list=current_col_name_list, check_list=check_col_list)
 
-            # table_name_listに追加
-            table_name_list.append(table_name)
+                # table_name_listに追加
+                table_name_list.append(table_name)
 
-            # columnに相違がある場合、リストに追加
-            if not result:
-                false_tables_col_info.append(f"{table_name}: {msg}\n")
+                # columnに相違がある場合、リストに追加
+                if not result:
+                    false_tables_col_info.append(f"{table_name}: {msg}\n")
+
+        else:
+            current_col_name_list = self._get_column_name(table_name=self.db_file_name)
+            result, msg = self._current_element_check(current_list=current_col_name_list, check_list=self.table_pattern_info)
+
 
         if false_tables_col_info:
             self.logger.error(f"以下のテーブルにカラム相違があります:\n{''.join(false_tables_col_info)}")
@@ -265,6 +289,7 @@ class SqliteExistsHandler:
 # columnの整合チェック
 
     def _current_element_check(self, current_list: List, check_list: List):
+        self.logger.debug(f'current_list: {current_list}, check_list: {check_list}')
         # 不足しているカラム
         missing = [item for item in check_list if item not in current_list]
 

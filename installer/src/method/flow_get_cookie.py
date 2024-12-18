@@ -12,7 +12,7 @@ from base.utils import Logger
 from base.chrome import ChromeManager
 from base.loginWithId import SingleSiteIDLogin
 
-from const_str import SiteName
+from const_str import SiteName, FileName
 from const_element import LoginInfo
 from constSqliteTable import TableSchemas
 
@@ -23,7 +23,7 @@ from constSqliteTable import TableSchemas
 # 一連の流れ
 
 class FlowGetCookie:
-    def __init__(self, site_name: str, debugMode=True):
+    def __init__(self, site_name: str, db_file_name: str, table_pattern_info: str, debugMode=True):
 
         # logger
         self.getLogger = Logger(__name__, debugMode=debugMode)
@@ -38,7 +38,7 @@ class FlowGetCookie:
         self.login_info = login_pattern_dict[site_name]
 
         # インスタンス
-        self.id_login = SingleSiteIDLogin(chrome=self.chrome, debugMode=debugMode)
+        self.id_login = SingleSiteIDLogin(chrome=self.chrome, db_file_name=db_file_name, table_pattern_info=table_pattern_info, debugMode=debugMode)
 
 
 
@@ -64,7 +64,9 @@ class FlowGetCookie:
 class GameClubClubGetCookieFlow(FlowGetCookie):
     def __init__(self, debugMode=True):
         site_name = SiteName.GAME_CLUB.value
-        super().__init__(site_name=site_name, debugMode=debugMode)
+        db_file_name = SiteName.GAME_CLUB.value
+        table_pattern_info = TableSchemas.GAME_CLUB.value
+        super().__init__(site_name=site_name, db_file_name=db_file_name, table_pattern_info=table_pattern_info, debugMode=debugMode)
 
 
 

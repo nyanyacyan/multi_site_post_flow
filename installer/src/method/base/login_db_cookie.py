@@ -28,7 +28,7 @@ from const_str import StatusName, FileName
 
 
 class SingleLoginDBCookie:
-    def __init__(self, chrome: WebDriver, db_file_name: str, table_pattern_info: Dict, debugMode=True):
+    def __init__(self, chrome: WebDriver, db_file_name: str, debugMode=True):
         # logger
         self.getLogger = Logger(__name__, debugMode=debugMode)
         self.logger = self.getLogger.getLogger()
@@ -41,7 +41,7 @@ class SingleLoginDBCookie:
         self.selenium = SeleniumBasicOperations(chrome=self.chrome, debugMode=debugMode)
 
         # 必要情報
-        self.db_file_name = FileName.DB_FILE_NAME.value
+        self.db_file_name = db_file_name
         self.table_pattern_info = TableSchemas.TABLE_PATTERN.value
         self.currentDate = datetime.now().strftime("%y%m%d")
 
@@ -51,10 +51,10 @@ class SingleLoginDBCookie:
 # ----------------------------------------------------------------------------------
 # Cookieの情報をDBから取得
 
-    def _get_cookie_in_db(self, table_name: str, filter_keys: Dict):
+    def _get_cookie_in_db(self, table_name: str):
         # DBよりテーブルデータ（filter_keysによって絞り込まれた行）をすべて取得してくる
         with SqliteRead(db_file_name=self.db_file_name, table_pattern_info=self.table_pattern_info) as sqlite_read:
-            table_all_data = sqlite_read._read_data(table_name=table_name, filter_keys=filter_keys)
+            table_all_data = sqlite_read._read_data(table_name=table_name)
 
         # テーブルデータから行ごとにデータを抽出
         rows = [row for row in table_all_data]
@@ -84,21 +84,21 @@ class SingleLoginDBCookie:
 # ----------------------------------------------------------------------------------
 # Cookieを使ってログイン
 
-    def _cookie_login(self, homeUrl: str, table_name: str, filter_keys: Dict):
+    def _cookie_login(self, home_url: str, table_name: str):
         # Cookieの必要な情報をDBから取得する
-        cookie_info = self._get_cookie_in_db(table_name=table_name, filter_keys=filter_keys)
+        cookie_info = self._get_cookie_in_db(table_name=table_name)
 
         # 一度サイトを開く
-        self.selenium.openSite(url=homeUrl)
+        self.selenium.openSite(url=home_url)
 
         # Cookieをbrowserに追加
         self.chrome.add_cookie(cookie_dict=cookie_info)
 
         # 一度サイトを開く
-        self.selenium.openSite(url=homeUrl)
+        self.selenium.openSite(url=home_url)
 
         # アクセスしたいサイトにアクセスできたかどうかを確認する（コンプリートまで）
-        self.wait.changeUrlWait(target_url=homeUrl, timeout=10)
+        self.wait.changeUrlWait(target_url=home_url, timeout=10)
 
 
 

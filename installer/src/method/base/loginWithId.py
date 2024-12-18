@@ -33,7 +33,7 @@ decoInstanceClick = ClickDeco(debugMode=True)
 
 
 class SingleSiteIDLogin:
-    def __init__(self, chrome: WebDriver, debugMode=True):
+    def __init__(self, chrome: WebDriver, db_file_name: str, table_pattern_info: str, debugMode=True):
         # logger
         self.getLogger = Logger(__name__, debugMode=debugMode)
         self.logger = self.getLogger.getLogger()
@@ -44,8 +44,9 @@ class SingleSiteIDLogin:
         self.element = ElementManager(chrome=chrome, debugMode=debugMode)
         self.wait = Wait(chrome=self.chrome, debugMode=debugMode)
 
-        self.db_file_name=FileName.DB_FILE_NAME.value
-        self.table_pattern_info=TableSchemas.TABLE_PATTERN.value
+        #! 修正時に注意が必要 現在はdb_file_nameにはサイト名が入っている
+        self.db_file_name = db_file_name
+        self.table_pattern_info = table_pattern_info
         self.logger.debug(f'\nself.db_file_name: {self.db_file_name}\nself.table_pattern_info: {self.table_pattern_info}')
 
 

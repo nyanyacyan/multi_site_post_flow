@@ -8,19 +8,17 @@
 import os, time, asyncio
 
 # 自作モジュール
-from base.utils import Logger
-from base.chrome import ChromeManager
-from base.login_db_cookie import SingleLoginDBCookie
+from .base.utils import Logger
+from .base.chrome import ChromeManager
 
 
-from const_str import SiteName, GameClubInfo
 
 # ----------------------------------------------------------------------------------
 # **********************************************************************************
 # 一連の流れ
 
-class FlowNewItem:
-    def __init__(self, home_url: str, table_name: str, debugMode=True):
+class FlowOP:
+    def __init__(self, debugMode=True):
 
         # logger
         self.getLogger = Logger(__name__, debugMode=debugMode)
@@ -31,13 +29,11 @@ class FlowNewItem:
         self.chrome = self.chromeManager.flowSetupChrome()
 
         # const
-        self.home_url = home_url
-        self.table_name = table_name
 
 
 
         # インスタンス
-        self.cookie_login = SingleLoginDBCookie(chrome=self.chrome, debugMode=debugMode)
+
 
 
 ####################################################################################
@@ -45,12 +41,7 @@ class FlowNewItem:
 #todo 各メソッドをまとめる
 
     async def process(self):
-        self.cookie_login._cookie_login(home_url=self.home_url, table_name=self.table_name)
-
-        # Cookieログイン
-
-
-        # 自動出品
+        await self.gss_to_notify.flowProcess()
 
 
 
@@ -64,7 +55,5 @@ class FlowNewItem:
 # テスト実施
 
 if __name__ == '__main__':
-    home_url = GameClubInfo.HOME_URL.value
-    table_name = SiteName.GAME_CLUB.value
-    test_flow = FlowNewItem(home_url=home_url, table_name=table_name)
+    test_flow = Flow()
     asyncio.run(test_flow.process())
