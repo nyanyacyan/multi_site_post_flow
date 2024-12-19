@@ -76,7 +76,9 @@ class GameClubClubGetCookieFlow(FlowGetCookie):
 class MAClubGetCookieFlow(FlowGetCookie):
     def __init__(self, debugMode=True):
         site_name = SiteName.MA_CLUB.value
-        super().__init__(site_name=site_name, debugMode=debugMode)
+        db_file_name = SiteName.MA_CLUB.value
+        table_pattern_info = TableSchemas.MA_CLUB.value
+        super().__init__(site_name=site_name, db_file_name=db_file_name, table_pattern_info=table_pattern_info, debugMode=debugMode)
 
 
 # **********************************************************************************
@@ -85,7 +87,9 @@ class MAClubGetCookieFlow(FlowGetCookie):
 class RRMTClubGetCookieFlow(FlowGetCookie):
     def __init__(self, debugMode=True):
         site_name = SiteName.RRMT_CLUB.value
-        super().__init__(site_name=site_name, debugMode=debugMode)
+        db_file_name = SiteName.RRMT_CLUB.value
+        table_pattern_info = TableSchemas.RRMT_CLUB.value
+        super().__init__(site_name=site_name, db_file_name=db_file_name, table_pattern_info=table_pattern_info, debugMode=debugMode)
 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
