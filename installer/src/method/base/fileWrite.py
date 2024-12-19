@@ -14,7 +14,7 @@ import aiofiles
 
 # 自作モジュール
 from .utils import Logger
-from ..const_domain_search import Extension
+from const_str import Extension, SubDir
 from .path import BaseToPath
 from .errorHandlers import FileWriteError
 from .decorators import Decorators
@@ -577,9 +577,9 @@ class LimitSabDirFileWrite:
 # pickle
 #? picklesのディレクトリに入れたい場合にはoverrideさせていれる
 
-    @decoInstance.fileRetryAction(maxRetry=2, delay=2)
-    def writeSabDirToPickle(self, data: Any, subDirName: str, fileName: str, extension: str=Extension.pickle.value):
-        filePath = self.path.getResultSubDirFilePath(subDirName=subDirName, fileName=fileName, extension=extension)
+    # @decoInstance.fileRetryAction(maxRetry=2, delay=2)
+    def writeSabDirToPickle(self, data: Any, subDirName: str=SubDir.pickles.value, extension: str=Extension.pickle.value):
+        filePath = self.path.getResultSubDirFilePath(subDirName=subDirName, fileName=self.currentDate, extension=extension)
 
         if data and subDirName:
             with open(filePath, 'wb') as file:

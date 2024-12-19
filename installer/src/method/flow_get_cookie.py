@@ -58,6 +58,20 @@ class FlowGetCookie:
 
 
 # ----------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------
+#todo 各メソッドをまとめる
+
+    async def pickle_process(self):
+        # ログインからCookieをDBへ保存
+        await self.id_login.flow_cookie_pickle_save(
+            login_url=self.login_info['LOGIN_URL'],
+            login_info=self.login_info,
+        )
+
+        return self.logger.debug(f'bool: {bool}')
+
+
+# ----------------------------------------------------------------------------------
 # **********************************************************************************
 
 
@@ -102,7 +116,7 @@ if __name__ == '__main__':
         # rrmt_club_flow = RRMTClubGetCookieFlow()
 
         await asyncio.gather(
-            game_club_flow.process(),
+            game_club_flow.pickle_process(),
             # ma_club_flow.process(),
             # rrmt_club_flow.process()
         )

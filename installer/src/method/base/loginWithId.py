@@ -10,6 +10,9 @@ from selenium.common.exceptions import TimeoutException
 
 # 自作モジュール
 from .utils import Logger
+from .path import BaseToPath
+from .fileWrite import LimitSabDirFileWrite
+from .fileRead import ResultFileRead
 from .elementManager import ElementManager
 from .driverWait import Wait
 from .decorators import Decorators
@@ -43,6 +46,9 @@ class SingleSiteIDLogin:
         # インスタンス
         self.element = ElementManager(chrome=chrome, debugMode=debugMode)
         self.wait = Wait(chrome=self.chrome, debugMode=debugMode)
+        self.path = BaseToPath(debugMode=debugMode)
+        self.pickle_write = LimitSabDirFileWrite(debugMode=debugMode)
+        self.pickle_read =ResultFileRead(debugMode=debugMode)
 
         #! 修正時に注意が必要 現在はdb_file_nameにはサイト名が入っている
         self.db_file_name = db_file_name
@@ -278,6 +284,7 @@ class SingleSiteIDLogin:
 
     # @decoInstance.funcBase
     def _sort_cookie(self, cookie: Dict):
+        self.logger.warning(f'cookie: {cookie}')
         db_cookie_info = {
             'name': cookie['name'],
             'value': cookie.get('value'),
@@ -285,8 +292,8 @@ class SingleSiteIDLogin:
             'path': cookie.get('path'),
             'expires': cookie.get('expiry'),
             'maxAge': cookie.get('max-age'),  # expiresよりも優先される、〇〇秒間持たせる権限
-            'secure': 1 if cookie.get('secure') else 0,  # secure属性（True:1, False:0）
-            'httpOnly': 1 if cookie.get('httpOnly') else 0,  # httpOnly属性（True:1, False:0）
+            'secure': cookie.get('secure', False),  # ブール値に変換
+            'httpOnly': cookie.get('httpOnly', False),  # ブール値に変換
             'sameSite': cookie.get('sameSite', 'Lax'),  # sameSite属性のデフォルトは'Lax'
             'createTime': int(time.time())  # 現在時刻をUnixタイムスタンプで記録
         }
@@ -296,6 +303,22 @@ class SingleSiteIDLogin:
 
 
 # ----------------------------------------------------------------------------------
+
+
+    async def flow_cookie_pickle_save(self, login_url: str, login_info: dict, timeout: int =180):
+        # ログインの実施
+        self.flowLoginID(login_url=login_url, login_info=login_info, timeout=timeout)
+
+        # Cookieの取得
+        cookie = self._getCookie()
+
+        self.pickle_write.writeSabDirToPickle(data=cookie,)
+
+
+
+
+
+
 # **********************************************************************************
 
 

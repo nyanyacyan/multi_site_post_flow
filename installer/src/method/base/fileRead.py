@@ -12,7 +12,7 @@ import aiofiles
 
 # 自作モジュール
 from .utils import Logger
-from ..const_domain_search import Encoding
+from const_str import Encoding
 from .path import BaseToPath
 from .decorators import Decorators
 
@@ -121,8 +121,10 @@ class ResultFileRead:
 # 日付名の一番新しいフォルダ名のPathを取得
 
     def getLatestFolderPath(self, path: str):
-        folders = [f for f in os.list(path) if f.isdigit()]
-        latestFolder = sorted(folders, reverse=True)[0]
+        self.logger.debug(f'path: {path}')
+        files = [f for f in os.listdir(path) if os.path.isfile(os.path.join(path, f)) and f.endswith('.pkl')]
+        self.logger.debug(f'files: {files}')
+        latestFolder = sorted(files, reverse=True)[0]
         return os.path.join(path, latestFolder)
 
 
@@ -132,7 +134,11 @@ class ResultFileRead:
     def readPickleLatestResult(self):
         picklesPath = self.path.getPickleDirPath()
         latestPickleFilePath = self.getLatestFolderPath(path=picklesPath)
-        return pickle.load(latestPickleFilePath)
+
+        with open(latestPickleFilePath, 'rb') as file:
+            data = pickle.load(file)
+            self.logger.debug(f"Loaded data from pickle: {data}")
+            return data
 
 
 # ----------------------------------------------------------------------------------
