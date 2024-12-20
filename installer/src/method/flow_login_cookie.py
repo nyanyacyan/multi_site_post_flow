@@ -6,6 +6,7 @@
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 # import
 import os, time, asyncio
+from selenium_stealth import stealth
 
 # 自作モジュール
 from base.utils import Logger
@@ -31,6 +32,15 @@ class FlowLoginCookie:
         self.chromeManager = ChromeManager(debugMode=debugMode)
         self.chrome = self.chromeManager.flowSetupChrome()
 
+        # navigator.webdriver を undefined に設定
+        self.chrome.execute_cdp_cmd("Page.addScriptToEvaluateOnNewDocument", {
+            "source": """
+                Object.defineProperty(navigator, 'webdriver', {
+                    get: () => undefined
+                });
+            """
+        })
+
         # const
         self.home_url = home_url
         self.db_file_name = db_file_name
@@ -46,9 +56,11 @@ class FlowLoginCookie:
 #todo 各メソッドをまとめる
 
     async def process(self):
-        cookie = self.pickle_read.readPickleLatestResult()
+        cookies = self.pickle_read.readPickleLatestResult()
 
-        self.cookie_login._cookie_login(home_url=self.home_url, cookie_info=cookie)
+
+
+        self.cookie_login._session_login(home_url=self.home_url, cookies=cookies)
 
 
 

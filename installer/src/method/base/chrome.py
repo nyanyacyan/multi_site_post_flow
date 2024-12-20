@@ -4,6 +4,7 @@
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 # import
 import os, subprocess, shutil
+from selenium_stealth import stealth
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
@@ -58,6 +59,18 @@ class ChromeManager:
         self.clear_cache()
         service = Service(self.getChromeDriverPath)
         chrome = webdriver.Chrome(service=service, options=self.setupChromeOption)
+
+        # selenium-stealth を適用してWebDriverを偽装（日本語に設定）
+        stealth(
+            chrome,
+            languages=["ja-JP", "ja"],
+            vendor="Google Inc.",
+            platform="Win32",
+            webgl_vendor="Intel Inc.",
+            renderer="Intel Iris OpenGL Engine",
+            fix_hairline=True
+        )
+
         return chrome
 
 

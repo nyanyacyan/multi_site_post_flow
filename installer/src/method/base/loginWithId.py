@@ -261,14 +261,15 @@ class SingleSiteIDLogin:
 
     def _getCookie(self):
         cookies = self.chrome.get_cookies()
-        cookie = cookies[0]
-        self.logger.debug(f"\ncookies(元データ→リスト): {cookies}\ncookie（元データリストの1つ目の辞書）: {cookie}")
-        checked_cookie = self.canValueInCookie(cookie=cookie)
-        return checked_cookie
+        # cookie = cookies[0]
+        self.logger.debug(f"\ncookies(元データ→リスト): {cookies}")
+        # checked_cookie = self.canValueInCookie(cookie=cookie)
+        return cookies
 
 
 # ----------------------------------------------------------------------------------
 # Cookieの値が入っているか確認
+# TODO 使わない
 
 
     def canValueInCookie(self, cookie: Dict):
@@ -310,9 +311,9 @@ class SingleSiteIDLogin:
         self.flowLoginID(login_url=login_url, login_info=login_info, timeout=timeout)
 
         # Cookieの取得
-        cookie = self._getCookie()
+        cookies = self._getCookie()
 
-        self.pickle_write.writeSabDirToPickle(data=cookie,)
+        self.pickle_write.writeSabDirToPickle(data=cookies)
 
 
 

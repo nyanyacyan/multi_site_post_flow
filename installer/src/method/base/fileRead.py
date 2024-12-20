@@ -134,6 +134,7 @@ class ResultFileRead:
     def readPickleLatestResult(self):
         picklesPath = self.path.getPickleDirPath()
         latestPickleFilePath = self.getLatestFolderPath(path=picklesPath)
+        self.logger.debug(f'picklesPath: {picklesPath}\nlatestPickleFilePath: {latestPickleFilePath}')
 
         with open(latestPickleFilePath, 'rb') as file:
             data = pickle.load(file)

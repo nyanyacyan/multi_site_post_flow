@@ -580,7 +580,7 @@ class LimitSabDirFileWrite:
     # @decoInstance.fileRetryAction(maxRetry=2, delay=2)
     def writeSabDirToPickle(self, data: Any, subDirName: str=SubDir.pickles.value, extension: str=Extension.pickle.value):
         filePath = self.path.getResultSubDirFilePath(subDirName=subDirName, fileName=self.currentDate, extension=extension)
-
+        self.logger.debug(f'data: {data}')
         if data and subDirName:
             with open(filePath, 'wb') as file:
                 pickle.dump(data, file)
