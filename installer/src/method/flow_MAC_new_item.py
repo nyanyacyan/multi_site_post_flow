@@ -52,6 +52,16 @@ class FlowMACNewItem:
         self.random_sleep._random_sleep()
 
         # 操作していく
+        # 出品ボタンをクリック
+        # 画像添付
+        # ゲームタイトルクリック
+        # POPUPタイトル入力
+        # タイトルを選択
+        # カテゴリ選択
+        # 出品タイトル
+        # 商品説明
+        # 課金総額
+        # 商品価格
 
 
 

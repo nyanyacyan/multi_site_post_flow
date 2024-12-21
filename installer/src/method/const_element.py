@@ -33,6 +33,8 @@ class LoginInfo(Enum):
             'LOGIN_AFTER_ELEMENT_VALUE': "//a[@href='/mypage' and contains(text(),'マイページ')]",
             'RECAPTCHA_CHECKBOX_BY': "id",
             'RECAPTCHA_CHECKBOX_VALUE': "recaptcha-anchor",
+            'SELL_BTN': "//a[@href='/mypage/products/add']",
+            
         },
         'MA_CLUB':{
             'SITE_NAME': 'MA_CLUB',
