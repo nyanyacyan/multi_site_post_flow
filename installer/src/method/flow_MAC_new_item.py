@@ -45,11 +45,16 @@ class FlowMACNewItem:
 #todo 各メソッドをまとめる
 
     async def process(self, login_info: Dict):
+        # スプシの読み込み（辞書でoutput）
+
+
         # IDログイン
         self.login.flowLoginID(login_info=login_info, timeout=120)
 
         # ランダム待機
         self.random_sleep._random_sleep()
+
+        # 各辞書から必要情報を定義
 
         # 操作していく
         # 出品ボタンをクリック

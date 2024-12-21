@@ -14,6 +14,7 @@ from base.utils import Logger
 from base.chrome import ChromeManager
 from base.loginWithId import SingleSiteIDLogin
 from base.seleniumBase import SeleniumBasicOperations
+from base.spreadsheetRead import GetDataGSSAPI
 
 # const
 from const_str import SiteName, GameClubInfo
@@ -38,6 +39,8 @@ class FlowGCNewItem:
         # インスタンス
         self.login = SingleSiteIDLogin(chrome=self.chrome, debugMode=debugMode)
         self.random_sleep = SeleniumBasicOperations(chrome=self.chrome, debugMode=debugMode)
+        self.gss_read = GetDataGSSAPI(debugMode=debugMode)
+
 
 
 ####################################################################################
@@ -45,13 +48,28 @@ class FlowGCNewItem:
 #todo 各メソッドをまとめる
 
     async def process(self, login_info: Dict):
+        # スプシの読み込み（辞書でoutput）
+        self.gss_read.getDataFrameFromGss(KeyName=KeyName, spreadsheetId=spreadsheetId, workSheetName=workSheetName)
+
         # IDログイン
         self.login.flowLoginID(login_info=login_info, timeout=120)
 
         # ランダム待機
         self.random_sleep._random_sleep()
 
+        # 各辞書から必要情報を定義
+
         # 操作していく
+        # 出品ボタンをクリック
+        # 画像添付
+        # ゲームタイトルクリック
+        # POPUPタイトル入力
+        # タイトルを選択
+        # カテゴリ選択
+        # 出品タイトル
+        # 商品説明
+        # 課金総額
+        # 商品価格
 
 
 
