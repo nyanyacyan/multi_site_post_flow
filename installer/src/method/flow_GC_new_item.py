@@ -6,21 +6,25 @@
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 # import
 import os, time, asyncio
+from typing import Dict, List
+
 
 # 自作モジュール
 from base.utils import Logger
 from base.chrome import ChromeManager
-from base.login_db_cookie import SingleLoginDBCookie
+from base.loginWithId import SingleSiteIDLogin
+from base.seleniumBase import SeleniumBasicOperations
 
-
+# const
 from const_str import SiteName, GameClubInfo
+from const_element import LoginInfo
 
 # ----------------------------------------------------------------------------------
 # **********************************************************************************
 # 一連の流れ
 
-class FlowNewItem:
-    def __init__(self, home_url: str, table_name: str, debugMode=True):
+class FlowGCNewItem:
+    def __init__(self, debugMode=True):
 
         # logger
         self.getLogger = Logger(__name__, debugMode=debugMode)
@@ -30,27 +34,24 @@ class FlowNewItem:
         self.chromeManager = ChromeManager(debugMode=debugMode)
         self.chrome = self.chromeManager.flowSetupChrome()
 
-        # const
-        self.home_url = home_url
-        self.table_name = table_name
-
-
 
         # インスタンス
-        self.cookie_login = SingleLoginDBCookie(chrome=self.chrome, debugMode=debugMode)
+        self.login = SingleSiteIDLogin(chrome=self.chrome, debugMode=debugMode)
+        self.random_sleep = SeleniumBasicOperations(chrome=self.chrome, debugMode=debugMode)
 
 
 ####################################################################################
 # ----------------------------------------------------------------------------------
 #todo 各メソッドをまとめる
 
-    async def process(self):
-        self.cookie_login._cookie_login(home_url=self.home_url, table_name=self.table_name)
+    async def process(self, login_info: Dict):
+        # IDログイン
+        self.login.flowLoginID(login_info=login_info, timeout=120)
 
-        # Cookieログイン
+        # ランダム待機
+        self.random_sleep._random_sleep()
 
-
-        # 自動出品
+        # 操作していく
 
 
 
@@ -64,7 +65,7 @@ class FlowNewItem:
 # テスト実施
 
 if __name__ == '__main__':
-    home_url = GameClubInfo.HOME_URL.value
-    table_name = SiteName.GAME_CLUB.value
-    test_flow = FlowNewItem(home_url=home_url, table_name=table_name)
-    asyncio.run(test_flow.process())
+    login_info = LoginInfo.SITE_PATTERNS.value['GAME_CLUB']
+    print(f"login_info: {login_info}")
+    test_flow = FlowGCNewItem()
+    asyncio.run(test_flow.process(login_info))

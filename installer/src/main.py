@@ -10,7 +10,7 @@ import asyncio
 
 
 from method.base.utils import Logger
-from installer.src.method.flow_get_cookie import Flow
+from installer.src.method.oldFlows.flow_get_cookie import Flow
 
 
 # ------------------------------------------------------------------------------

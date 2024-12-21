@@ -36,7 +36,7 @@ decoInstanceClick = ClickDeco(debugMode=True)
 
 
 class SingleSiteIDLogin:
-    def __init__(self, chrome: WebDriver, db_file_name: str, table_pattern_info: str, debugMode=True):
+    def __init__(self, chrome: WebDriver, debugMode=True):
         # logger
         self.getLogger = Logger(__name__, debugMode=debugMode)
         self.logger = self.getLogger.getLogger()
@@ -50,79 +50,16 @@ class SingleSiteIDLogin:
         self.pickle_write = LimitSabDirFileWrite(debugMode=debugMode)
         self.pickle_read =ResultFileRead(debugMode=debugMode)
 
-        #! 修正時に注意が必要 現在はdb_file_nameにはサイト名が入っている
-        self.db_file_name = db_file_name
-        self.table_pattern_info = table_pattern_info
-        self.logger.debug(f'\nself.db_file_name: {self.db_file_name}\nself.table_pattern_info: {self.table_pattern_info}')
-
-
-# ----------------------------------------------------------------------------------
-# Cookieログイン
-# reCAPTCHA OK → 調整必要 → 待機時間を180秒
-
-    @decoInstance.funcBase
-    async def flow_cookie_save(self, login_url: str, login_info: dict, table_name: str, timeout: int =180):
-        # DBファイルの初期化確認
-        with SqliteExistsHandler(db_file_name=self.db_file_name, table_pattern_info=self.table_pattern_info) as sqlite_exists:
-            sqlite_exists.flow_db_start_check()
-
-        # ログインの実施
-        self.flowLoginID(login_url=login_url, login_info=login_info, timeout=timeout)
-
-        # Cookieの取得
-        cookie = self._getCookie()
-
-        # CookieデータがDBの項目に入れられるように整理する
-        sorted_cookie = self._sort_cookie(cookie=cookie)
-        self.logger.info(f'sorted_cookie: {sorted_cookie}')
-
-        # ここに指定のテーブルのnameによって分岐
-        with SqliteRead(db_file_name=self.db_file_name, table_pattern_info=self.table_pattern_info) as sqlite_read:
-            table_all_data = sqlite_read._read_data(table_name=table_name)
-
-        # テーブルデータから行ごとにデータを抽出
-        rows = [row for row in table_all_data]
-        self.logger.debug(f'rows: {[dict(row) for row in rows]}')
-
-        # テーブルにデータがない場合をチェック
-        if not rows:
-            self.logger.warning(f"{table_name} テーブルに既存のデータがありません")
-            table_cookie_name = None
-        else:
-            table_cookie_name = rows[0]['name']  # 'name' キーが存在しない場合を考慮
-
-        # Cookieデータをリストとして渡す
-        cookie_data_list = sorted_cookie if isinstance(sorted_cookie, list) else [sorted_cookie]
-
-        # Cookie情報が入っているかどうかで分岐
-        if table_cookie_name:
-            # 入っている場合にはアップデートを実施
-            filter_keys = {"name": table_cookie_name}
-            with SqliteUpdate(db_file_name=self.db_file_name, table_pattern_info=self.table_pattern_info) as sqlite_update:
-                sqlite_update._update_data(update_data_list=cookie_data_list, table_name=table_name, filter_keys=filter_keys)
-            self.logger.info(f"{table_name} のCookieデータを更新しました")
-
-        else:
-            # テーブルに情報がまだ入ってないため挿入
-            with SqliteInsert(db_file_name=self.db_file_name, table_pattern_info=self.table_pattern_info) as sqlite_insert:
-                sqlite_insert._insert_data(insert_data_list=cookie_data_list, table_name=table_name)
-            self.logger.info(f"{table_name} に新しくCookieデータを挿入しました")
-
-        # バックアップの実施
-        sqlite_backup = SqliteBuckup(db_file_name=self.db_file_name)
-        sqlite_backup._data_buck_up()
-
-
 
 # ----------------------------------------------------------------------------------
 # IDログイン
 # reCAPTCHA OK
 
-    def flowLoginID(self, login_url: str, login_info: dict, timeout: int):
+    def flowLoginID(self, login_info: dict, timeout: int = 120):
         self.logger.debug(f'login_info: {login_info}')
 
         # サイトを開いてCookieを追加
-        self.openSite(login_url=login_url)
+        self.openSite(login_url=login_info['LOGIN_URL'])
 
         self.inputId(by=login_info['ID_BY'], value=login_info['ID_VALUE'], inputText=login_info['ID_TEXT'])
 
@@ -281,29 +218,6 @@ class SingleSiteIDLogin:
 
 
 # ----------------------------------------------------------------------------------
-# CookieデータをDBにいれられるように整理
-
-    # @decoInstance.funcBase
-    def _sort_cookie(self, cookie: Dict):
-        self.logger.warning(f'cookie: {cookie}')
-        db_cookie_info = {
-            'name': cookie['name'],
-            'value': cookie.get('value'),
-            'domain': cookie.get('domain'),
-            'path': cookie.get('path'),
-            'expires': cookie.get('expiry'),
-            'maxAge': cookie.get('max-age'),  # expiresよりも優先される、〇〇秒間持たせる権限
-            'secure': cookie.get('secure', False),  # ブール値に変換
-            'httpOnly': cookie.get('httpOnly', False),  # ブール値に変換
-            'sameSite': cookie.get('sameSite', 'Lax'),  # sameSite属性のデフォルトは'Lax'
-            'createTime': int(time.time())  # 現在時刻をUnixタイムスタンプで記録
-        }
-        self.logger.debug(f'db_cookie_info: {db_cookie_info}')
-
-        return db_cookie_info
-
-
-# ----------------------------------------------------------------------------------
 
 
     async def flow_cookie_pickle_save(self, login_url: str, login_info: dict, timeout: int =180):
@@ -314,10 +228,6 @@ class SingleSiteIDLogin:
         cookies = self._getCookie()
 
         self.pickle_write.writeSabDirToPickle(data=cookies)
-
-
-
-
 
 
 # **********************************************************************************
