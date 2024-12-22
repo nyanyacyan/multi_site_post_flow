@@ -5,37 +5,39 @@
 # tree -I 'venv|resultOutput|__pycache__'
 
 # ----------------------------------------------------------------------------------
+# import
 import os
 from enum import Enum
 from dotenv import load_dotenv
 load_dotenv()
 
-# ----------------------------------------------------------------------------------
 
+# ----------------------------------------------------------------------------------
+# GSS情報
 
 class GssInfo(Enum):
 
     GAME_CLUB = {
-        'KeyName': '',
-        'spreadsheetId': '',
-        'workSheetName': '',
+        'jsonKeyName': 'sns-auto-430920-08274ad68b41.json',
+        'spreadsheetId': '11hUzuGZaXmM070E8Gl5YA5ydUcWGDcjV0MkGQEpzLx8',
+        'workSheetName': 'GAME_CLUB',
     }
 
     MA_CLUB = {
-        'KeyName': '',
-        'spreadsheetId': '',
-        'workSheetName': '',
+        'jsonKeyName': 'sns-auto-430920-08274ad68b41.json',
+        'spreadsheetId': '11hUzuGZaXmM070E8Gl5YA5ydUcWGDcjV0MkGQEpzLx8',
+        'workSheetName': 'MA_CLUB',
     }
 
     RRMT_CLUB = {
-        'KeyName': '',
-        'spreadsheetId': '',
-        'workSheetName': '',
+        'jsonKeyName': 'sns-auto-430920-08274ad68b41.json',
+        'spreadsheetId': '11hUzuGZaXmM070E8Gl5YA5ydUcWGDcjV0MkGQEpzLx8',
+        'workSheetName': 'RRMT_CLUB',
     }
 
 
 # ----------------------------------------------------------------------------------
-
+# ログイン情報
 
 class LoginInfo(Enum):
 
@@ -98,3 +100,29 @@ class LoginInfo(Enum):
         },
     }
 
+
+# ----------------------------------------------------------------------------------
+# 出品要素
+
+class SellInfo(Enum):
+
+    GAME_CLUB = {
+        'SELL_BTN': "//a[@href='/mypage/products/add']",
+        '': '',
+        '': '',
+    }
+
+    MA_CLUB = {
+        '': '',
+        '': '',
+        '': '',
+    }
+
+    RRMT_CLUB = {
+        '': '',
+        '': '',
+        '': '',
+    }
+
+
+# ----------------------------------------------------------------------------------

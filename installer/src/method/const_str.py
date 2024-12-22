@@ -36,7 +36,6 @@ class FileName(Enum):
     CHROME_OP_IFRAME='uBlock-Origin.crx'
 
 
-
 # ----------------------------------------------------------------------------------
 #! 基本必須
 
@@ -66,51 +65,6 @@ class SiteName(Enum):
     GAME_CLUB='GAME_CLUB'
     MA_CLUB='MA_CLUB'
     RRMT_CLUB='RRMT_CLUB'
-
-
-# ----------------------------------------------------------------------------------
-# サイトURL
-
-class MAClubInfo(Enum):
-    LOGIN_URL='https://maclub.jp/signin'
-    HOME_URL='https://maclub.jp/mypage'
-    TARGET_URL=''
-
-    GSS_URL=''
-
-
-# ----------------------------------------------------------------------------------
-# サイトURL
-
-class GameClubInfo(Enum):
-    LOGIN_URL='https://gameclub.jp/signin'
-    HOME_URL='https://gameclub.jp/mypage'
-    TARGET_URL=''
-
-    GSS_URL=''
-
-
-# ----------------------------------------------------------------------------------
-# サイトURL
-
-class rrmtClubInfo(Enum):
-    LOGIN_URL='https://rmt.club/user-login'
-    HOME_URL='https://www.xdomain.ne.jp/'
-    TARGET_URL=''
-
-    GSS_URL=''
-
-
-# ----------------------------------------------------------------------------------
-class GssInfo(Enum):
-    SITE='https://docs.google.com/spreadsheets/d/11hUzuGZaXmM070E8Gl5YA5ydUcWGDcjV0MkGQEpzLx8/export?format=csv&gid=0'
-
-    ID_COL='site_id'
-
-    NAME_COL='site_name'
-
-    URL_COL='site_url'
-
 
 
 # ----------------------------------------------------------------------------------
@@ -156,21 +110,6 @@ class ErrorMessage(Enum):
 
 class KeyFile(Enum):
     gssKeyFile='sns-auto-430920-08274ad68b41.json'
-
-
-# ----------------------------------------------------------------------------------
-# スプシID
-
-class GssSheetId(Enum):
-    XSheetId=''
-    InstagramSheetId=''
-
-
-# ----------------------------------------------------------------------------------
-# スプシのColumn
-
-class GssColumns(Enum):
-    pass
 
 
 # ----------------------------------------------------------------------------------
