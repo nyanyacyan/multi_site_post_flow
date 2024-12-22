@@ -16,6 +16,7 @@ from .utils import Logger
 from .decorators import Decorators
 from .textManager import TextManager
 from .driverDeco import ClickDeco
+from .driverWait import Wait
 
 
 decoInstance = Decorators(debugMode=True)
@@ -35,6 +36,7 @@ class ElementManager:
         self.currentDate = datetime.now().strftime('%y%m%d_%H%M%S')
         self.textManager = TextManager(debugMode=debugMode)
         self.clickWait = ClickDeco(debugMode=debugMode)
+        self.wait = Wait(chrome=self.chrome, debugMode=debugMode)
 
 
 
@@ -129,10 +131,27 @@ class ElementManager:
 
 
 # ----------------------------------------------------------------------------------
-
+# ファイルアップロード
 
     @decoInstance.funcBase
-    def clickClearInput(self, by: str, value: str, inputText: str):
+    def files_input(self, by: str, value: str, file_path_list: str, check_by: str, check_value: str):
+        # アップロード場所の特定
+        element = self.getElement(value=value, by=by)
+
+        self.logger.debug(f'file_path_list: {file_path_list}')
+
+        # ファイルPathを記入
+        element.send_keys("\n".join(file_path_list))
+
+        # 対象の箇所の場所の変化を確認
+        self.wait.canWaitDom(by=check_by, value=check_value)
+
+
+# ----------------------------------------------------------------------------------
+# クリックしてから入力
+
+    @decoInstance.funcBase
+    def clickClearInput(self, value: str, inputText: str, by: str = 'xpath'):
         self.clickWait.canWaitClick(chrome=self.chrome, by=by, value=value, timeout=3)
         element = self.getElement(by=by, value=value)
         try:
@@ -146,12 +165,10 @@ class ElementManager:
         self.clickWait.jsPageChecker(chrome=self.chrome)
 
 
-
-
 # ----------------------------------------------------------------------------------
 
 
-    def clickElement(self, by: str, value: str):
+    def clickElement(self, value: str, by: str = 'xpath'):
         self.clickWait.canWaitClick(chrome=self.chrome, by=by, value=value, timeout=3)
         element = self.getElement(by=by, value=value)
         try:

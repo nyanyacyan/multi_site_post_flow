@@ -156,7 +156,12 @@ class GetDataGSSAPI:
         # 対象のスプシを開く
         worksheet = client.open_by_key(gss_info['spreadsheetId']).worksheet(gss_info['workSheetName'])
 
+        # デバッグ用
+        all_values = worksheet.get_all_values()
+        self.logger.debug(f"ワークシート全データ: {all_values}")
+
         # シートのデータを取得→ここでのデータは辞書型
+        # columnの行に空白があると読込ができない→入力されてる部分以外を選択して消去
         dictData = worksheet.get_all_records()
 
         # DataFrameに変換

@@ -17,7 +17,7 @@ from .utils import Logger
 
 
 class Wait:
-    def __init__(self, chrome, debugMode=True):
+    def __init__(self, chrome: WebDriver, debugMode=True):
         self.chrome = chrome
 
         # logger
@@ -37,7 +37,7 @@ class Wait:
 # ----------------------------------------------------------------------------------
 # 入力ができるまで待機
 
-    def canWaitInput(self, by: str, value: str, timeout: int = 10):
+    def canWaitInput(self, value: str, by: str = 'xpath', timeout: int = 10):
         element = WebDriverWait(self.chrome, timeout).until(EC.visibility_of_element_located((by, value)))
         self.logger.info(f"insert（input）が可能になってます")
         return element
@@ -56,7 +56,7 @@ class Wait:
 # DOM上に存在するまで待機
 
     def canWaitDom(self, by: str, value: str, timeout: int = 10):
-        if WebDriverWait(self.chrome, timeout).until(EC.presence_of_element_located((self._locator_select(by), value))):
+        if WebDriverWait(self.chrome, timeout).until(EC.presence_of_element_located((by, value))):
             self.logger.info(f"指定の要素のDOMを確認できました")
         return
 
