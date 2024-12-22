@@ -13,6 +13,30 @@ load_dotenv()
 # ----------------------------------------------------------------------------------
 
 
+class GssInfo(Enum):
+
+    GAME_CLUB = {
+        'KeyName': '',
+        'spreadsheetId': '',
+        'workSheetName': '',
+    }
+
+    MA_CLUB = {
+        'KeyName': '',
+        'spreadsheetId': '',
+        'workSheetName': '',
+    }
+
+    RRMT_CLUB = {
+        'KeyName': '',
+        'spreadsheetId': '',
+        'workSheetName': '',
+    }
+
+
+# ----------------------------------------------------------------------------------
+
+
 class LoginInfo(Enum):
 
     SITE_PATTERNS = {
@@ -34,7 +58,7 @@ class LoginInfo(Enum):
             'RECAPTCHA_CHECKBOX_BY': "id",
             'RECAPTCHA_CHECKBOX_VALUE': "recaptcha-anchor",
             'SELL_BTN': "//a[@href='/mypage/products/add']",
-            
+
         },
         'MA_CLUB':{
             'SITE_NAME': 'MA_CLUB',

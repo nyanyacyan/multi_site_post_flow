@@ -8,6 +8,7 @@
 import requests
 import gspread
 from google.oauth2.service_account import Credentials
+from typing import Dict, List
 import pandas as pd
 import io
 
@@ -146,13 +147,13 @@ class GetDataGSSAPI:
 # TODO ここの3点セットをINFOにして辞書で渡す
 
     @decoInstance.retryAction(maxRetry=3, delay=30)
-    def getDataFrameFromGss(self, KeyName: str, spreadsheetId: str, workSheetName: str):
-        client = self.client(KeyName=KeyName)
+    def getDataFrameFromGss(self, gss_info : Dict):
+        client = self.client(KeyName=gss_info['KeyName'])
 
-        self.logger.debug(f"利用可能なワークシート: {client.open_by_key(spreadsheetId).worksheets()}")
+        self.logger.debug(f"利用可能なワークシート: {client.open_by_key(gss_info['spreadsheetId']).worksheets()}")
 
         # 対象のスプシを開く
-        worksheet = client.open_by_key(spreadsheetId).worksheet(workSheetName)
+        worksheet = client.open_by_key(gss_info['spreadsheetId']).worksheet(gss_info['workSheetName'])
 
         # シートのデータを取得→ここでのデータは辞書型
         dictData = worksheet.get_all_records()

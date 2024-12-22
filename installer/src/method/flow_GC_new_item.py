@@ -7,6 +7,7 @@
 # import
 import os, time, asyncio
 from typing import Dict, List
+import pandas as pd
 
 
 # 自作モジュール
@@ -18,7 +19,7 @@ from base.spreadsheetRead import GetDataGSSAPI
 
 # const
 from const_str import SiteName, GameClubInfo
-from const_element import LoginInfo
+from const_element import LoginInfo, GssInfo
 
 # ----------------------------------------------------------------------------------
 # **********************************************************************************
@@ -47,9 +48,13 @@ class FlowGCNewItem:
 # ----------------------------------------------------------------------------------
 #todo 各メソッドをまとめる
 
-    async def process(self, login_info: Dict):
+    async def process(self, gss_info: Dict, login_info: Dict):
         # スプシの読み込み（辞書でoutput）
-        self.gss_read.getDataFrameFromGss(KeyName=KeyName, spreadsheetId=spreadsheetId, workSheetName=workSheetName)
+        df = self.gss_read.getDataFrameFromGss(gss_info=gss_info)
+
+        # dfの中からチェックがあるものだけ抽出
+        process_df = df[df['チェック'] == True]
+        self.logger.debug(process_df.head)
 
         # IDログイン
         self.login.flowLoginID(login_info=login_info, timeout=120)
@@ -58,6 +63,7 @@ class FlowGCNewItem:
         self.random_sleep._random_sleep()
 
         # 各辞書から必要情報を定義
+
 
         # 操作していく
         # 出品ボタンをクリック
@@ -83,6 +89,7 @@ class FlowGCNewItem:
 # テスト実施
 
 if __name__ == '__main__':
+    gss_info = GssInfo.GAME_CLUB.value
     login_info = LoginInfo.SITE_PATTERNS.value['GAME_CLUB']
     print(f"login_info: {login_info}")
     test_flow = FlowGCNewItem()
