@@ -40,11 +40,9 @@ load_dotenv()
 
 
 class InsertSql:
-    def __init__(self, chrome: WebDriver, debugMode=True):
+    def __init__(self, chrome: WebDriver):
         # logger
-        self.getLogger = Logger(
-            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
-        )
+        self.getLogger = Logger()
         self.logger = self.getLogger.getLogger()
 
         self.chrome = chrome
@@ -54,11 +52,15 @@ class InsertSql:
         self.imageTableName = TableName.IMAGE.value
 
         self.currentDate = datetime.now().strftime("%y%m%d_%H%M%S")
-        self.element = ElementManager(chrome=self.chrome, debugMode=debugMode)
-        self.chatGPT = ChatGPTOrder(debugMode=debugMode)
-        self.textManager = TextManager(debugMode=debugMode)
-        self.SQLite = SQLite(debugMode=debugMode)
-        self.jumpTargetPage = JumpTargetPage(chrome=self.chrome, debugMode=debugMode)
+        self.element = ElementManager(
+            chrome=self.chrome,
+        )
+        self.chatGPT = ChatGPTOrder()
+        self.textManager = TextManager()
+        self.SQLite = SQLite()
+        self.jumpTargetPage = JumpTargetPage(
+            chrome=self.chrome,
+        )
 
     # ----------------------------------------------------------------------------------
     # flow

@@ -24,11 +24,9 @@ decoInstance = Decorators(debugMode=True)
 
 
 class CookieManager:
-    def __init__(self, chrome: WebDriver, homeUrl: str, loginUrl: str, debugMode=True):
+    def __init__(self, chrome: WebDriver, homeUrl: str, loginUrl: str):
         # logger
-        self.getLogger = Logger(
-            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
-        )
+        self.getLogger = Logger()
         self.logger = self.getLogger.getLogger()
 
         self.chrome = chrome
@@ -42,12 +40,11 @@ class CookieManager:
         self.currentTime = int(time.time())
 
         # インスタンス
-        self.sqlite = SQLite(debugMode=debugMode)
+        self.sqlite = SQLite()
         self.loginID = LoginID(
             chrome=self.chrome,
             homeUrl=self.homeUrl,
             loginUrl=self.loginUrl,
-            debugMode=debugMode,
         )
 
     # ----------------------------------------------------------------------------------

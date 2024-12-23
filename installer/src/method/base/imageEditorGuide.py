@@ -12,16 +12,13 @@ from installer.src.method.constElementInfo import ImageInfo
 from const_str import FileName
 
 
-
 # **********************************************************************************
 
 
 class ImageGuideDrawer:
     def __init__(self, base_image_path, output_path, debugMode):
         # logger
-        self.getLogger = Logger(
-            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
-        )
+        self.getLogger = Logger()
         self.logger = self.getLogger.getLogger()
 
         self.base_image_path = base_image_path

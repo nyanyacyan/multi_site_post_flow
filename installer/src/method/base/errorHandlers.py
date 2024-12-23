@@ -29,12 +29,10 @@ from .popup import Popup
 
 
 class NetworkHandler:
-    def __init__(self, debugMode=True):
+    def __init__(self):
 
         # logger
-        self.getLogger = Logger(
-            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
-        )
+        self.getLogger = Logger()
         self.logger = self.getLogger.getLogger()
 
     # ----------------------------------------------------------------------------------
@@ -71,12 +69,10 @@ class NetworkHandler:
 
 
 class ResponseStatusCode:
-    def __init__(self, debugMode=True):
+    def __init__(self):
 
         # logger
-        self.getLogger = Logger(
-            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
-        )
+        self.getLogger = Logger()
         self.logger = self.getLogger.getLogger()
 
     # ----------------------------------------------------------------------------------
@@ -180,12 +176,10 @@ class ResponseStatusCode:
 
 
 class FileWriteError:
-    def __init__(self, debugMode=True):
+    def __init__(self):
 
         # logger
-        self.getLogger = Logger(
-            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
-        )
+        self.getLogger = Logger()
         self.logger = self.getLogger.getLogger()
 
     # ----------------------------------------------------------------------------------
@@ -244,12 +238,10 @@ class FileWriteError:
 
 
 class PickleWriteError:
-    def __init__(self, debugMode=True):
+    def __init__(self):
 
         # logger
-        self.getLogger = Logger(
-            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
-        )
+        self.getLogger = Logger()
         self.logger = self.getLogger.getLogger()
 
     # ----------------------------------------------------------------------------------
@@ -287,12 +279,10 @@ class PickleWriteError:
 
 
 class PickleReadError:
-    def __init__(self, debugMode=True):
+    def __init__(self):
 
         # logger
-        self.getLogger = Logger(
-            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
-        )
+        self.getLogger = Logger()
         self.logger = self.getLogger.getLogger()
 
     # ----------------------------------------------------------------------------------
@@ -333,12 +323,10 @@ class PickleReadError:
 
 
 class AccessFileNotFoundError:
-    def __init__(self, debugMode=True):
+    def __init__(self):
 
         # logger
-        self.getLogger = Logger(
-            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
-        )
+        self.getLogger = Logger()
         self.logger = self.getLogger.getLogger()
 
     # ----------------------------------------------------------------------------------
@@ -357,12 +345,10 @@ class AccessFileNotFoundError:
 
 
 class RequestRetryAction:
-    def __init__(self, debugMode=True):
+    def __init__(self):
 
         # logger
-        self.getLogger = Logger(
-            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
-        )
+        self.getLogger = Logger()
         self.logger = self.getLogger.getLogger()
 
     # ----------------------------------------------------------------------------------
@@ -461,12 +447,10 @@ class RequestRetryAction:
 
 
 class FileReadHandler:
-    def __init__(self, debugMode=True):
+    def __init__(self):
 
         # logger
-        self.getLogger = Logger(
-            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
-        )
+        self.getLogger = Logger()
         self.logger = self.getLogger.getLogger()
 
     # ----------------------------------------------------------------------------------
@@ -494,12 +478,10 @@ class FileReadHandler:
 
 
 class GeneratePromptHandler:
-    def __init__(self, debugMode=True):
+    def __init__(self):
 
         # logger
-        self.getLogger = Logger(
-            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
-        )
+        self.getLogger = Logger()
         self.logger = self.getLogger.getLogger()
 
     # ----------------------------------------------------------------------------------
@@ -524,17 +506,15 @@ class GeneratePromptHandler:
 
 
 class ChromeHandler:
-    def __init__(self, debugMode=True):
+    def __init__(self):
 
         # logger
-        self.getLogger = Logger(
-            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
-        )
+        self.getLogger = Logger()
         self.logger = self.getLogger.getLogger()
 
         # instance
-        self.popup = Popup(debugMode=debugMode)
-        self.sysCommand = SysCommand(debugMode=debugMode)
+        self.popup = Popup()
+        self.sysCommand = SysCommand()
 
     # ----------------------------------------------------------------------------------
 
@@ -567,12 +547,10 @@ class ChromeHandler:
 
 
 class SqliteError:
-    def __init__(self, debugMode=True):
+    def __init__(self):
 
         # logger
-        self.getLogger = Logger(
-            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
-        )
+        self.getLogger = Logger()
         self.logger = self.getLogger.getLogger()
 
     # ----------------------------------------------------------------------------------

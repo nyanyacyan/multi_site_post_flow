@@ -23,12 +23,10 @@ decoInstance = Decorators(debugMode=True)
 
 
 class GetContext:
-    def __init__(self, debugMode=True):
+    def __init__(self):
 
         # logger
-        self.getLogger = Logger(
-            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
-        )
+        self.getLogger = Logger()
         self.logger = self.getLogger.getLogger()
 
     # ----------------------------------------------------------------------------------

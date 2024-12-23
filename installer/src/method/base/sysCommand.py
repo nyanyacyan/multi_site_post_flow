@@ -15,12 +15,9 @@ from const_str import FileName
 
 
 class SysCommand:
-    def __init__(self, debugMode=True):
-
+    def __init__(self):
         # logger
-        self.getLogger = Logger(
-            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
-        )
+        self.getLogger = Logger()
         self.logger = self.getLogger.getLogger()
 
     # ----------------------------------------------------------------------------------

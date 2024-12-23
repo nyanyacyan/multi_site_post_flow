@@ -23,16 +23,14 @@ from const_str import SiteName, GameClubInfo
 
 
 class FlowLoginCookie:
-    def __init__(self, home_url: str, db_file_name: str, debugMode=True):
+    def __init__(self, home_url: str, db_file_name: str):
 
         # logger
-        self.getLogger = Logger(
-            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
-        )
+        self.getLogger = Logger()
         self.logger = self.getLogger.getLogger()
 
         # chrome
-        self.chromeManager = ChromeManager(debugMode=debugMode)
+        self.chromeManager = ChromeManager()
         self.chrome = self.chromeManager.flowSetupChrome()
 
         # navigator.webdriver を undefined に設定
@@ -53,9 +51,10 @@ class FlowLoginCookie:
 
         # インスタンス
         self.cookie_login = SingleLoginDBCookie(
-            chrome=self.chrome, db_file_name=self.db_file_name, debugMode=debugMode
+            chrome=self.chrome,
+            db_file_name=self.db_file_name,
         )
-        self.pickle_read = ResultFileRead(debugMode=debugMode)
+        self.pickle_read = ResultFileRead()
 
     ####################################################################################
     # ----------------------------------------------------------------------------------

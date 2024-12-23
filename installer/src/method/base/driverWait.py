@@ -19,14 +19,14 @@ from .utils import Logger
 
 
 class Wait:
-    def __init__(self, chrome: WebDriver, debugMode=True):
+    def __init__(self, chrome: WebDriver):
+        # logger
+        self.getLogger = Logger()
+        self.logger = self.getLogger.getLogger()
+
+        # chrome
         self.chrome = chrome
 
-        # logger
-        self.getLogger = Logger(
-            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
-        )
-        self.logger = self.getLogger.getLogger()
 
     # ----------------------------------------------------------------------------------
     # クリックができるまで待機
@@ -48,6 +48,7 @@ class Wait:
         self.logger.info(f"insert（input）が可能になってます")
         return element
 
+
     # ----------------------------------------------------------------------------------
     # ページが完全に開くまで待機
 
@@ -58,6 +59,7 @@ class Wait:
             self.logger.info(f"指定の要素が見つかりました")
         return
 
+
     # ----------------------------------------------------------------------------------
     # DOM上に存在するまで待機
 
@@ -67,6 +69,7 @@ class Wait:
         ):
             self.logger.info(f"指定の要素のDOMを確認できました")
         return
+
 
     # ----------------------------------------------------------------------------------
     # 指定のURLに切り替わるまで待機
@@ -79,6 +82,7 @@ class Wait:
             self.logger.error(
                 f"指定のURLに切り替わりませんでした: {target_url}, エラー: {e}"
             )
+
 
     # ----------------------------------------------------------------------------------
     # 次のページに移動後にページがちゃんと開いてる状態か全体を確認してチェックする

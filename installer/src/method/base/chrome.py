@@ -27,19 +27,17 @@ decoInstance = Decorators(debugMode=True)
 
 
 class ChromeManager:
-    def __init__(self, debugMode=True):
+    def __init__(self):
 
         # logger
-        self.getLogger = Logger(
-            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
-        )
+        self.getLogger = Logger()
         self.logger = self.getLogger.getLogger()
 
         # インスタンスをクラス内で保持
         self.chrome = None
 
         # インスタンス
-        self.path = BaseToPath(debugMode=debugMode)
+        self.path = BaseToPath()
 
     # ----------------------------------------------------------------------------------
 

@@ -28,17 +28,15 @@ decoInstance = Decorators(debugMode=True)
 
 
 class SqliteBase:
-    def __init__(self, debugMode=True):
+    def __init__(self):
 
         # logger
-        self.getLogger = Logger(
-            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
-        )
+        self.getLogger = Logger()
         self.logger = self.getLogger.getLogger()
 
         # インスタンス化
-        self.networkError = NetworkHandler(debugMode=debugMode)
-        self.path = BaseToPath(debugMode=debugMode)
+        self.networkError = NetworkHandler()
+        self.path = BaseToPath()
         self.currentDate = datetime.now().strftime("%y%m%d")
         self.tablePattern = TableSchemas.TABLE_PATTERN.value
 

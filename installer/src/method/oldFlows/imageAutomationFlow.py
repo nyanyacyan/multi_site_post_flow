@@ -35,16 +35,14 @@ load_dotenv()
 
 
 class Flow:
-    def __init__(self, debugMode=True):
+    def __init__(self):
 
         # logger
-        self.getLogger = Logger(
-            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
-        )
+        self.getLogger = Logger()
         self.logger = self.getLogger.getLogger()
 
         # chrome
-        self.chromeManager = ChromeManager(debugMode=debugMode)
+        self.chromeManager = ChromeManager()
         self.chrome = self.chromeManager.flowSetupChrome()
 
         self.loginUrl = SiteUrl.LoginUrl.value
@@ -57,17 +55,17 @@ class Flow:
             chrome=self.chrome,
             loginUrl=self.loginUrl,
             homeUrl=self.homeUrl,
-            debugMode=debugMode,
+            ,
         )
         self.cookieLogin = CookieLogin(
             chrome=self.chrome,
             loginUrl=self.loginUrl,
             homeUrl=self.homeUrl,
             signInUrl=self.signInUrl,
-            debugMode=debugMode,
+            ,
         )
-        self.insertSql = InsertSql(chrome=self.chrome, debugMode=debugMode)
-        self.createImage = DataFormatterToSql(chrome=self.chrome, debugMode=debugMode)
+        self.insertSql = InsertSql(chrome=self.chrome, )
+        self.createImage = DataFormatterToSql(chrome=self.chrome, )
 
     # ----------------------------------------------------------------------------------
 

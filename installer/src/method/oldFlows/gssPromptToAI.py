@@ -24,12 +24,10 @@ from ..base.context import GetContext
 
 
 class OverrideChatGPTOrder(ChatGPTOrder):
-    def __init__(self, debugMode=True):
+    def __init__(self):
 
         # logger
-        self.getLogger = Logger(
-            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
-        )
+        self.getLogger = Logger()
         self.logger = self.getLogger.getLogger()
 
     # オーバーライド
@@ -53,12 +51,10 @@ class OverrideChatGPTOrder(ChatGPTOrder):
 
 
 class OverrideGSSAPILogin(GSSAPILogin):
-    def __init__(self, debugMode=True):
+    def __init__(self):
 
         # logger
-        self.getLogger = Logger(
-            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
-        )
+        self.getLogger = Logger()
         self.logger = self.getLogger.getLogger()
 
     def get_df_in_gss(self, sheet_name: str, jsonKeyName: str, spreadsheetId: str):
@@ -71,19 +67,17 @@ class OverrideGSSAPILogin(GSSAPILogin):
 
 
 class GetPromptGSS:
-    def __init__(self, debugMode=True):
+    def __init__(self):
 
         # logger
-        self.getLogger = Logger(
-            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
-        )
+        self.getLogger = Logger()
         self.logger = self.getLogger.getLogger()
 
         # インスタンス
-        self.GPT = OverrideChatGPTOrder(debugMode=debugMode)
-        self.GssApi = GSSAPILogin(debugMode=debugMode)
-        self.pickle = PickleControl(debugMode=debugMode)
-        self.context = GetContext(debugMode=debugMode)
+        self.GPT = OverrideChatGPTOrder()
+        self.GssApi = GSSAPILogin()
+        self.pickle = PickleControl()
+        self.context = GetContext()
 
     # ----------------------------------------------------------------------------------
     # GSSからプロンプトをDataFrameで取得する

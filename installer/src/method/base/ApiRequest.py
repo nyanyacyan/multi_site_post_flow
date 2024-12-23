@@ -25,16 +25,14 @@ decoInstance = Decorators(debugMode=True)
 
 
 class ApiRequest:
-    def __init__(self, debugMode=True):
+    def __init__(self):
 
         # logger
-        self.getLogger = Logger(
-            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
-        )
+        self.getLogger = Logger()
         self.logger = self.getLogger.getLogger()
 
         # インスタンス
-        self.errorHandler = ResponseStatusCode(debugMode=debugMode)
+        self.errorHandler = ResponseStatusCode()
 
     # ----------------------------------------------------------------------------------
     # 非同期のセッションを作成

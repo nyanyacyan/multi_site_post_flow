@@ -38,20 +38,18 @@ load_dotenv()
 
 
 class XFlow:
-    def __init__(self, debugMode=True):
+    def __init__(self):
 
         # logger
-        self.getLogger = Logger(
-            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
-        )
+        self.getLogger = Logger()
         self.logger = self.getLogger.getLogger()
 
         # インスタンス
-        self.GssApi = GetDataGSSAPI(debugMode=debugMode)
-        self.ChatGptOrder = ChatGPTOrder(debugMode=debugMode)
-        self.generatePrompt = GeneratePrompt(debugMode=debugMode)
-        self.Weekday = GetContext(debugMode=debugMode)
-        self.lineNotify = LineNotify(debugMode=debugMode)
+        self.GssApi = GetDataGSSAPI()
+        self.ChatGptOrder = ChatGPTOrder()
+        self.generatePrompt = GeneratePrompt()
+        self.Weekday = GetContext()
+        self.lineNotify = LineNotify()
 
     # ----------------------------------------------------------------------------------
     # XProcess
@@ -111,20 +109,18 @@ class XFlow:
 
 
 class InstagramFlow:
-    def __init__(self, debugMode=True):
+    def __init__(self):
 
         # logger
-        self.getLogger = Logger(
-            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
-        )
+        self.getLogger = Logger()
         self.logger = self.getLogger.getLogger()
 
         # インスタンス
-        self.GssApi = GetDataGSSAPI(debugMode=debugMode)
-        self.ChatGptOrder = ChatGPTOrder(debugMode=debugMode)
-        self.generatePrompt = GeneratePrompt(debugMode=debugMode)
-        self.Weekday = GetContext(debugMode=debugMode)
-        self.lineNotify = LineNotify(debugMode=debugMode)
+        self.GssApi = GetDataGSSAPI()
+        self.ChatGptOrder = ChatGPTOrder()
+        self.generatePrompt = GeneratePrompt()
+        self.Weekday = GetContext()
+        self.lineNotify = LineNotify()
 
     # ----------------------------------------------------------------------------------
     # instagramProcess

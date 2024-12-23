@@ -23,18 +23,14 @@ from constSqliteTable import TableSchemas
 
 
 class FlowGetCookie:
-    def __init__(
-        self, site_name: str, db_file_name: str, table_pattern_info: str, debugMode=True
-    ):
+    def __init__(self, site_name: str, db_file_name: str, table_pattern_info: str):
 
         # logger
-        self.getLogger = Logger(
-            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
-        )
+        self.getLogger = Logger()
         self.logger = self.getLogger.getLogger()
 
         # chrome
-        self.chromeManager = ChromeManager(debugMode=debugMode)
+        self.chromeManager = ChromeManager()
         self.chrome = self.chromeManager.flowSetupChrome()
 
         # const
@@ -46,7 +42,7 @@ class FlowGetCookie:
             chrome=self.chrome,
             db_file_name=db_file_name,
             table_pattern_info=table_pattern_info,
-            debugMode=debugMode,
+            ,
         )
 
     ####################################################################################
@@ -82,7 +78,7 @@ class FlowGetCookie:
 
 
 class GameClubClubGetCookieFlow(FlowGetCookie):
-    def __init__(self, debugMode=True):
+    def __init__(self):
         site_name = SiteName.GAME_CLUB.value
         db_file_name = SiteName.GAME_CLUB.value
         table_pattern_info = TableSchemas.GAME_CLUB.value
@@ -90,7 +86,7 @@ class GameClubClubGetCookieFlow(FlowGetCookie):
             site_name=site_name,
             db_file_name=db_file_name,
             table_pattern_info=table_pattern_info,
-            debugMode=debugMode,
+            ,
         )
 
 
@@ -98,7 +94,7 @@ class GameClubClubGetCookieFlow(FlowGetCookie):
 
 
 class MAClubGetCookieFlow(FlowGetCookie):
-    def __init__(self, debugMode=True):
+    def __init__(self):
         site_name = SiteName.MA_CLUB.value
         db_file_name = SiteName.MA_CLUB.value
         table_pattern_info = TableSchemas.MA_CLUB.value
@@ -106,7 +102,7 @@ class MAClubGetCookieFlow(FlowGetCookie):
             site_name=site_name,
             db_file_name=db_file_name,
             table_pattern_info=table_pattern_info,
-            debugMode=debugMode,
+            ,
         )
 
 
@@ -114,7 +110,7 @@ class MAClubGetCookieFlow(FlowGetCookie):
 
 
 class RRMTClubGetCookieFlow(FlowGetCookie):
-    def __init__(self, debugMode=True):
+    def __init__(self):
         site_name = SiteName.RRMT_CLUB.value
         db_file_name = SiteName.RRMT_CLUB.value
         table_pattern_info = TableSchemas.RRMT_CLUB.value
@@ -122,7 +118,7 @@ class RRMTClubGetCookieFlow(FlowGetCookie):
             site_name=site_name,
             db_file_name=db_file_name,
             table_pattern_info=table_pattern_info,
-            debugMode=debugMode,
+            ,
         )
 
 

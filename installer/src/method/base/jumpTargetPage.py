@@ -22,11 +22,9 @@ decoInstance = jsCompleteWaitDeco(debugMode=True)
 
 
 class JumpTargetPage:
-    def __init__(self, chrome: WebDriver, debugMode=True):
+    def __init__(self, chrome: WebDriver):
         # logger
-        self.getLogger = Logger(
-            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
-        )
+        self.getLogger = Logger()
         self.logger = self.getLogger.getLogger()
 
         self.chrome = chrome

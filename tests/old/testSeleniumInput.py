@@ -18,27 +18,30 @@ from installer.src.method.base.loginWithId import LoginID
 # **********************************************************************************
 # 単体テスト 写真を取得
 
+
 class TestSeleniumInput:
 
-# ----------------------------------------------------------------------------------
-# テストOK
+    # ----------------------------------------------------------------------------------
+    # テストOK
 
     def testInputSuccess(self):
         chrome = MagicMock()
-        loginUrl = 'http://example.com'
-        homeUrl = 'dummyUrl.com'
-        by = 'id'
-        value = 'dummyPath'
-        inputText = 'dummyText'
+        loginUrl = "http://example.com"
+        homeUrl = "dummyUrl.com"
+        by = "id"
+        value = "dummyPath"
+        inputText = "dummyText"
 
-        instance = LoginID(chrome=chrome, loginUrl=loginUrl, homeUrl=homeUrl, debugMode=True)
+        instance = LoginID(chrome=chrome, loginUrl=loginUrl, homeUrl=homeUrl)
 
         instance.element = MagicMock()
 
         instance.element.inputText.return_value = "mocked input"
 
         # WebDriverWaitをモック化
-        with patch('installer.src.method.base.driverDeco.WebDriverWait') as mock_WebDriverWait:
+        with patch(
+            "installer.src.method.base.driverDeco.WebDriverWait"
+        ) as mock_WebDriverWait:
             # WebDriverWait の until メソッドが返すモックされた要素
             mock_element = MagicMock(spec=WebElement)
             mock_WebDriverWait.return_value.until.return_value = mock_element
@@ -47,7 +50,9 @@ class TestSeleniumInput:
             result = instance.inputId(by=by, value=value, inputText=inputText)
 
             # inputText メソッドが正しい引数で呼ばれたか確認
-            instance.element.inputText.assert_called_once_with(by=by, value=value, inputText=inputText)
+            instance.element.inputText.assert_called_once_with(
+                by=by, value=value, inputText=inputText
+            )
 
             # WebDriverWaitが正しく呼び出されたか確認
             mock_WebDriverWait.assert_called_once_with(chrome, 10)
@@ -61,25 +66,27 @@ class TestSeleniumInput:
 # **********************************************************************************
 # 単体テスト 写真を取得
 
+
 class TestSeleniumClick:
 
-# ----------------------------------------------------------------------------------
-# テストOK
+    # ----------------------------------------------------------------------------------
+    # テストOK
 
     def testClickSuccess(self):
         chrome = MagicMock()
-        loginUrl = 'http://example.com'
-        homeUrl = 'dummyUrl.com'
-        by = 'id'
-        value = 'dummyPath'
+        loginUrl = "http://example.com"
+        homeUrl = "dummyUrl.com"
+        by = "id"
+        value = "dummyPath"
 
-
-        instance = LoginID(chrome=chrome, loginUrl=loginUrl, homeUrl=homeUrl, debugMode=True)
+        instance = LoginID(chrome=chrome, loginUrl=loginUrl, homeUrl=homeUrl)
 
         instance.element = MagicMock()
 
         # WebDriverWaitをモック化
-        with patch('installer.src.method.base.driverDeco.WebDriverWait') as mock_WebDriverWait:
+        with patch(
+            "installer.src.method.base.driverDeco.WebDriverWait"
+        ) as mock_WebDriverWait:
             # WebDriverWait の until メソッドが返すモックされた要素
             mock_element = MagicMock(spec=WebElement)
             mock_WebDriverWait.return_value.until.return_value = mock_element

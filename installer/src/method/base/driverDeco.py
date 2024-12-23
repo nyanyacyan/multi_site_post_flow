@@ -23,12 +23,10 @@ from .utils import Logger
 
 
 class jsCompleteWaitDeco:
-    def __init__(self, debugMode=True):
+    def __init__(self):
 
         # logger
-        self.getLogger = Logger(
-            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
-        )
+        self.getLogger = Logger()
         self.logger = self.getLogger.getLogger()
 
     # ----------------------------------------------------------------------------------
@@ -119,12 +117,10 @@ class jsCompleteWaitDeco:
 
 
 class InputDeco:
-    def __init__(self, debugMode=True):
+    def __init__(self):
 
         # logger
-        self.getLogger = Logger(
-            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
-        )
+        self.getLogger = Logger()
         self.logger = self.getLogger.getLogger()
 
     # ----------------------------------------------------------------------------------
@@ -187,12 +183,10 @@ class InputDeco:
 
 
 class ClickDeco:
-    def __init__(self, debugMode=True):
+    def __init__(self):
 
         # logger
-        self.getLogger = Logger(
-            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
-        )
+        self.getLogger = Logger()
         self.logger = self.getLogger.getLogger()
 
     # ----------------------------------------------------------------------------------

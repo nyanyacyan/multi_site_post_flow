@@ -22,19 +22,17 @@ from ..const_domain_search import SubDir
 
 
 class PyppeteerUtils:
-    def __init__(self, debugMode=True):
+    def __init__(self):
 
         # logger
-        self.getLogger = Logger(
-            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
-        )
+        self.getLogger = Logger()
         self.logger = self.getLogger.getLogger()
 
         self.currentDate = datetime.now().strftime("%y%m%d")
 
         self.chrome = None
-        self.file_write = AsyncLimitSabDirFileWrite(debugMode=debugMode)
-        self.file_read = AsyncResultFileRead(debugMode=debugMode)
+        self.file_write = AsyncLimitSabDirFileWrite()
+        self.file_read = AsyncResultFileRead()
 
     # ----------------------------------------------------------------------------------
     # Chromeブラウザの設定

@@ -27,22 +27,20 @@ decoInstance = Decorators(debugMode=True)
 
 
 class ChatGPTOrder:
-    def __init__(self, debugMode=True):
-        # def __init__(self, api_key: str, debugMode=True):
+    def __init__(self):
+        # def __init__(self, api_key: str):
 
         # logger
-        self.getLogger = Logger(
-            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
-        )
+        self.getLogger = Logger()
         self.logger = self.getLogger.getLogger()
 
         # ApiKey
         # self.api_key = api_key
 
         # インスタンス
-        self.apiRequest = ApiRequest(debugMode=debugMode)
-        self.path = BaseToPath(debugMode=debugMode)
-        self.fileWrite = LimitFileWrite(debugMode=debugMode)
+        self.apiRequest = ApiRequest()
+        self.path = BaseToPath()
+        self.fileWrite = LimitFileWrite()
 
     # ----------------------------------------------------------------------------------
     # SNSバージョン　リクエストした文章とresponseで帰ってきた文章を整理してjsonファイルに書き込む

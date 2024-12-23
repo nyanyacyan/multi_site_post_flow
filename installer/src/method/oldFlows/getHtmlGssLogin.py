@@ -19,7 +19,7 @@ from ..base.spreadsheetRead import GSSAPILogin
 
 
 class OverrideSpreadsheet(SpreadsheetRead):
-    def __init__(self, sheet_url, account_id, debugMode=True):
+    def __init__(self, sheet_url, account_id):
         super().__init__(sheet_url, account_id, debugMode)
 
     # URLを取得
@@ -36,7 +36,7 @@ class OverrideSpreadsheet(SpreadsheetRead):
 
 
 class OverrideAutoLogin(AutoLogin):
-    def __init__(self, chrome, debugMode=True):
+    def __init__(self, chrome):
         super().__init__(chrome, debugMode)
 
     # titleとサイトが開いてるかどうかでサイトが開いてるかを確認
@@ -51,7 +51,7 @@ class OverrideAutoLogin(AutoLogin):
 
 
 class OverrideGetHtml(GetHtml):
-    def __init__(self, debugMode=True):
+    def __init__(self):
         super().__init__(debugMode)
 
     def organized_html(
@@ -72,23 +72,24 @@ class OverrideGetHtml(GetHtml):
 
 
 class GetHtmlGssLogin:
-    def __init__(self, chrome, sheet_url, account_id, debugMode=True):
+    def __init__(self, chrome, sheet_url, account_id):
         self.chrome = chrome
         self.account_id = account_id
 
         # logger
-        self.getLogger = Logger(
-            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
-        )
+        self.getLogger = Logger()
         self.logger = self.getLogger.getLogger()
 
         # インスタンス
         self.get_in_gss = OverrideSpreadsheet(
-            sheet_url=sheet_url, account_id=account_id, debugMode=debugMode
+            sheet_url=sheet_url,
+            account_id=account_id,
         )
-        self.login = OverrideAutoLogin(chrome=chrome, debugMode=debugMode)
-        self.get_html = OverrideGetHtml(debugMode=debugMode)
-        self.spreadsheet = GSSAPILogin(debugMode=debugMode)
+        self.login = OverrideAutoLogin(
+            chrome=chrome,
+        )
+        self.get_html = OverrideGetHtml()
+        self.spreadsheet = GSSAPILogin()
 
     # ----------------------------------------------------------------------------------
     # クラスの除外リストをスプシより取得

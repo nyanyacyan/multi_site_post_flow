@@ -25,22 +25,22 @@ from const_element import LoginInfo
 
 
 class FlowRRMTCNewItem:
-    def __init__(self, debugMode=True):
+    def __init__(self):
 
         # logger
-        self.getLogger = Logger(
-            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
-        )
+        self.getLogger = Logger()
         self.logger = self.getLogger.getLogger()
 
         # chrome
-        self.chromeManager = ChromeManager(debugMode=debugMode)
+        self.chromeManager = ChromeManager()
         self.chrome = self.chromeManager.flowSetupChrome()
 
         # インスタンス
-        self.login = SingleSiteIDLogin(chrome=self.chrome, debugMode=debugMode)
+        self.login = SingleSiteIDLogin(
+            chrome=self.chrome,
+        )
         self.random_sleep = SeleniumBasicOperations(
-            chrome=self.chrome, debugMode=debugMode
+            chrome=self.chrome,
         )
 
     ####################################################################################

@@ -38,9 +38,7 @@ class CookieLogin:
         debugMode=True,
     ):
         # logger
-        self.getLogger = Logger(
-            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
-        )
+        self.getLogger = Logger()
         self.logger = self.getLogger.getLogger()
 
         self.chrome = chrome
@@ -51,22 +49,22 @@ class CookieLogin:
 
         # インスタンス
         self.browser = SeleniumBasicOperations(
-            chrome=self.chrome, homeUrl=self.homeUrl, debugMode=debugMode
+            chrome=self.chrome, homeUrl=self.homeUrl,
         )
-        self.driverWait = Wait(chrome=self.chrome, debugMode=debugMode)
+        self.driverWait = Wait(chrome=self.chrome, )
         self.cookieManager = CookieManager(
             chrome=self.chrome,
             loginUrl=self.loginUrl,
             homeUrl=self.homeUrl,
-            debugMode=debugMode,
+            ,
         )
         self.idLogin = SingleSiteIDLogin(
             chrome=self.chrome,
             homeUrl=self.homeUrl,
             loginUrl=self.loginUrl,
-            debugMode=debugMode,
+            ,
         )
-        self.element = ElementManager(chrome=self.chrome, debugMode=debugMode)
+        self.element = ElementManager(chrome=self.chrome, )
 
     # ----------------------------------------------------------------------------------
     # 2段階ログイン

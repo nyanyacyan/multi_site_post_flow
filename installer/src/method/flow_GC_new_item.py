@@ -27,22 +27,22 @@ from const_element import LoginInfo, GssInfo, SellInfo
 # 一連の流れ
 
 class FlowGCNewItem:
-    def __init__(self, debugMode=True):
+    def __init__(self):
 
         # logger
-        self.getLogger = Logger(moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode)
+        self.getLogger = Logger(moduleName=FileName.LOG_FILE_NAME.value, )
         self.logger = self.getLogger.getLogger()
 
         # chrome
-        self.chromeManager = ChromeManager(debugMode=debugMode)
+        self.chromeManager = ChromeManager()
         self.chrome = self.chromeManager.flowSetupChrome()
 
 
         # インスタンス
-        self.login = SingleSiteIDLogin(chrome=self.chrome, debugMode=debugMode)
-        self.random_sleep = SeleniumBasicOperations(chrome=self.chrome, debugMode=debugMode)
-        self.gss_read = GetDataGSSAPI(debugMode=debugMode)
-        self.element = ElementManager(chrome=self.chrome, debugMode=debugMode)
+        self.login = SingleSiteIDLogin(chrome=self.chrome, )
+        self.random_sleep = SeleniumBasicOperations(chrome=self.chrome, )
+        self.gss_read = GetDataGSSAPI()
+        self.element = ElementManager(chrome=self.chrome, )
 
         # ランダム待機
         self.random_sleep = self.random_sleep._random_sleep()

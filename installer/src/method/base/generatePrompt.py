@@ -26,17 +26,15 @@ decoInstance = Decorators(debugMode=True)
 
 
 class GeneratePrompt:
-    def __init__(self, debugMode=True):
+    def __init__(self):
 
         # logger
-        self.getLogger = Logger(
-            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
-        )
+        self.getLogger = Logger()
         self.logger = self.getLogger.getLogger()
 
         # インスタンス
-        self.fileWrite = FileWrite(debugMode=debugMode)
-        self.errorHandler = GeneratePromptHandler(debugMode=debugMode)
+        self.fileWrite = FileWrite()
+        self.errorHandler = GeneratePromptHandler()
 
     # ----------------------------------------------------------------------------------
     # DataFrameからPrompt生成する

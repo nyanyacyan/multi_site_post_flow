@@ -20,7 +20,7 @@ from .ApiRequest import ApiRequest
 
 
 class OverrideApiRequest(ApiRequest):
-    def __init__(self, debugMode=True):
+    def __init__(self):
         super().__init__(debugMode)
 
     def apiRequest(
@@ -59,9 +59,7 @@ class XPoster:
     ):
 
         # logger
-        self.getLogger = Logger(
-            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
-        )
+        self.getLogger = Logger()
         self.logger = self.getLogger.getLogger()
 
         # apikey
@@ -77,7 +75,7 @@ class XPoster:
         )
 
         # instance
-        self.apiRequest = OverrideApiRequest(debugMode=debugMode)
+        self.apiRequest = OverrideApiRequest()
 
     # ----------------------------------------------------------------------------------
     # Twitterの画像付きでアップ
@@ -170,13 +168,9 @@ class XPoster:
 
 
 class InstagramPoster:
-    def __init__(
-        self, instAccessToken: str, instBusinessAccountId: str, debugMode=True
-    ):
+    def __init__(self, instAccessToken: str, instBusinessAccountId: str):
         # logger
-        self.getLogger = Logger(
-            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
-        )
+        self.getLogger = Logger()
         self.logger = self.getLogger.getLogger()
 
         # apikey
@@ -184,7 +178,7 @@ class InstagramPoster:
         self.instBusinessAccountId = instBusinessAccountId
 
         # インスタンス
-        self.apiRequest = OverrideApiRequest(debugMode=debugMode)
+        self.apiRequest = OverrideApiRequest()
 
     # ----------------------------------------------------------------------------------
     # Instagramは画像を投稿してIDを取得する必要がある

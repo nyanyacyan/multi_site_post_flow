@@ -17,7 +17,6 @@ from .path import BaseToPath
 from .decorators import Decorators
 
 
-
 decoInstance = Decorators(debugMode=True)
 
 
@@ -26,16 +25,14 @@ decoInstance = Decorators(debugMode=True)
 
 
 class ResultFileRead:
-    def __init__(self, debugMode=True):
+    def __init__(self):
 
         # logger
-        self.getLogger = Logger(
-            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
-        )
+        self.getLogger = Logger()
         self.logger = self.getLogger.getLogger()
 
         # インスタンス
-        self.path = BaseToPath(debugMode=debugMode)
+        self.path = BaseToPath()
 
     # ----------------------------------------------------------------------------------
 
@@ -153,16 +150,14 @@ class ResultFileRead:
 
 
 class InputDataFileRead:
-    def __init__(self, debugMode=True):
+    def __init__(self):
 
         # logger
-        self.getLogger = Logger(
-            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
-        )
+        self.getLogger = Logger()
         self.logger = self.getLogger.getLogger()
 
         # インスタンス
-        self.path = BaseToPath(debugMode=debugMode)
+        self.path = BaseToPath()
 
     # ----------------------------------------------------------------------------------
 
@@ -243,16 +238,14 @@ class InputDataFileRead:
 
 
 class AsyncResultFileRead:
-    def __init__(self, debugMode=True):
+    def __init__(self):
 
         # logger
-        self.getLogger = Logger(
-            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
-        )
+        self.getLogger = Logger()
         self.logger = self.getLogger.getLogger()
 
         # インスタンス
-        self.path = BaseToPath(debugMode=debugMode)
+        self.path = BaseToPath()
 
     # ----------------------------------------------------------------------------------
     # pickleの読込

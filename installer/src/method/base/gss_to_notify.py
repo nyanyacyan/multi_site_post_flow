@@ -13,7 +13,6 @@ from datetime import datetime
 from selenium.common.exceptions import NoSuchElementException
 
 
-
 # 自作モジュール
 from .spreadsheetRead import GSSReadNoID
 from .utils import Logger
@@ -37,25 +36,29 @@ load_dotenv()
 
 
 class GssToNotify:
-    def __init__(self, gss_url, chrome, debugMode=True) -> None:
+    def __init__(self, gss_url, chrome) -> None:
         # logger
-        self.getLogger = Logger(
-            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
-        )
+        self.getLogger = Logger()
         self.logger = self.getLogger.getLogger()
 
         self.gss_url = gss_url
         self.chrome = chrome
 
         # インスタンス化
-        self.gss_read = GSSReadNoID(gss_url=self.gss_url, debugMode=debugMode)
-        self.selenium = SeleniumBasicOperations(chrome=self.chrome, debugMode=debugMode)
-        self.element = ElementManager(chrome=self.chrome, debugMode=debugMode)
-        self.chatWork = ChatworkNotify(debugMode=debugMode)
-        self.path = BaseToPath(debugMode=debugMode)
+        self.gss_read = GSSReadNoID(
+            gss_url=self.gss_url,
+        )
+        self.selenium = SeleniumBasicOperations(
+            chrome=self.chrome,
+        )
+        self.element = ElementManager(
+            chrome=self.chrome,
+        )
+        self.chatWork = ChatworkNotify()
+        self.path = BaseToPath()
         self.currentDate = datetime.now().strftime("%y%m%d_%H%M%S")
-        self.append_write = AppendWrite(debugMode=debugMode)
-        self.can_wait = ClickDeco(debugMode=debugMode)
+        self.append_write = AppendWrite()
+        self.can_wait = ClickDeco()
 
     # ----------------------------------------------------------------------------------
 

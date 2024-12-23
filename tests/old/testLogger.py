@@ -18,14 +18,14 @@ from installer.src.method.base.utils import Logger
 # 単体テスト 写真を取得
 
 
-
 # 成功したときのテスト
 # @patch('method')→この中にいれるmethodがモック化される→モック化されたものは引数に渡す必要がある
+
 
 class TestLogger:
     def testContextSuccess(self):
         # ロガーのインスタンス化
-        instance = Logger(__name__, debugMode=True)
+        instance = Logger(__name__)
         logger = instance.getLogger()
 
         # ログ出力をキャプチャするための設定
@@ -42,8 +42,8 @@ class TestLogger:
         # 結果の検証
         assert "abc" in log_output
 
-
         # クリーンアップ
         logger.removeHandler(handler)
+
 
 # ----------------------------------------------------------------------------------

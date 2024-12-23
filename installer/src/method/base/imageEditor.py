@@ -21,14 +21,12 @@ from const_str import FileName, Extension
 
 
 class ImageEditor:
-    def __init__(self, debugMode=True):
+    def __init__(self):
         # logger
-        self.getLogger = Logger(
-            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
-        )
+        self.getLogger = Logger()
         self.logger = self.getLogger.getLogger()
 
-        self.path = BaseToPath(debugMode=debugMode)
+        self.path = BaseToPath()
 
         self.imageSize = (1080, 1080)
 

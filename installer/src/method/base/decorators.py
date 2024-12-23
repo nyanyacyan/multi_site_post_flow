@@ -34,24 +34,22 @@ load_dotenv()
 
 
 class Decorators:
-    def __init__(self, debugMode=True):
+    def __init__(self):
 
         # logger
-        self.getLogger = Logger(
-            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
-        )
+        self.getLogger = Logger()
         self.logger = self.getLogger.getLogger()
 
         # インスタンス化
-        self.networkError = NetworkHandler(debugMode=debugMode)
-        self.fileError = FileWriteError(debugMode=debugMode)
-        self.basePath = BaseToPath(debugMode=debugMode)
-        self.requestError = RequestRetryAction(debugMode=debugMode)
-        self.fileHandler = FileReadHandler(debugMode=debugMode)
-        self.generatePromptHandler = GeneratePromptHandler(debugMode=debugMode)
-        self.chromeHandler = ChromeHandler(debugMode=debugMode)
-        self.sysCommand = SysCommand(debugMode=debugMode)
-        self.sqliteHandler = SqliteError(debugMode=debugMode)
+        self.networkError = NetworkHandler()
+        self.fileError = FileWriteError()
+        self.basePath = BaseToPath()
+        self.requestError = RequestRetryAction()
+        self.fileHandler = FileReadHandler()
+        self.generatePromptHandler = GeneratePromptHandler()
+        self.chromeHandler = ChromeHandler()
+        self.sysCommand = SysCommand()
+        self.sqliteHandler = SqliteError()
 
     # ----------------------------------------------------------------------------------
 

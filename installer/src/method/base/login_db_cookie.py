@@ -31,19 +31,17 @@ from const_str import StatusName, FileName
 
 
 class SingleLoginDBCookie:
-    def __init__(self, chrome: WebDriver, db_file_name: str, debugMode=True):
+    def __init__(self, chrome: WebDriver, db_file_name: str):
         # logger
-        self.getLogger = Logger(
-            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
-        )
+        self.getLogger = Logger()
         self.logger = self.getLogger.getLogger()
 
         self.chrome = chrome
 
         # インスタンス
-        self.element = ElementManager(chrome=chrome, debugMode=debugMode)
-        self.wait = Wait(chrome=self.chrome, debugMode=debugMode)
-        self.selenium = SeleniumBasicOperations(chrome=self.chrome, debugMode=debugMode)
+        self.element = ElementManager(chrome=chrome, )
+        self.wait = Wait(chrome=self.chrome, )
+        self.selenium = SeleniumBasicOperations(chrome=self.chrome, )
 
         # 必要情報
         self.db_file_name = db_file_name
@@ -54,9 +52,9 @@ class SingleLoginDBCookie:
             chrome=self.chrome,
             db_file_name=db_file_name,
             table_pattern_info=self.table_pattern_info,
-            debugMode=debugMode,
+            ,
         )
-        self.file_read = ResultFileRead(debugMode=debugMode)
+        self.file_read = ResultFileRead()
 
     # ----------------------------------------------------------------------------------
     # Cookieの情報をDBから取得

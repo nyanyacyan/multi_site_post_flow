@@ -33,22 +33,19 @@ from const_str import FileName
 
 
 class DataFormatterToSql:
-    def __init__(self, chrome: WebDriver, debugMode=True):
-
+    def __init__(self, chrome: WebDriver):
         # logger
-        self.getLogger = Logger(
-            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
-        )
+        self.getLogger = Logger()
         self.logger = self.getLogger.getLogger()
 
         self.chrome = chrome
 
-        self.insertSql = InsertSql(chrome=self.chrome, debugMode=debugMode)
-        self.textManager = TextManager(debugMode=debugMode)
-        self.imageEditor = ImageEditor(debugMode=debugMode)
-        self.fileWrite = LimitSabDirFileWrite(debugMode=debugMode)
+        self.insertSql = InsertSql(chrome=self.chrome)
+        self.textManager = TextManager()
+        self.imageEditor = ImageEditor()
+        self.fileWrite = LimitSabDirFileWrite()
         self.currentDate = datetime.now().strftime("%y%m%d")
-        self.popup = Popup(debugMode=debugMode)
+        self.popup = Popup()
 
     # ----------------------------------------------------------------------------------
     # 各データをパターンごとにまとめる辞書

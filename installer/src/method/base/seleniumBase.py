@@ -24,17 +24,15 @@ jsComplete = jsCompleteWaitDeco(debugMode=True)
 
 
 class SeleniumBasicOperations:
-    def __init__(self, chrome: WebDriver, debugMode=True):
+    def __init__(self, chrome: WebDriver):
         # logger
-        self.getLogger = Logger(
-            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
-        )
+        self.getLogger = Logger()
         self.logger = self.getLogger.getLogger()
 
         self.chrome = chrome
 
-        self.jsComplete = jsCompleteWaitDeco(debugMode=debugMode)
-        self.path = BaseToPath(debugMode=debugMode)
+        self.jsComplete = jsCompleteWaitDeco()
+        self.path = BaseToPath()
         self.currentDate = datetime.now().strftime("%y%m%d_%H%M%S")
 
     # ----------------------------------------------------------------------------------

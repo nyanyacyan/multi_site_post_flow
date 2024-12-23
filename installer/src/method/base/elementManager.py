@@ -30,18 +30,18 @@ decoInstance = Decorators(debugMode=True)
 
 
 class ElementManager:
-    def __init__(self, chrome: WebDriver, debugMode=True):
+    def __init__(self, chrome: WebDriver):
         # logger
-        self.getLogger = Logger(
-            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
-        )
+        self.getLogger = Logger()
         self.logger = self.getLogger.getLogger()
 
         self.chrome = chrome
         self.currentDate = datetime.now().strftime("%y%m%d_%H%M%S")
-        self.textManager = TextManager(debugMode=debugMode)
-        self.clickWait = ClickDeco(debugMode=debugMode)
-        self.wait = Wait(chrome=self.chrome, debugMode=debugMode)
+        self.textManager = TextManager()
+        self.clickWait = ClickDeco()
+        self.wait = Wait(
+            chrome=self.chrome,
+        )
 
     # ----------------------------------------------------------------------------------
 

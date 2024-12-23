@@ -28,18 +28,15 @@ decoInstance = Decorators(debugMode=True)
 
 
 class SqliteInsert:
-    def __init__(self, db_file_name: str, table_pattern_info: Dict, debugMode=True):
-
+    def __init__(self, db_file_name: str, table_pattern_info: Dict):
         # logger
-        self.getLogger = Logger(
-            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
-        )
+        self.getLogger = Logger()
         self.logger = self.getLogger.getLogger()
 
         # インスタンス化
-        self.networkError = NetworkHandler(debugMode=debugMode)
-        self.path = BaseToPath(debugMode=debugMode)
-        self.sql_base = SqliteBase(debugMode=debugMode)
+        self.networkError = NetworkHandler()
+        self.path = BaseToPath()
+        self.sql_base = SqliteBase()
 
         # 必要情報
         self.table_pattern_info = table_pattern_info  # スキーマ情報を保持
@@ -134,18 +131,16 @@ class SqliteInsert:
 
 
 class SqliteUpdate:
-    def __init__(self, db_file_name: str, table_pattern_info: Dict, debugMode=True):
+    def __init__(self, db_file_name: str, table_pattern_info: Dict):
 
         # logger
-        self.getLogger = Logger(
-            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
-        )
+        self.getLogger = Logger()
         self.logger = self.getLogger.getLogger()
 
         # インスタンス化
-        self.networkError = NetworkHandler(debugMode=debugMode)
-        self.path = BaseToPath(debugMode=debugMode)
-        self.sql_base = SqliteBase(debugMode=debugMode)
+        self.networkError = NetworkHandler()
+        self.path = BaseToPath()
+        self.sql_base = SqliteBase()
 
         # 必要情報
         self.table_pattern_info = table_pattern_info  # スキーマ情報を保持
@@ -260,18 +255,16 @@ class SqliteUpdate:
 
 
 class SqliteRead:
-    def __init__(self, db_file_name: str, table_pattern_info: Dict, debugMode=True):
+    def __init__(self, db_file_name: str, table_pattern_info: Dict):
 
         # logger
-        self.getLogger = Logger(
-            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
-        )
+        self.getLogger = Logger()
         self.logger = self.getLogger.getLogger()
 
         # インスタンス化
-        self.networkError = NetworkHandler(debugMode=debugMode)
-        self.path = BaseToPath(debugMode=debugMode)
-        self.sql_base = SqliteBase(debugMode=debugMode)
+        self.networkError = NetworkHandler()
+        self.path = BaseToPath()
+        self.sql_base = SqliteBase()
 
         # 必要情報
         self.table_pattern_info = table_pattern_info  # スキーマ情報を保持
@@ -375,16 +368,14 @@ class SqliteRead:
 
 
 class SqliteBuckup:
-    def __init__(self, db_file_name: str, debugMode=True):
+    def __init__(self, db_file_name: str):
 
         # logger
-        self.getLogger = Logger(
-            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
-        )
+        self.getLogger = Logger()
         self.logger = self.getLogger.getLogger()
 
         # インスタンス化
-        self.path = BaseToPath(debugMode=debugMode)
+        self.path = BaseToPath()
 
         # 必要情報
         self.db_file_name = db_file_name

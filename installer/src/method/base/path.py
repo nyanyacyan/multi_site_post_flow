@@ -22,16 +22,14 @@ from .errorHandlers import AccessFileNotFoundError
 
 
 class BaseToPath:
-    def __init__(self, debugMode=True):
+    def __init__(self):
 
         # logger
-        self.getLogger = Logger(
-            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
-        )
+        self.getLogger = Logger()
         self.logger = self.getLogger.getLogger()
 
         # インスタンス
-        self.fileNotFoundError = AccessFileNotFoundError(debugMode=debugMode)
+        self.fileNotFoundError = AccessFileNotFoundError()
         self.currentDate = datetime.now().strftime("%y%m%d")
         self.fullCurrentDate = datetime.now().strftime("%y%m%d_%H%M%S")
 

@@ -28,17 +28,14 @@ decoInstance = Decorators(debugMode=True)
 
 
 class FileWrite:
-    def __init__(self, debugMode=True):
-
+    def __init__(self):
         # logger
-        self.getLogger = Logger(
-            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
-        )
+        self.getLogger = Logger()
         self.logger = self.getLogger.getLogger()
 
         # インスタンス
-        self.errorhandler = FileWriteError(debugMode=debugMode)
-        self.path = BaseToPath(debugMode=debugMode)
+        self.errorhandler = FileWriteError()
+        self.path = BaseToPath()
         self.currentDate = datetime.now().strftime("%y%m%d_%H%M%S")
 
     # ----------------------------------------------------------------------------------
@@ -166,17 +163,15 @@ class FileWrite:
 
 
 class LimitFileWrite:
-    def __init__(self, debugMode=True):
+    def __init__(self):
 
         # logger
-        self.getLogger = Logger(
-            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
-        )
+        self.getLogger = Logger()
         self.logger = self.getLogger.getLogger()
 
         # インスタンス
-        self.errorhandler = FileWriteError(debugMode=debugMode)
-        self.path = BaseToPath(debugMode=debugMode)
+        self.errorhandler = FileWriteError()
+        self.path = BaseToPath()
         self.currentDate = datetime.now().strftime("%y%m%d")
 
     # ----------------------------------------------------------------------------------
@@ -380,9 +375,7 @@ class PDFWhite(FPDF):
         super().__init__()
 
         # logger
-        self.getLogger = Logger(
-            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
-        )
+        self.getLogger = Logger()
         self.logger = self.getLogger.getLogger()
 
         fontPath = os.path.join(
@@ -539,17 +532,15 @@ class PDFWhite(FPDF):
 
 
 class LimitSabDirFileWrite:
-    def __init__(self, debugMode=True):
+    def __init__(self):
 
         # logger
-        self.getLogger = Logger(
-            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
-        )
+        self.getLogger = Logger()
         self.logger = self.getLogger.getLogger()
 
         # インスタンス
-        self.errorhandler = FileWriteError(debugMode=debugMode)
-        self.path = BaseToPath(debugMode=debugMode)
+        self.errorhandler = FileWriteError()
+        self.path = BaseToPath()
         self.currentDate = datetime.now().strftime("%y%m%d")
 
     # ----------------------------------------------------------------------------------
@@ -639,17 +630,15 @@ class LimitSabDirFileWrite:
 
 
 class AsyncLimitSabDirFileWrite:
-    def __init__(self, debugMode=True):
+    def __init__(self):
 
         # logger
-        self.getLogger = Logger(
-            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
-        )
+        self.getLogger = Logger()
         self.logger = self.getLogger.getLogger()
 
         # インスタンス
-        self.errorhandler = FileWriteError(debugMode=debugMode)
-        self.path = BaseToPath(debugMode=debugMode)
+        self.errorhandler = FileWriteError()
+        self.path = BaseToPath()
         self.currentDate = datetime.now().strftime("%y%m%d")
 
     # ----------------------------------------------------------------------------------
@@ -732,17 +721,15 @@ class AsyncLimitSabDirFileWrite:
 
 
 class AppendWrite:
-    def __init__(self, debugMode=True):
+    def __init__(self):
 
         # logger
-        self.getLogger = Logger(
-            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
-        )
+        self.getLogger = Logger()
         self.logger = self.getLogger.getLogger()
 
         # インスタンス
-        self.errorhandler = FileWriteError(debugMode=debugMode)
-        self.path = BaseToPath(debugMode=debugMode)
+        self.errorhandler = FileWriteError()
+        self.path = BaseToPath()
         self.currentDate = datetime.now().strftime("%y%m%d")
 
     # ----------------------------------------------------------------------------------

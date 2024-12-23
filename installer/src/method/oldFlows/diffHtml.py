@@ -21,18 +21,16 @@ from ..base.spreadsheetRead import GSSAPILogin
 
 
 class DiffHtml:
-    def __init__(self, exclusion_sheet_url, debugMode=True):
+    def __init__(self, exclusion_sheet_url):
         self.exclusion_sheet_url = exclusion_sheet_url
 
         # logger
-        self.getLogger = Logger(
-            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
-        )
+        self.getLogger = Logger()
         self.logger = self.getLogger.getLogger()
 
         # インスタンス
-        self.spreadsheet = GSSAPILogin(debugMode=debugMode)
-        self.fileWhite = FileWrite(debugMode=debugMode)
+        self.spreadsheet = GSSAPILogin()
+        self.fileWhite = FileWrite()
         self.timestamp = datetime.now().strftime("%m-%d_%H-%M")
 
     # ----------------------------------------------------------------------------------

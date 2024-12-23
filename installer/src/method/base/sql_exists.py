@@ -29,18 +29,16 @@ decoInstance = Decorators(debugMode=True)
 
 
 class SqliteExistsHandler:
-    def __init__(self, db_file_name: str, table_pattern_info: Dict, debugMode=True):
+    def __init__(self, db_file_name: str, table_pattern_info: Dict):
 
         # logger
-        self.getLogger = Logger(
-            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
-        )
+        self.getLogger = Logger()
         self.logger = self.getLogger.getLogger()
 
         # インスタンス化
-        self.networkError = NetworkHandler(debugMode=debugMode)
-        self.path = BaseToPath(debugMode=debugMode)
-        self.sql_base = SqliteBase(debugMode=debugMode)
+        self.networkError = NetworkHandler()
+        self.path = BaseToPath()
+        self.sql_base = SqliteBase()
 
         # 必要情報
         self.table_pattern_info = table_pattern_info  # スキーマ情報を保持

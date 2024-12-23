@@ -17,15 +17,13 @@ from installer.src.method.oldFlows.flow_get_cookie import Flow
 
 
 class Main:
-    def __init__(self, debugMode=True):
+    def __init__(self):
 
         # logger
-        self.getLogger = Logger(
-            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
-        )
+        self.getLogger = Logger()
         self.logger = self.getLogger.getLogger()
 
-        self.flow = Flow(debugMode=debugMode)
+        self.flow = Flow()
 
     async def main(self):
         start_time = time.time()

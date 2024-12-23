@@ -32,17 +32,15 @@ decoInstance = Decorators(debugMode=True)
 
 
 class SpreadsheetRead:
-    def __init__(self, sheet_url, account_id, debugMode=True):
+    def __init__(self, sheet_url, account_id):
         self.sheet_url = sheet_url
         self.account_id = account_id
 
         # logger
-        self.getLogger = Logger(
-            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
-        )
+        self.getLogger = Logger()
         self.logger = self.getLogger.getLogger()
 
-        self.path = BaseToPath(debugMode=debugMode)
+        self.path = BaseToPath()
         self.df = self.load_spreadsheet()
 
     ####################################################################################
@@ -96,13 +94,11 @@ class SpreadsheetRead:
 
 
 class GSSReadNoID:
-    def __init__(self, gss_url, debugMode=True):
+    def __init__(self, gss_url):
         self.gss_url = gss_url
 
         # logger
-        self.getLogger = Logger(
-            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
-        )
+        self.getLogger = Logger()
         self.logger = self.getLogger.getLogger()
 
     ####################################################################################
@@ -132,17 +128,15 @@ class GSSReadNoID:
 
 
 class GetDataGSSAPI:
-    def __init__(self, debugMode=True):
+    def __init__(self):
 
         # logger
-        self.getLogger = Logger(
-            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
-        )
+        self.getLogger = Logger()
         self.logger = self.getLogger.getLogger()
 
         # インスタンス
-        self.path = BaseToPath(debugMode=debugMode)
-        self.decorators = Decorators(debugMode=debugMode)
+        self.path = BaseToPath()
+        self.decorators = Decorators()
 
     # ----------------------------------------------------------------------------------
     # APIを使ってGSSからデータを取得してDataFrameに変換

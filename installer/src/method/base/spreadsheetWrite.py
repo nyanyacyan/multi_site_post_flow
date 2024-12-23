@@ -32,17 +32,15 @@ load_dotenv()
 
 
 class SpreadsheetWrite:
-    def __init__(self, jsonKeyName: str, debugMode=True):
+    def __init__(self, jsonKeyName: str):
 
         # logger
-        self.getLogger = Logger(
-            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
-        )
+        self.getLogger = Logger()
         self.logger = self.getLogger.getLogger()
 
         # インスタンス
-        self.networkError = NetworkHandler(debugMode=debugMode)
-        self.path = BaseToPath(debugMode=debugMode)
+        self.networkError = NetworkHandler()
+        self.path = BaseToPath()
 
         # jsonファイル
         self.jsonKeyName = self.path.getReadFilePath(fileName=jsonKeyName)

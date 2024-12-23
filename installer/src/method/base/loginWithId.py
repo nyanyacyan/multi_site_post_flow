@@ -36,21 +36,19 @@ decoInstanceClick = ClickDeco(debugMode=True)
 
 
 class SingleSiteIDLogin:
-    def __init__(self, chrome: WebDriver, debugMode=True):
+    def __init__(self, chrome: WebDriver):
         # logger
-        self.getLogger = Logger(
-            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
-        )
+        self.getLogger = Logger()
         self.logger = self.getLogger.getLogger()
 
         self.chrome = chrome
 
         # インスタンス
-        self.element = ElementManager(chrome=chrome, debugMode=debugMode)
-        self.wait = Wait(chrome=self.chrome, debugMode=debugMode)
-        self.path = BaseToPath(debugMode=debugMode)
-        self.pickle_write = LimitSabDirFileWrite(debugMode=debugMode)
-        self.pickle_read = ResultFileRead(debugMode=debugMode)
+        self.element = ElementManager(chrome=chrome)
+        self.wait = Wait(chrome=self.chrome)
+        self.path = BaseToPath()
+        self.pickle_write = LimitSabDirFileWrite()
+        self.pickle_read = ResultFileRead()
 
     # ----------------------------------------------------------------------------------
     # IDログイン
@@ -241,7 +239,7 @@ class SingleSiteIDLogin:
 
 
 class MultiSiteIDLogin(SingleSiteIDLogin):
-    def __init__(self, chrome, debugMode=True):
+    def __init__(self, chrome):
         super().__init__(chrome, debugMode)
 
     # ----------------------------------------------------------------------------------
