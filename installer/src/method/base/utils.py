@@ -43,7 +43,10 @@ class LoggerBasicColor(logging.Formatter):
 
 class Logger:
     def __init__(self, debugMode: bool=True):
-          # このメソッド名のLoggerを生成
+        # このメソッド名のLoggerを生成
+        file_name = FileName.LOG_FILE_NAME.value
+        self.logger = logging.getLogger(file_name)
+
         self.debugMode = debugMode
 
         # インスタンス
@@ -129,8 +132,6 @@ class Logger:
 
 
     def getLogger(self):
-        file_name = FileName.LOG_FILE_NAME.value
-        self.logger = logging.getLogger(file_name)
         return self.logger
 
 

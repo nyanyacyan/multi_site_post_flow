@@ -19,7 +19,7 @@ from .decorators import Decorators
 from const_str import FileName
 
 
-decoInstance = Decorators(debugMode=True)
+decoInstance = Decorators()
 
 
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$

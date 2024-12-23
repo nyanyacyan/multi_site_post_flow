@@ -16,40 +16,38 @@ from installer.src.method.base.fileRead import ResultFileRead
 # **********************************************************************************
 # pytestを実行する
 
+
 class TestFileRead:
 
-# ----------------------------------------------------------------------------------
+    # ----------------------------------------------------------------------------------
 
+    def testSuccess(self):
+        fileName = "dummyName"
 
-	def testSuccess(self):
-		fileName = 'dummyName'
+        instance = ResultFileRead()
 
-		instance = ResultFileRead(debugMode=True)
+        with patch("builtins.open", mock_open()) as mockedFile:
 
-		with patch('builtins.open', mock_open()) as mockedFile:
+            instance.readTextToResult(fileName=fileName)
 
-			instance.readTextToResult(fileName=fileName)
+            mockedFile().read.assert_called_once_with()
 
-			mockedFile().read.assert_called_once_with()
+    # ----------------------------------------------------------------------------------
 
+    def testError(self):
+        fileName = "dummyName"
 
-# ----------------------------------------------------------------------------------
+        instance = ResultFileRead()
 
+        with patch("builtins.open", mock_open()) as mockedFile:
 
-	def testError(self):
-		fileName = 'dummyName'
+            mockedFile.side_effect = FileNotFoundError
 
-		instance = ResultFileRead(debugMode=True)
+            with pytest.raises(FileNotFoundError):
 
-		with patch('builtins.open', mock_open()) as mockedFile:
+                instance.readTextResult(fileName=fileName)
 
-			mockedFile.side_effect = FileNotFoundError
-
-			with pytest.raises(FileNotFoundError):
-
-				instance.readTextResult(fileName=fileName)
-
-				mockedFile().write.assert_called_once_with()
+                mockedFile().write.assert_called_once_with()
 
 
 # ----------------------------------------------------------------------------------

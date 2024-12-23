@@ -17,7 +17,7 @@ from .path import BaseToPath
 from .decorators import Decorators
 
 
-decoInstance = Decorators(debugMode=True)
+decoInstance = Decorators()
 
 
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$

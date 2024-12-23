@@ -24,7 +24,7 @@ from const_str import FileName
 
 load_dotenv()
 
-decoInstance = Decorators(debugMode=True)
+decoInstance = Decorators()
 
 
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$

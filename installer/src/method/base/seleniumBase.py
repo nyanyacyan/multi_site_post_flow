@@ -17,7 +17,7 @@ from .path import BaseToPath
 
 from const_str import SubDir, Extension, FileName
 
-jsComplete = jsCompleteWaitDeco(debugMode=True)
+jsComplete = jsCompleteWaitDeco()
 
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 # **********************************************************************************

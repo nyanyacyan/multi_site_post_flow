@@ -19,7 +19,7 @@ from .path import BaseToPath
 from .errorHandlers import FileWriteError
 from .decorators import Decorators
 
-decoInstance = Decorators(debugMode=True)
+decoInstance = Decorators()
 
 
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
@@ -370,7 +370,6 @@ class PDFWhite(FPDF):
         margin: int = 8,
         font: str = "ArialUnicode",
         fontSize: int = 12,
-        debugMode=True,
     ):
         super().__init__()
 

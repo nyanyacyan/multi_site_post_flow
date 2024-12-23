@@ -18,7 +18,7 @@ from .decorators import Decorators
 from const_str import Extension
 from constSqliteTable import TableSchemas
 
-decoInstance = Decorators(debugMode=True)
+decoInstance = Decorators()
 
 
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$

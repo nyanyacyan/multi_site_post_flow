@@ -19,7 +19,7 @@ from const_str import Extension
 from constSqliteTable import TableSchemas
 from const_sql_comment import SqlitePrompt
 
-decoInstance = Decorators(debugMode=True)
+decoInstance = Decorators()
 
 
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$

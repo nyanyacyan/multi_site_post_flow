@@ -28,9 +28,8 @@ from const_element import LoginInfo, GssInfo, SellInfo
 
 class FlowGCNewItem:
     def __init__(self):
-
         # logger
-        self.getLogger = Logger(moduleName=FileName.LOG_FILE_NAME.value, )
+        self.getLogger = Logger()
         self.logger = self.getLogger.getLogger()
 
         # chrome
@@ -97,65 +96,157 @@ class FlowGCNewItem:
 
 
 # ----------------------------------------------------------------------------------
-
+# TODO ここを別クラスにしてそれぞれのクラスで使えるようにする
 
     def sell_process(self, sell_data: Dict, sell_info: Dict):
         # 出品ボタンをクリック
-        self.element.clickElement(value=sell_info['SELL_BTN'])
+        self._sell_btn_click(sell_info)
 
         # 画像添付
-        self.element.files_input(by=sell_info['FILE_INPUT_BY'], value=sell_info['FILE_INPUT_VALUE'], check_by=sell_info['CHECK_BY'], check_value=sell_info['CHECK_VALUE'], file_path_list=sell_data[])
+        self._files_input(sell_data, sell_info)
 
         # ゲームタイトルクリック
+        self._game_title_click(sell_info=sell_info)
+
+        # POPUPタイトル入力
+        self._popup_title_input(sell_info=sell_info)
+
+        # タイトルを選択
+        self._category_select(sell_data=sell_data, sell_info=sell_info)
+
+        # 出品タイトル
+        self._input_sell_title(sell_data=sell_data, sell_info=sell_info)
+
+        # 商品説明
+        self._input_game_explanation(sell_data=sell_data, sell_info=sell_info)
+
+        # 課金総額
+        self._input_charge(sell_data=sell_data, sell_info=sell_info)
+
+        # 買い手への初回msg
+        self._input_first_msg(sell_data=sell_data, sell_info=sell_info)
+
+
+
+
+
+# ----------------------------------------------------------------------------------
+# 出品ボタンをクリック
+
+    def _sell_btn_click(self, sell_info: Dict):
+        self.element.clickElement(value=sell_info['SELL_BTN'])
+
+
+# ----------------------------------------------------------------------------------
+# 画像添付
+
+    def _files_input(self, sell_data: Dict, sell_info: Dict):
+
+        self.element.files_input(by=sell_info['FILE_INPUT_BY'], value=sell_info['FILE_INPUT_VALUE'], check_by=sell_info['CHECK_BY'], check_value=sell_info['CHECK_VALUE'], file_path_list=sell_data['画像データ'])
+
+
+# ----------------------------------------------------------------------------------
+# ゲームタイトルクリック
+
+    def _game_title_click(self, sell_info: Dict):
+
         self.element.clickElement(value=sell_info['TITLE_CLICK_VALUE'])
         self.random_sleep
 
-        # POPUPタイトル入力
+
+# ----------------------------------------------------------------------------------
+# POPUPタイトル入力
+
+    def _popup_title_input(self, , sell_data: Dict, sell_info: Dict):
         input_game_title = sell_data['ゲームタイトル']
         self.logger.debug(f'input_game_title: {input_game_title}')
         self.element.clickClearInput(value=sell_info['GAME_TITLE_INPUT_VALUE'], inputText=input_game_title)
         self.random_sleep
 
-        # タイトルを選択
-        # TODO ゲームタイトルを'name'にいれる
-        self.element.clickElement(value=sell_info['GAME_TITLE_SELECT_VALUE'])
+
+# ----------------------------------------------------------------------------------
+# タイトルを選択
+
+    def _game_title_select(self, sell_data: Dict, sell_info: Dict):
+        game_title = sell_data['ゲームタイトル']
+        game_title_path = sell_info['GAME_TITLE_SELECT_VALUE'].format(game_title)
+        self.logger.debug(f'game_title_path: {game_title_path}')
+        self.element.clickElement(value=game_title_path)
         self.random_sleep
 
-        # カテゴリ選択
-        self.element.clickElement(value=sell_info['CATEGORY_SELECT_VALUE'])
-        self.random_sleep
 
-        # 出品タイトル
+# ----------------------------------------------------------------------------------
+# カテゴリ選択
+
+    def _category_select(self, sell_data: Dict, sell_info: Dict):
+        if sell_data['カテゴリ'] == '引退垢':
+            element = self.element.clickElement(value=sell_info['CATEGORY_INTAI_SELECT_VALUE'])
+            self.logger.debug(f'引退垢を選択: {element}')
+            self.random_sleep
+        elif sell_data['カテゴリ'] == 'アイテム・通貨':
+            element = self.element.clickElement(value=sell_info['CATEGORY_ITEM_SELECT_VALUE'])
+            self.logger.debug(f'アイテム・通貨を選択: {element}')
+            self.random_sleep
+        else:
+            element = self.element.clickElement(value=sell_info['CATEGORY_DAIKO_SELECT_VALUE'])
+            self.logger.debug(f'代行を選択: {element}')
+            self.random_sleep
+
+
+# ----------------------------------------------------------------------------------
+# 出品タイトル
+
+    def _input_sell_title(self, sell_data: Dict, sell_info: Dict):
         input_sell_title = sell_data['出品タイトル']
         self.logger.debug(f'input_sell_title: {input_sell_title}')
-        self.element.clickClearInput(value=sell_info['SELL_TITLE_INPUT_VALUE'], inputText=input_sell_title)
+        self.element.clickClearInput(by=sell_info['SELL_TITLE_INPUT_BY'], value=sell_info['SELL_TITLE_INPUT_VALUE'], inputText=input_sell_title)
         self.random_sleep
 
-        # 商品説明
+
+# ----------------------------------------------------------------------------------
+# 商品説明
+
+    def _input_game_explanation(self, sell_data: Dict, sell_info: Dict):
         input_game_explanation = sell_data['商品説明']
         self.logger.debug(f'input_game_explanation: {input_game_explanation}')
-        self.element.clickClearInput(value=sell_info['SELL_EXPLANATION_INPUT_VALUE'], inputText=input_game_explanation)
+        self.element.clickClearInput(by=sell_info['SELL_EXPLANATION_INPUT_BY'], value=sell_info['SELL_EXPLANATION_INPUT_VALUE'], inputText=input_game_explanation)
         self.random_sleep
 
-        # 課金総額
-        input_game_explanation = sell_data['商品説明']
-        self.logger.debug(f'input_game_explanation: {input_game_explanation}')
-        self.element.clickClearInput(value=sell_info['SELL_EXPLANATION_INPUT_VALUE'], inputText=input_game_explanation)
+
+# ----------------------------------------------------------------------------------
+# 課金総額
+
+    def _input_charge(self, sell_data: Dict, sell_info: Dict):
+        input_charge = sell_data['課金総額']
+        self.logger.debug(f'input_game_explanation: {input_charge}')
+        self.element.clickClearInput(value=sell_info['CHARGE_VALUE'], inputText=input_charge)
         self.random_sleep
 
-        # 買い手への初回msg
+
+# ----------------------------------------------------------------------------------
+# 買い手への初回msg
+
+    def _input_first_msg(self, sell_data: Dict, sell_info: Dict):
         input_first_msg = sell_data['初回メッセージ']
         self.logger.debug(f'input_first_msg: {input_first_msg}')
-        self.element.clickClearInput(value=sell_info['FIRST_MSG_VALUE'], inputText=input_first_msg)
+        self.element.clickClearInput(by=sell_info['FIRST_MSG_BY'], value=sell_info['FIRST_MSG_VALUE'], inputText=input_first_msg)
         self.random_sleep
 
-        # 出品を通知
-        input_game_explanation = sell_data['商品価格']
-        self.logger.debug(f'input_game_explanation: {input_game_explanation}')
-        self.element.clickClearInput(value=sell_info['SELL_EXPLANATION_INPUT_VALUE'], inputText=input_game_explanation)
+
+# ----------------------------------------------------------------------------------
+# 出品を通知
+
+    def _input_sell_notify(self, sell_data: Dict, sell_info: Dict):
+        input_sell_notify = sell_data['出品を通知']
+        self.logger.debug(f'input_sell_notify: {input_sell_notify}')
+        self.element.clickClearInput(value=sell_info['CHARGE_VALUE'], inputText=input_sell_notify)
         self.random_sleep
 
-        # 出品方法
+
+# ----------------------------------------------------------------------------------
+# 出品方法
+
+    def _select_sell_method(self, sell_data: Dict, sell_info: Dict):
         select_sell_method = sell_data['出品方法']
         # TODO 出品方法から得た値を受け取って選択する
         if select_sell_method == 'タイムセール':
@@ -164,16 +255,23 @@ class FlowGCNewItem:
             self.element.clickElement(value=sell_info['SELL_METHOD_FURIMA_VALUE'])
         self.random_sleep
 
-        # 商品価格
+
+# ----------------------------------------------------------------------------------
+# 商品価格
+
+    def _input_price(self, sell_data: Dict, sell_info: Dict):
         input_price = sell_data['商品価格']
         self.logger.debug(f'input_price: {input_price}')
         self.element.clickClearInput(value=sell_info['PRICE_VALUE'], inputText=input_price)
         self.random_sleep
 
-        # 確認する
+
+# ----------------------------------------------------------------------------------
+# 確認する
+
+    def _check_click(self, sell_info: Dict):
         self.element.clickElement(value=sell_info['CHECK_VALUE'])
         self.random_sleep
-
 
 
 # ----------------------------------------------------------------------------------

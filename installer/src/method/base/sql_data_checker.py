@@ -63,7 +63,7 @@ class SqliteChecker:
 
 if __name__ == "__main__":
     print("デバッグを開始")
-    sqlite_checker = SqliteChecker(debugMode=True)
+    sqlite_checker = SqliteChecker()
 
     #! ここを調べたいPathに変更
     db_path = "/Users/nyanyacyan/Desktop/project_file/multi_site_post_flow/installer/resultOutput/DB/241213.db"

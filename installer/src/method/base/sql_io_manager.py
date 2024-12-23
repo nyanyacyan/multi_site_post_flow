@@ -16,7 +16,7 @@ from .Archive.sql_base import SqliteBase
 from const_sql_comment import SqlitePrompt
 from const_str import FileName
 
-decoInstance = Decorators(debugMode=True)
+decoInstance = Decorators()
 
 
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$

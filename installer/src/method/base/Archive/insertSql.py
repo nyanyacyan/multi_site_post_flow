@@ -31,7 +31,7 @@ from ..const import ChatGptPrompt, ChatgptUtils, TableName
 from ..constElementInfo import ElementPath, ElementSpecify, ErrorElement
 from ..constSqliteTable import TableSchemas
 
-decoInstance = Decorators(debugMode=True)
+decoInstance = Decorators()
 
 load_dotenv()
 

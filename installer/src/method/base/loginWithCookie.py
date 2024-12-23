@@ -20,7 +20,7 @@ from .elementManager import ElementManager
 from const_str import FileName
 
 
-decoInstance = jsCompleteWaitDeco(debugMode=True)
+decoInstance = jsCompleteWaitDeco()
 
 
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
@@ -35,7 +35,7 @@ class CookieLogin:
         homeUrl: str,
         targetUrl: str,
         signInUrl: str,
-        debugMode=True,
+        ,
     ):
         # logger
         self.getLogger = Logger()

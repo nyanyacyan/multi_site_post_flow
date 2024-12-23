@@ -14,7 +14,7 @@ from .driverDeco import jsCompleteWaitDeco
 from const_str import FileName
 
 
-decoInstance = jsCompleteWaitDeco(debugMode=True)
+decoInstance = jsCompleteWaitDeco()
 
 
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$

@@ -16,22 +16,23 @@ from installer.src.method.base.context import GetContext
 # **********************************************************************************
 # 単体テスト 写真を取得
 
+
 class TestContext:
 
-# ----------------------------------------------------------------------------------
-# 成功したときのテスト
-# @patch('method')→この中にいれるmethodがモック化される→モック化されたものは引数に渡す必要がある
+    # ----------------------------------------------------------------------------------
+    # 成功したときのテスト
+    # @patch('method')→この中にいれるmethodがモック化される→モック化されたものは引数に渡す必要がある
 
     def testContextSuccess(self):
         # ダミーデータセット
 
         # インスタンスの作成
-        instance = GetContext(debugMode=True)
+        instance = GetContext()
 
         sheetNames = instance.getWeekday()
 
         # 結果の検証
-        assert sheetNames == '木曜'
+        assert sheetNames == "木曜"
 
 
 # ----------------------------------------------------------------------------------

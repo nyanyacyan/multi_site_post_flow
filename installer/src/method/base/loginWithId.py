@@ -25,10 +25,10 @@ from constSqliteTable import TableSchemas
 from const_element import LoginInfo
 from const_str import StatusName, FileName
 
-decoInstance = Decorators(debugMode=True)
-decoJsInstance = jsCompleteWaitDeco(debugMode=True)
-decoInstanceInput = InputDeco(debugMode=True)
-decoInstanceClick = ClickDeco(debugMode=True)
+decoInstance = Decorators()
+decoJsInstance = jsCompleteWaitDeco()
+decoInstanceInput = InputDeco()
+decoInstanceClick = ClickDeco()
 
 
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
@@ -240,7 +240,7 @@ class SingleSiteIDLogin:
 
 class MultiSiteIDLogin(SingleSiteIDLogin):
     def __init__(self, chrome):
-        super().__init__(chrome, debugMode)
+        super().__init__(chrome)
 
     # ----------------------------------------------------------------------------------
 

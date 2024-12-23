@@ -103,5 +103,5 @@ class Flow:
 
 
 if __name__ == "__main__":
-    process = Flow(debugMode=True)
+    process = Flow()
     asyncio.run(process.flow())

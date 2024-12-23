@@ -15,42 +15,40 @@ from installer.src.method.base.fileWrite import FileWrite
 # **********************************************************************************
 # pytestを実行する
 
+
 class TestFileWrite:
 
-# ----------------------------------------------------------------------------------
+    # ----------------------------------------------------------------------------------
 
+    def testSuccess(self):
+        fileName = "dummyName"
+        data = "TestData"
 
-	def testSuccess(self):
-		fileName = 'dummyName'
-		data = 'TestData'
+        instance = FileWrite()
 
-		instance = FileWrite(debugMode=True)
+        with patch("builtins.open", mock_open()) as mockedFile:
 
-		with patch('builtins.open', mock_open()) as mockedFile:
+            instance.writeToText(data=data, fileName=fileName)
 
-			instance.writeToText(data=data, fileName=fileName)
+            mockedFile().write.assert_called_once_with(data)
 
-			mockedFile().write.assert_called_once_with(data)
+    # ----------------------------------------------------------------------------------
 
+    def testError(self):
+        fileName = "dummyName"
+        data = "TestData"
 
-# ----------------------------------------------------------------------------------
+        instance = FileWrite()
 
+        with patch("builtins.open", mock_open()) as mockedFile:
 
-	def testError(self):
-		fileName = 'dummyName'
-		data = 'TestData'
+            mockedFile.side_effect = FileNotFoundError
 
-		instance = FileWrite(debugMode=True)
+            with pytest.raises(FileNotFoundError):
 
-		with patch('builtins.open', mock_open()) as mockedFile:
+                instance.writeToText(data=data, fileName=fileName)
 
-			mockedFile.side_effect = FileNotFoundError
-
-			with pytest.raises(FileNotFoundError):
-
-				instance.writeToText(data=data, fileName=fileName)
-
-				mockedFile().write.assert_called_once_with(data)
+                mockedFile().write.assert_called_once_with(data)
 
 
 # ----------------------------------------------------------------------------------

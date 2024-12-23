@@ -634,5 +634,5 @@ buildingName = "ネオマイム横浜阪東橋弐番館 802号室"
 
 # Instantiate the main ImageEditor class and execute pattern editors
 if __name__ == "__main__":
-    image_editor = ImageEditor(debugMode=True)
+    image_editor = ImageEditor()
     image_editor.executePatternEditors(data, buildingName)

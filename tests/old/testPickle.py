@@ -19,146 +19,138 @@ from installer.src.method.base.pklChange import PickleRead, PickleWrite
 # **********************************************************************************
 # pytestを実行する
 
+
 class TestPickleRead:
 
-# ----------------------------------------------------------------------------------
+    # ----------------------------------------------------------------------------------
 
+    def testSuccess(self):
+        pklName = "dummyName"
+        data = b"\x80\x03}q\x00X\x03\x00\x00\x00keyq\x01X\x05\x00\x00\x00valueq\x02s."
 
-	def testSuccess(self):
-		pklName = 'dummyName'
-		data = b'\x80\x03}q\x00X\x03\x00\x00\x00keyq\x01X\x05\x00\x00\x00valueq\x02s.'
+        instance = PickleRead()
 
-		instance = PickleRead(debugMode=True)
+        with patch("builtins.open", mock_open(read_data=data)) as mockedFile:
 
-		with patch('builtins.open', mock_open(read_data=data)) as mockedFile:
+            # ここを対象のメソッドに変更
+            instance.pickleToDf(pklName=pklName)
 
-			# ここを対象のメソッドに変更
-			instance.pickleToDf(pklName=pklName)
+            # 一回だけモックを呼び出せているか確認
+            mockedFile().read.assert_called()
 
-			# 一回だけモックを呼び出せているか確認
-			mockedFile().read.assert_called()
+    # ----------------------------------------------------------------------------------
 
+    def testError(self):
+        pklName = "dummyName"
+        data = b"\x80\x03}q\x00X\x03\x00\x00\x00keyq\x01X\x05\x00\x00\x00valueq\x02s."
 
-# ----------------------------------------------------------------------------------
+        instance = PickleRead()
 
+        with patch("builtins.open", mock_open(read_data=data)) as mockedFile:
 
-	def testError(self):
-		pklName = 'dummyName'
-		data = b'\x80\x03}q\x00X\x03\x00\x00\x00keyq\x01X\x05\x00\x00\x00valueq\x02s.'
+            mockedFile.side_effect = TypeError
 
-		instance = PickleRead(debugMode=True)
+            with pytest.raises(TypeError):
 
-		with patch('builtins.open', mock_open(read_data=data)) as mockedFile:
+                # ここを対象のメソッドに変更
+                result = instance.pklToUtf8(pklName=pklName)
 
-			mockedFile.side_effect = TypeError
+                # 一回だけモックを呼び出せているか確認
+                mockedFile().read.assert_called()
 
-			with pytest.raises(TypeError):
-
-				# ここを対象のメソッドに変更
-				result = instance.pklToUtf8(pklName=pklName)
-
-				# 一回だけモックを呼び出せているか確認
-				mockedFile().read.assert_called()
-
-			assert result is None
+            assert result is None
 
 
 # ----------------------------------------------------------------------------------
 # **********************************************************************************
 # pytestを実行する
 
+
 class TestPickleWrite:
 
-# ----------------------------------------------------------------------------------
+    # ----------------------------------------------------------------------------------
 
+    def testSuccess(self):
+        pklName = "dummyName"
+        data = "dummyName"
 
-	def testSuccess(self):
-		pklName = 'dummyName'
-		data = 'dummyName'
+        instance = PickleWrite()
 
-		instance = PickleWrite(debugMode=True)
+        with patch("builtins.open", mock_open()) as mockedFile:
 
-		with patch('builtins.open', mock_open()) as mockedFile:
+            # ここを対象のメソッドに変更
+            instance.pickleToDf(data=data, pklName=pklName)
 
-			# ここを対象のメソッドに変更
-			instance.pickleToDf(data=data, pklName=pklName)
+            # 一回だけモックを呼び出せているか確認
+            mockedFile().read.assert_called()
 
-			# 一回だけモックを呼び出せているか確認
-			mockedFile().read.assert_called()
+    # ----------------------------------------------------------------------------------
 
+    def testDfSuccess(self):
+        pklName = "dummyName"
+        data = {
+            "TestData": ["a", "B"],
+            "TestData2": ["d", "e"],
+            "TestData3": ["f", "g"],
+        }
 
-# ----------------------------------------------------------------------------------
+        df = pd.DataFrame(data)
 
-	def testDfSuccess(self):
-		pklName = 'dummyName'
-		data = {
-			'TestData': ['a','B'],
-			'TestData2': ['d','e'],
-			'TestData3': ['f','g']
-		}
+        instance = PickleWrite()
 
-		df = pd.DataFrame(data)
+        with patch("builtins.open", mock_open()) as mockedFile:
 
-		instance = PickleWrite(debugMode=True)
+            instance.dfToPickle(df=df, pklName=pklName)
 
-		with patch('builtins.open', mock_open()) as mockedFile:
+            mockedFile().write.assert_called()
 
-			instance.dfToPickle(df=df, pklName=pklName)
+    # ----------------------------------------------------------------------------------
 
-			mockedFile().write.assert_called()
+    def testError(self):
+        pklName = "dummyName"
+        data = "TestData"
 
+        instance = PickleWrite()
 
+        with patch("builtins.open", mock_open()) as mockedFile:
 
-# ----------------------------------------------------------------------------------
+            mockedFile.side_effect = ValueError
 
+            with pytest.raises(ValueError):
 
-	def testError(self):
-		pklName = 'dummyName'
-		data = 'TestData'
+                result = instance.toPkl(data=data, pklName=pklName)
 
-		instance = PickleWrite(debugMode=True)
+                # 一回だけモックを呼び出せているか確認
+                mockedFile().read.assert_called()
 
-		with patch('builtins.open', mock_open()) as mockedFile:
+            assert result is None
 
-			mockedFile.side_effect = ValueError
+    # ----------------------------------------------------------------------------------
 
-			with pytest.raises(ValueError):
+    def testDfError(self):
+        pklName = "dummyName"
+        data = {
+            "TestData": ["a", "B"],
+            "TestData2": ["d", "e"],
+            "TestData3": ["f", "g"],
+        }
 
-				result = instance.toPkl(data=data, pklName=pklName)
+        df = pd.DataFrame(data)
 
-				# 一回だけモックを呼び出せているか確認
-				mockedFile().read.assert_called()
+        instance = PickleWrite()
 
-			assert result is None
+        with patch("builtins.open", mock_open()) as mockedFile:
 
+            mockedFile.side_effect = ValueError
 
-# ----------------------------------------------------------------------------------
+            with pytest.raises(ValueError):
 
+                result = instance.dfToPickle(df=df, pklName=pklName)
 
-	def testDfError(self):
-		pklName = 'dummyName'
-		data = {
-			'TestData': ['a','B'],
-			'TestData2': ['d','e'],
-			'TestData3': ['f','g']
-		}
+                # 一回だけモックを呼び出せているか確認
+                mockedFile().read.assert_called()
 
-		df = pd.DataFrame(data)
-
-		instance = PickleWrite(debugMode=True)
-
-		with patch('builtins.open', mock_open()) as mockedFile:
-
-			mockedFile.side_effect = ValueError
-
-			with pytest.raises(ValueError):
-
-				result = instance.dfToPickle(df=df, pklName=pklName)
-
-				# 一回だけモックを呼び出せているか確認
-				mockedFile().read.assert_called()
-
-			assert result is None
+            assert result is None
 
 
 # ----------------------------------------------------------------------------------
