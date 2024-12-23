@@ -11,7 +11,10 @@ from dotenv import load_dotenv
 from pprint import pprint
 
 from selenium.webdriver.remote.webelement import WebElement
-from selenium.common.exceptions import NoSuchElementException, ElementClickInterceptedException
+from selenium.common.exceptions import (
+    NoSuchElementException,
+    ElementClickInterceptedException,
+)
 from selenium.common.exceptions import TimeoutException
 
 
@@ -39,7 +42,9 @@ load_dotenv()
 class InsertSql:
     def __init__(self, chrome: WebDriver, debugMode=True):
         # logger
-        self.getLogger = Logger(__name__, debugMode=debugMode)
+        self.getLogger = Logger(
+            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
+        )
         self.logger = self.getLogger.getLogger()
 
         self.chrome = chrome
@@ -48,17 +53,16 @@ class InsertSql:
         self.textTableName = TableName.TEXT.value
         self.imageTableName = TableName.IMAGE.value
 
-        self.currentDate = datetime.now().strftime('%y%m%d_%H%M%S')
+        self.currentDate = datetime.now().strftime("%y%m%d_%H%M%S")
         self.element = ElementManager(chrome=self.chrome, debugMode=debugMode)
         self.chatGPT = ChatGPTOrder(debugMode=debugMode)
         self.textManager = TextManager(debugMode=debugMode)
         self.SQLite = SQLite(debugMode=debugMode)
         self.jumpTargetPage = JumpTargetPage(chrome=self.chrome, debugMode=debugMode)
 
-
-# ----------------------------------------------------------------------------------
-# flow
-# 一覧の物件リストから詳細ページへ移動して取得する
+    # ----------------------------------------------------------------------------------
+    # flow
+    # 一覧の物件リストから詳細ページへ移動して取得する
 
     @decoInstance.funcBase
     def getListPageInfo(self):
@@ -75,63 +79,67 @@ class InsertSql:
         while pageCount <= maxRetries:
             # 一覧ページにある物件詳細リンクを全て取得
             linkList = self._getLinkList()
-            self.logger.warning(f"linkList: {linkList}: {len(linkList)}個のリンクを取得")
+            self.logger.warning(
+                f"linkList: {linkList}: {len(linkList)}個のリンクを取得"
+            )
 
             # newのカウントを行う
             newElement = self._getClassElementList()
-            self.logger.warning(f"newElement: {newElement}: {len(newElement)}個の[NEW]の要素を発見")
-
+            self.logger.warning(
+                f"newElement: {newElement}: {len(newElement)}個の[NEW]の要素を発見"
+            )
 
             #! テスト時はnewElementの要素を制限
             # if len(newElement) > 2:
             #     newElement = newElement[:2]  # 最初の2つの要素のみを使用
 
-
             if len(newElement) == 0:
-                self.logger.warning(f"処理可能な[NEW]要素が見つからなくなりました。処理を終了します。")
+                self.logger.warning(
+                    f"処理可能な[NEW]要素が見つからなくなりました。処理を終了します。"
+                )
                 break
 
             print(f"newElement: {newElement}\nnewElementの数: {len(newElement)}個")
 
             for i in range(len(newElement)):
-                url = linkList[i].get_attribute('href')
+                url = linkList[i].get_attribute("href")
                 newText = newElement[i].text
-                newTextList = newText.split('\u3000')  # \u3000は全角の空白
+                newTextList = newText.split("\u3000")  # \u3000は全角の空白
 
-                station = newTextList[0] + '駅'
+                station = newTextList[0] + "駅"
                 trainName = newTextList[1]
                 walking = newTextList[2]
 
-                stationWord = '  '.join([station, walking])
+                stationWord = "  ".join([station, walking])
 
                 count += 1
 
                 listPageInfoDict[count] = {
-                    'url': url,
-                    'station': station,
-                    'walking': walking,
-                    'trainName': trainName,
-                    'stationWord': stationWord,
+                    "url": url,
+                    "station": station,
+                    "walking": walking,
+                    "trainName": trainName,
+                    "stationWord": stationWord,
                 }
 
                 print(f"{count} 個目 listPageInfo: \n{listPageInfoDict[count]}")
 
-
                 # #! テスト中に設定
                 # pageCount += 1
-
 
             # ! テスト中はコメントアウト→本番の際には解除
             try:
                 # 次へのページをClick
                 self.element.clickElement(
-                    by='xpath',
-                    value='//div[@class="numberArea"]//a[contains(text(), ">")]'
+                    by="xpath",
+                    value='//div[@class="numberArea"]//a[contains(text(), ">")]',
                 )
                 pageCount += 1
 
             except NoSuchElementException:
-                self.logger.error(f"次のページが見当たらないため処理を終了: {count}目実施")
+                self.logger.error(
+                    f"次のページが見当たらないため処理を終了: {count}目実施"
+                )
                 break
 
             except ElementClickInterceptedException:
@@ -139,25 +147,22 @@ class InsertSql:
                 self.popupRemove()
                 continue
 
-
         print(f"listPageInfo{count}個 全データ:\n{listPageInfoDict}")
         return listPageInfoDict
 
-
-# ----------------------------------------------------------------------------------
-
+    # ----------------------------------------------------------------------------------
 
     async def getDetailPageInfo(self, listPageInfoDict: Dict, delay: int = 2):
 
         listNum = len(listPageInfoDict)
         print(f"listPageInfoDict: {listPageInfoDict}\nlistNum: {listNum}")
         allTextAndImageDict = {}
-        for i in range(1,listNum + 1):  # 最初の引数がstart 2つ目の引数がend
+        for i in range(1, listNum + 1):  # 最初の引数がstart 2つ目の引数がend
             # サブ辞書からデータ部分を抽出
             listPageInfo = listPageInfoDict[i]
 
             # 物件詳細リンクにアクセス
-            detailPageUrl = listPageInfo['url']
+            detailPageUrl = listPageInfo["url"]
             self.logger.debug(f"detailPageUrl: {detailPageUrl}")
             self.chrome.get(url=detailPageUrl)
             time.sleep(delay)
@@ -177,18 +182,21 @@ class InsertSql:
             self.logger.debug(f"id: {id}")
 
             # ２〜４枚目に必要なコメントを生成
-            updateColumnsData = await self._generateComments(id=id, mergeDict=textMergeDict)
+            updateColumnsData = await self._generateComments(
+                id=id, mergeDict=textMergeDict
+            )
 
             # pprint(f"updateColumnsData: {updateColumnsData}")
 
             # すべてのテキストをマージ
             allTextMergeDict = {**textMergeDict, **updateColumnsData}
-            print(f"updateColumnsData: {updateColumnsData}\n\nlistPageInfo: {listPageInfo}\n\nallTextMergeDict: {allTextMergeDict}")
+            print(
+                f"updateColumnsData: {updateColumnsData}\n\nlistPageInfo: {listPageInfo}\n\nallTextMergeDict: {allTextMergeDict}"
+            )
 
             # Sortする
             sortAllTextDict = self._sortOrderDict(
-                dataDict=allTextMergeDict,
-                sortOrder=TableSchemas.SORT_TEXT_KEY
+                dataDict=allTextMergeDict, sortOrder=TableSchemas.SORT_TEXT_KEY
             )
             self.logger.warning(f"sortAllTextDict: {sortAllTextDict}")
 
@@ -202,7 +210,7 @@ class InsertSql:
             self._ImageInsertData(imageDict=imageDict)
 
             # テキストデータと画像データをまとめてサブ辞書として格納
-            allTextAndImageDict[i] = {'text': sortAllTextDict, 'image': imageDict}
+            allTextAndImageDict[i] = {"text": sortAllTextDict, "image": imageDict}
 
             self.logger.info(f"{i}回目実施完了 {allTextAndImageDict[i]}")
 
@@ -217,47 +225,42 @@ class InsertSql:
         self.logger.warning(f"allTextAndImageDict:\n{allTextAndImageDict}")
         return allTextAndImageDict
 
-
-# ----------------------------------------------------------------------------------
-# webElementのTextを抽出して辞書に組み替える
-# 値がwebElementだったら[element.text]をかける
+    # ----------------------------------------------------------------------------------
+    # webElementのTextを抽出して辞書に組み替える
+    # 値がwebElementだったら[element.text]をかける
 
     def webElementToText(self, webElementData: dict):
-        return {key: element.text if isinstance(element, WebElement) else element for key, element in webElementData.items()}
+        return {
+            key: element.text if isinstance(element, WebElement) else element
+            for key, element in webElementData.items()
+        }
 
-
-# ----------------------------------------------------------------------------------
-# 2つの辞書データをマージさせる
+    # ----------------------------------------------------------------------------------
+    # 2つの辞書データをマージさせる
 
     def _mergeImageTableData(self, id: int, mergeDict: Dict):
-        dataInMergeDict = self._getImageTableToColInMergeData(id=id, mergeDict=mergeDict)
+        dataInMergeDict = self._getImageTableToColInMergeData(
+            id=id, mergeDict=mergeDict
+        )
         self.logger.info(f"imageDataにて使うデータ: {dataInMergeDict}")
 
         imageDict = self._imagesDict()
 
         return {**dataInMergeDict, **imageDict}
 
-
-# ----------------------------------------------------------------------------------
-# mergeDataに有るImageDataに必要データを取得
+    # ----------------------------------------------------------------------------------
+    # mergeDataに有るImageDataに必要データを取得
 
     def _getImageTableToColInMergeData(self, id: int, mergeDict: Dict):
         self.logger.debug(f"mergeDict: {mergeDict}\nid: {id}")
 
-        name = mergeDict['name']
-        createTime = mergeDict['createTime']
-        url = mergeDict['url']
+        name = mergeDict["name"]
+        createTime = mergeDict["createTime"]
+        url = mergeDict["url"]
 
-        return {
-            "id": id,
-            "name": name,
-            "createTime": createTime,
-            "url": url
-        }
+        return {"id": id, "name": name, "createTime": createTime, "url": url}
 
-
-# ----------------------------------------------------------------------------------
-
+    # ----------------------------------------------------------------------------------
 
     def _imagesDict(self):
         # display: noneがあったら解除
@@ -274,14 +277,18 @@ class InsertSql:
 
             try:
                 # 要素を絞り込み
-                imageTag = self.element.filterElement(parentElement=element, by='tag', value='img')
+                imageTag = self.element.filterElement(
+                    parentElement=element, by="tag", value="img"
+                )
             except NoSuchElementException:
                 self.logger.warning(f"<img>タグが見つかりませんでした: {element}")
                 continue
 
             self.logger.info(f"imageTag: {imageTag}")
 
-            imageTitle = imageTag.get_attribute('title') or imageTag.get_attribute('alt')
+            imageTitle = imageTag.get_attribute("title") or imageTag.get_attribute(
+                "alt"
+            )
             self.logger.debug(f"imageTitle: {imageTitle}")
 
             # 同じtitleがあるかを検知
@@ -293,14 +300,12 @@ class InsertSql:
                 # 重複していたらユニーク数を追記
                 imageTitle = f"{imageTitle}_{titleCount[imageTitle]}"
 
-
             imageData[imageTitle] = imageUrl
 
         print(f"imageData: {imageData}")
 
         sortedImageData = self._sortOrderDict(
-            dataDict=imageData,
-            sortOrder=TableSchemas.SORT_IMAGE_KEY
+            dataDict=imageData, sortOrder=TableSchemas.SORT_IMAGE_KEY
         )
 
         self.logger.warning(f"Sortが完了してるimageData:\n{sortedImageData}")
@@ -311,95 +316,81 @@ class InsertSql:
 
         return sortedImageData
 
-
-# ----------------------------------------------------------------------------------
-# すべての画像データを取得する
+    # ----------------------------------------------------------------------------------
+    # すべての画像データを取得する
 
     def _sortOrderDict(self, dataDict: Dict, sortOrder: List):
         sortedDict = {k: dataDict[k] for k in sortOrder if k in dataDict}
         self.logger.info(f"sortedDict: {sortedDict}")
         return sortedDict
 
-
-# ----------------------------------------------------------------------------------
-# すべての画像データを取得する
+    # ----------------------------------------------------------------------------------
+    # すべての画像データを取得する
 
     def _getImageList(self):
         return self.element.getElements(
-            by="xpath",
-            value="//div[@id='box_main_gallery']//li//a"
+            by="xpath", value="//div[@id='box_main_gallery']//li//a"
         )
 
-
-# ----------------------------------------------------------------------------------
-# 特定のクラスの要素をすべて取得する
+    # ----------------------------------------------------------------------------------
+    # 特定のクラスの要素をすべて取得する
 
     def _getClassElementList(self):
-        return self.element.getElements(
-            by="class",
-            value="new"
-        )
+        return self.element.getElements(by="class", value="new")
 
-
-# ----------------------------------------------------------------------------------
-# 一覧ページからすべてのリンクを取得してリストにする
+    # ----------------------------------------------------------------------------------
+    # 一覧ページからすべてのリンクを取得してリストにする
 
     @decoInstance.funcBase
     def _getLinkList(self):
         linkList = self.element.getElements(
-            by="xpath",
-            value="//a[contains(text(), '物件画像')]"
+            by="xpath", value="//a[contains(text(), '物件画像')]"
         )
         return linkList
 
-
-# ----------------------------------------------------------------------------------
-# 入力を実行。入力先のIDを返す
+    # ----------------------------------------------------------------------------------
+    # 入力を実行。入力先のIDを返す
 
     @decoInstance.funcBase
     def _textInsertData(self, mergeDict: Dict):
         self.SQLite.checkTableExists()
 
-        id = self.SQLite.insertDictData(tableName=self.textTableName, inputDict=mergeDict)
+        id = self.SQLite.insertDictData(
+            tableName=self.textTableName, inputDict=mergeDict
+        )
         return id
 
-
-# ----------------------------------------------------------------------------------
-# 入力を実行。入力先のIDを返す
+    # ----------------------------------------------------------------------------------
+    # 入力を実行。入力先のIDを返す
 
     @decoInstance.funcBase
     def _ImageInsertData(self, imageDict: Dict):
-        id = self.SQLite.insertDictData(tableName=self.imageTableName, inputDict=imageDict)
+        id = self.SQLite.insertDictData(
+            tableName=self.imageTableName, inputDict=imageDict
+        )
         return id
 
-
-# ----------------------------------------------------------------------------------
-# # 指定のIDのcolumnを指定してアップデートする
+    # ----------------------------------------------------------------------------------
+    # # 指定のIDのcolumnを指定してアップデートする
 
     @decoInstance.funcBase
     def _updateDataInSQlite(self, id: int, updateColumnsData: Dict):
         # self.SQLite.checkTableExists()
 
         self.SQLite.updateData(
-            tableName=self.textTableName,
-            updateColumnsData=updateColumnsData,
-            rowId=id
+            tableName=self.textTableName, updateColumnsData=updateColumnsData, rowId=id
         )
         return id
 
-
-
-# ----------------------------------------------------------------------------------
-# tableValueは一覧の中の何個目かどうか
+    # ----------------------------------------------------------------------------------
+    # tableValueは一覧の中の何個目かどうか
 
     @decoInstance.funcBase
     def _getListPageData(self, tableValue: Any):
         listPageInfo = self._listPageInfo(tableValue=tableValue)
         return listPageInfo
 
-
-# ----------------------------------------------------------------------------------
-
+    # ----------------------------------------------------------------------------------
 
     @decoInstance.funcBase
     def _getDetailPageData(self):
@@ -407,28 +398,23 @@ class InsertSql:
         detailPageInfo = self._detailPageInfo()
         return {**metaInfo, **detailPageInfo}
 
-
-# ----------------------------------------------------------------------------------
+    # ----------------------------------------------------------------------------------
 
     @decoInstance.funcBase
-    async def _generateComments(self, id: int ,mergeDict: Dict):
+    async def _generateComments(self, id: int, mergeDict: Dict):
         # 2ページ目のコメント
         secondComment = self.createSecondPageComment(mergeDict=mergeDict)
 
-        selectItems = self.element.textCleaner(textList=mergeDict['item'])
+        selectItems = self.element.textCleaner(textList=mergeDict["item"])
 
         # 3ページ目のコメント
         thirdComment = await self.chatGPTComment(
-            selectItems=selectItems,
-            itemStartValue=4,
-            maxlen=100
+            selectItems=selectItems, itemStartValue=4, maxlen=100
         )
 
         # 4ページ目のコメント
         fourthComment = await self.chatGPTComment(
-            selectItems=selectItems,
-            itemStartValue=8,
-            maxlen=100
+            selectItems=selectItems, itemStartValue=8, maxlen=100
         )
 
         return {
@@ -439,9 +425,7 @@ class InsertSql:
             "selectItems": selectItems,
         }
 
-
-# ----------------------------------------------------------------------------------
-
+    # ----------------------------------------------------------------------------------
 
     @decoInstance.retryAction
     def _navigateToTargetPage(self, delay: int):
@@ -456,15 +440,12 @@ class InsertSql:
         # 検索画面を消去
         self.element.clickElement(
             by=ElementSpecify.XPATH.value,
-            value=ElementPath.SEARCH_DELETE_BTN_PATH.value
+            value=ElementPath.SEARCH_DELETE_BTN_PATH.value,
         )
         time.sleep(delay)
         self.logger.debug(f"新しいページに移動後、Refresh完了")
 
-
-# ----------------------------------------------------------------------------------
-
-
+    # ----------------------------------------------------------------------------------
 
     def popupRemove(self, delay: int = 2):
         try:
@@ -475,7 +456,7 @@ class InsertSql:
                 # 検索画面を消去
                 popupElement = self.element.clickElement(
                     by=ElementSpecify.XPATH.value,
-                    value=ElementPath.SEARCH_DELETE_BTN_PATH.value
+                    value=ElementPath.SEARCH_DELETE_BTN_PATH.value,
                 )
                 # エラーが起きる可能性があるため検知しやすくするためスリープ
                 time.sleep(delay)
@@ -486,7 +467,6 @@ class InsertSql:
 
                 self.logger.info(f"除去が終わってません。再試行")
 
-
         # 別のページが開いてる
         except TimeoutException:
             self.errorPageDetect(
@@ -494,15 +474,15 @@ class InsertSql:
                 value=ErrorElement.ERROR_CLICK_BY.value,
                 errorPageActionFunc=lambda: self.element.clickElement(
                     by=ErrorElement.ERROR_CLICK_BY.value,
-                    value=ErrorElement.ERROR_CLICK_VALUE.value
-                )
+                    value=ErrorElement.ERROR_CLICK_VALUE.value,
+                ),
             )
 
+    # ----------------------------------------------------------------------------------
 
-# ----------------------------------------------------------------------------------
-
-
-    def errorPageDetect(self, by: str, value: str, errorMessage: str, errorPageActionFunc):
+    def errorPageDetect(
+        self, by: str, value: str, errorMessage: str, errorPageActionFunc
+    ):
         self.logger.warning(f"エラーページが表示されている可能性があります。")
 
         errorElement = self.element.getElement(by=by, value=value)
@@ -511,30 +491,32 @@ class InsertSql:
 
             errorPageActionFunc()
 
-
-# ----------------------------------------------------------------------------------
-# ChatGPTのコメント生成
+    # ----------------------------------------------------------------------------------
+    # ChatGPTのコメント生成
 
     @decoInstance.funcBase
     async def chatGPTComment(self, selectItems: List, itemStartValue: int, maxlen: int):
-        prompt = self.ChatGPTPromptCreate(selectItems=selectItems, itemStartValue=itemStartValue, maxlen=maxlen)
+        prompt = self.ChatGPTPromptCreate(
+            selectItems=selectItems, itemStartValue=itemStartValue, maxlen=maxlen
+        )
         result = await self.chatGPT.resultOutput(
             prompt=prompt,
             fixedPrompt=ChatGptPrompt.fixedPrompt.value,
             endpointUrl=ChatgptUtils.endpointUrl.value,
             model=ChatgptUtils.model.value,
-            apiKey=os.getenv('CHATGPT_APIKEY'),
+            apiKey=os.getenv("CHATGPT_APIKEY"),
             maxlen=maxlen,
-            maxTokens=ChatgptUtils.MaxToken.value
+            maxTokens=ChatgptUtils.MaxToken.value,
         )
         self.logger.info(f"コメント: {result}")
-        self.logger.info(f"コメント文字数（文字制限:{maxlen}文字まで）: {len(result)}文字")
+        self.logger.info(
+            f"コメント文字数（文字制限:{maxlen}文字まで）: {len(result)}文字"
+        )
         return result
 
-
-# ----------------------------------------------------------------------------------
-# Prompt生成
-# 文字数制限はここで入力
+    # ----------------------------------------------------------------------------------
+    # Prompt生成
+    # 文字数制限はここで入力
 
     @decoInstance.funcBase
     def ChatGPTPromptCreate(self, selectItems: List, itemStartValue: int, maxlen: int):
@@ -542,7 +524,7 @@ class InsertSql:
 
         self.logger.info(f"selectItems: {selectItems}")
 
-        def getItemOrDefault(index: int, default: str = 'なし'):
+        def getItemOrDefault(index: int, default: str = "なし"):
             """指定したインデックスのアイテムを取得、なければデフォルト値を返す"""
             return selectItems[index] if index < len(selectItems) else default
 
@@ -559,29 +541,28 @@ class InsertSql:
 
         return prompt
 
-
-# ----------------------------------------------------------------------------------
-# 2ページ目のコメント作成
+    # ----------------------------------------------------------------------------------
+    # 2ページ目のコメント作成
 
     @decoInstance.funcBase
     def createSecondPageComment(self, mergeDict: str):
         # 2枚目コメント→つなぎ合わせたもの
         result = self.SQLite.getSortColOneData(
-            tableName = self.textTableName,
-            primaryKeyCol = "name",
-            sortCol = 'createTime',
-            primaryKeyColValue = mergeDict.get('name'),
-            cols=['trainName', 'station', 'walking', 'rent', 'managementCost']
+            tableName=self.textTableName,
+            primaryKeyCol="name",
+            sortCol="createTime",
+            primaryKeyColValue=mergeDict.get("name"),
+            cols=["trainName", "station", "walking", "rent", "managementCost"],
         )
         resultDict = dict(result)
 
         print(f"result: {resultDict}")
 
-        trainName = resultDict.get('trainName', '-')
-        station = resultDict.get('station', '-')
-        walking = resultDict.get('walking', '-')
-        rent = resultDict.get('rent', '-')
-        managementCost = resultDict.get('managementCost', 'なし')
+        trainName = resultDict.get("trainName", "-")
+        station = resultDict.get("station", "-")
+        walking = resultDict.get("walking", "-")
+        rent = resultDict.get("rent", "-")
+        managementCost = resultDict.get("managementCost", "なし")
 
         rent_int = self._int_to_Str(rent)
         managementCost_int = self._int_to_Str(managementCost)
@@ -593,24 +574,23 @@ class InsertSql:
             f"{walking} の物件です。",
             f"賃料は {rent_int} 円",
             f"管理費等は {managementCost_int} 円",
-            "紹介するよ！"
+            "紹介するよ！",
         ]
 
         self.logger.info(f"secondComment:\n{commentParts}")
 
-        secondComment = '\n'.join(commentParts)
+        secondComment = "\n".join(commentParts)
         return secondComment
 
-
-# ----------------------------------------------------------------------------------
-# テキストから数値を抜き出す→円がある場合にはそれまでの数値を抜き出す
+    # ----------------------------------------------------------------------------------
+    # テキストから数値を抜き出す→円がある場合にはそれまでの数値を抜き出す
 
     def _int_to_Str(self, strData: str):
-        if '円' in strData:
-            strData = strData.split('円')[0]
+        if "円" in strData:
+            strData = strData.split("円")[0]
 
         # 数値になる文字列のみを残す
-        filteredStr = ''.join(filter(str.isdigit, strData))
+        filteredStr = "".join(filter(str.isdigit, strData))
 
         # もし数値になる文字列がなかったら
         if not filteredStr:
@@ -621,42 +601,34 @@ class InsertSql:
         self.logger.info(f"文字列から数値に変換: {number}")
         return number
 
-
-# ----------------------------------------------------------------------------------
-# 一覧ページから取得
-# tableValueは何個目かどうか
+    # ----------------------------------------------------------------------------------
+    # 一覧ページから取得
+    # tableValueは何個目かどうか
 
     @decoInstance.funcBase
     def _listPageInfo(self, tableValue: int) -> Dict[str, WebElement]:
         listInstance = self._listPageInfoValue(tableValue)
         return self._getListPageElement(listPageInfo=listInstance)
 
-
-# ----------------------------------------------------------------------------------
-# 詳細ページからデータを取得
+    # ----------------------------------------------------------------------------------
+    # 詳細ページからデータを取得
 
     @decoInstance.funcBase
     def _detailPageInfo(self) -> Dict[str, WebElement]:
         detailInstance = self._detailPageInfoValue()
         return self._getDetailPageElement(detailPageInfo=detailInstance)
 
-
-# ----------------------------------------------------------------------------------
-
+    # ----------------------------------------------------------------------------------
 
     def _metaInfo(self):
         currentUrl = self.chrome.current_url
         currentDate = self.currentDate
 
-        dataDict = {
-            "url": currentUrl,
-            "createTime": currentDate
-        }
+        dataDict = {"url": currentUrl, "createTime": currentDate}
         return dataDict
 
-
-# ----------------------------------------------------------------------------------
-# tableValueは何個目かどうか
+    # ----------------------------------------------------------------------------------
+    # tableValueは何個目かどうか
 
     def _listPageInfoValue(self, tableValue: int):
         return ListPageInfo(
@@ -668,9 +640,7 @@ class InsertSql:
             walkingValue=ElementPath.WAKING.value.format(tableValue),
         )
 
-
-# ----------------------------------------------------------------------------------
-
+    # ----------------------------------------------------------------------------------
 
     def _detailPageInfoValue(self) -> DetailPageInfo:
         return DetailPageInfo(
@@ -694,15 +664,19 @@ class InsertSql:
             keyMoneyValue=ElementPath.KEY_MONEY.value,
         )
 
-
-# ----------------------------------------------------------------------------------
-
+    # ----------------------------------------------------------------------------------
 
     @decoInstance.funcBase
     def _getListPageElement(self, listPageInfo: ListPageInfo):
-        trainLine = self.element.getElement(by=listPageInfo.trainLineBy, value=listPageInfo.trainLineValue)
-        station = self.element.getElement(by=listPageInfo.stationBy, value=listPageInfo.stationValue)
-        walking = self.element.getElement(by=listPageInfo.walkingBy, value=listPageInfo.walkingValue)
+        trainLine = self.element.getElement(
+            by=listPageInfo.trainLineBy, value=listPageInfo.trainLineValue
+        )
+        station = self.element.getElement(
+            by=listPageInfo.stationBy, value=listPageInfo.stationValue
+        )
+        walking = self.element.getElement(
+            by=listPageInfo.walkingBy, value=listPageInfo.walkingValue
+        )
 
         dataDict = {
             "trainLine": trainLine,  # 路線名
@@ -712,25 +686,42 @@ class InsertSql:
 
         return dataDict
 
-
-# ----------------------------------------------------------------------------------
-
+    # ----------------------------------------------------------------------------------
 
     @decoInstance.funcBase
-    def _getDetailPageElement(self, detailPageInfo: DetailPageInfo) -> Dict[str, WebElement]:
+    def _getDetailPageElement(
+        self, detailPageInfo: DetailPageInfo
+    ) -> Dict[str, WebElement]:
         # html = self.chrome.page_source
         # self.logger.info(f"html: \n{html}")
 
-        name = self.element.getElement(by=detailPageInfo.nameBy, value=detailPageInfo.nameValue)
-        ad = self.element.getElement(by=detailPageInfo.adBy, value=detailPageInfo.adValue)
-        area = self.element.getElement(by=detailPageInfo.areaBy, value=detailPageInfo.areaValue)
-        item = self.element.getElement(by=detailPageInfo.itemBy, value=detailPageInfo.itemValue)
-        address = self.element.getElement(by=detailPageInfo.addressBy, value=detailPageInfo.addressValue)
-        rent = self.element.getElement(by=detailPageInfo.rentBy, value=detailPageInfo.rentValue)
-        managementCost = self.element.getElement(by=detailPageInfo.managementCostBy, value=detailPageInfo.managementCostValue)
-        deposit = self.element.getElement(by=detailPageInfo.depositBy, value=detailPageInfo.depositValue)
-        keyMoney = self.element.getElement(by=detailPageInfo.keyMoneyBy, value=detailPageInfo.keyMoneyValue)
-
+        name = self.element.getElement(
+            by=detailPageInfo.nameBy, value=detailPageInfo.nameValue
+        )
+        ad = self.element.getElement(
+            by=detailPageInfo.adBy, value=detailPageInfo.adValue
+        )
+        area = self.element.getElement(
+            by=detailPageInfo.areaBy, value=detailPageInfo.areaValue
+        )
+        item = self.element.getElement(
+            by=detailPageInfo.itemBy, value=detailPageInfo.itemValue
+        )
+        address = self.element.getElement(
+            by=detailPageInfo.addressBy, value=detailPageInfo.addressValue
+        )
+        rent = self.element.getElement(
+            by=detailPageInfo.rentBy, value=detailPageInfo.rentValue
+        )
+        managementCost = self.element.getElement(
+            by=detailPageInfo.managementCostBy, value=detailPageInfo.managementCostValue
+        )
+        deposit = self.element.getElement(
+            by=detailPageInfo.depositBy, value=detailPageInfo.depositValue
+        )
+        keyMoney = self.element.getElement(
+            by=detailPageInfo.keyMoneyBy, value=detailPageInfo.keyMoneyValue
+        )
 
         dataDict = {
             "name": name,  # 物件名

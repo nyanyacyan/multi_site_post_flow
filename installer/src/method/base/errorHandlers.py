@@ -14,36 +14,46 @@ from selenium.common.exceptions import WebDriverException
 from googleapiclient import errors  # pip install google-api-python-client
 from typing import Callable, Optional, Any
 
+from const_str import FileName
+
+
 # 自作モジュール
 from .utils import Logger
 from .sysCommand import SysCommand
 from .popup import Popup
 
 
-
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 # **********************************************************************************
 # 例外処理をまとめたクラス
+
 
 class NetworkHandler:
     def __init__(self, debugMode=True):
 
         # logger
-        self.getLogger = Logger(__name__, debugMode=debugMode)
+        self.getLogger = Logger(
+            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
+        )
         self.logger = self.getLogger.getLogger()
 
-
-# ----------------------------------------------------------------------------------
-# retryするネットワークの例外処理
+    # ----------------------------------------------------------------------------------
+    # retryするネットワークの例外処理
 
     def gssRetryHandler(self, e: Exception, maxRetry: int, delay: int, retryCount: int):
         # Exceptionでキャッチしてからそれぞれのエラーをキャッチする
-        if isinstance(e, gspread.exceptions.APIError) or isinstance(e, errors.HttpError):
-            self.logger.error(f"スプシ: サーバーエラーのためリトライ{retryCount}/{maxRetry} {e}")
+        if isinstance(e, gspread.exceptions.APIError) or isinstance(
+            e, errors.HttpError
+        ):
+            self.logger.error(
+                f"スプシ: サーバーエラーのためリトライ{retryCount}/{maxRetry} {e}"
+            )
 
             # 上限に達した処理
             if retryCount >= maxRetry:
-                self.logger.error(f"スプシ: サーバーエラーのためリトライ リトライ上限のため終了")
+                self.logger.error(
+                    f"スプシ: サーバーエラーのためリトライ リトライ上限のため終了"
+                )
                 # sys.exit(1)
             # 送らせて実行
             time.sleep(delay)
@@ -64,36 +74,45 @@ class ResponseStatusCode:
     def __init__(self, debugMode=True):
 
         # logger
-        self.getLogger = Logger(__name__, debugMode=debugMode)
+        self.getLogger = Logger(
+            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
+        )
         self.logger = self.getLogger.getLogger()
 
+    # ----------------------------------------------------------------------------------
+    # response.statusが「200」以外の際の例外処理（リトライ）(通知あり)
+    # Exceptionでキャッチしてからそれぞれのエラーをキャッチする
 
-# ----------------------------------------------------------------------------------
-# response.statusが「200」以外の際の例外処理（リトライ）(通知あり)
-# Exceptionでキャッチしてからそれぞれのエラーをキャッチする
-
-    async def retryHandler(self, e: Exception, response: Any, retryCount: int, notifyFunc: Optional[Callable[[str], None]] = None, maxRetry: int=3, delay: int=30):
+    async def retryHandler(
+        self,
+        e: Exception,
+        response: Any,
+        retryCount: int,
+        notifyFunc: Optional[Callable[[str], None]] = None,
+        maxRetry: int = 3,
+        delay: int = 30,
+    ):
 
         # クライアント側のなにかしらのエラー
         if isinstance(e, aiohttp.ClientError):
             await self.errorRetryAction(
                 e=e,
-                errorComment='API側にてエラーが発生',
+                errorComment="API側にてエラーが発生",
                 retryCount=retryCount,
                 notifyFunc=notifyFunc,
                 maxRetry=maxRetry,
-                delay=delay
+                delay=delay,
             )
 
         # タイムアウトエラー
         elif isinstance(e, asyncio.TimeoutError):
             await self.errorRetryAction(
                 e=e,
-                errorComment='タイムアウトエラー',
+                errorComment="タイムアウトエラー",
                 retryCount=retryCount,
                 notifyFunc=notifyFunc,
                 maxRetry=maxRetry,
-                delay=delay
+                delay=delay,
             )
 
         else:
@@ -101,26 +120,31 @@ class ResponseStatusCode:
             if 500 <= response.status <= 599:
                 await self.errorRetryAction(
                     e=e,
-                    errorComment='サーバーエラー',
+                    errorComment="サーバーエラー",
                     retryCount=retryCount,
                     notifyFunc=notifyFunc,
                     maxRetry=maxRetry,
-                    delay=delay
+                    delay=delay,
                 )
 
             else:
                 # サーバーエラー以外の場合のエラーコード
                 self.noRetryAction(
-                    e=e,
-                    errorComment='処理中にエラーが発生',
-                    notifyFunc=notifyFunc
+                    e=e, errorComment="処理中にエラーが発生", notifyFunc=notifyFunc
                 )
 
+    # ----------------------------------------------------------------------------------
+    # retryアクションあり（通知あり）
 
-# ----------------------------------------------------------------------------------
-# retryアクションあり（通知あり）
-
-    async def errorRetryAction(self, e: Exception, errorComment: str, retryCount: int, notifyFunc: Optional[Callable[[str], None]] = None, maxRetry: int=3, delay: int=30):
+    async def errorRetryAction(
+        self,
+        e: Exception,
+        errorComment: str,
+        retryCount: int,
+        notifyFunc: Optional[Callable[[str], None]] = None,
+        maxRetry: int = 3,
+        delay: int = 30,
+    ):
         self.logger.error(f"{errorComment} :{retryCount}/{maxRetry} {e}")
 
         # 上限に達した処理
@@ -134,11 +158,15 @@ class ResponseStatusCode:
         # 送らせて実行
         await asyncio.sleep(delay)
 
+    # ----------------------------------------------------------------------------------
+    # retryアクションなし（通知あり）
 
-# ----------------------------------------------------------------------------------
-# retryアクションなし（通知あり）
-
-    def noRetryAction(self, e: str, errorComment: str, notifyFunc: Optional[Callable[[str], None]] = None):
+    def noRetryAction(
+        self,
+        e: str,
+        errorComment: str,
+        notifyFunc: Optional[Callable[[str], None]] = None,
+    ):
         self.logger.error(f"{errorComment} :{e}")
 
         if not notifyFunc is None:
@@ -155,14 +183,22 @@ class FileWriteError:
     def __init__(self, debugMode=True):
 
         # logger
-        self.getLogger = Logger(__name__, debugMode=debugMode)
+        self.getLogger = Logger(
+            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
+        )
         self.logger = self.getLogger.getLogger()
 
+    # ----------------------------------------------------------------------------------
 
-# ----------------------------------------------------------------------------------
-
-
-    def fileNotFoundErrorHandler(self, e: Exception, fullPath: str, retryCount: int, maxRetry: int, notifyFunc: Optional[Callable[[str], None]] = None, delay: int=2):
+    def fileNotFoundErrorHandler(
+        self,
+        e: Exception,
+        fullPath: str,
+        retryCount: int,
+        maxRetry: int,
+        notifyFunc: Optional[Callable[[str], None]] = None,
+        delay: int = 2,
+    ):
         self.logger.error(f"[ファイルPathが見つからにためディレクトリの作成]:{e}")
 
         # exist_ok=True→すでにディレクトリが合ったとしてもエラーにならない
@@ -182,16 +218,16 @@ class FileWriteError:
         self.logger.debug(f"リトライ実施")
         time.sleep(delay)
 
+    # ----------------------------------------------------------------------------------
 
-# ----------------------------------------------------------------------------------
-
-
-    def fileErrorHandler(self, e: Exception, notifyFunc: Optional[Callable[[str], None]] = None):
+    def fileErrorHandler(
+        self, e: Exception, notifyFunc: Optional[Callable[[str], None]] = None
+    ):
         errorMessage = {
             PermissionError: "[ファイルの書込権限がありません]",
             IOError: "[入出力エラーが発生]",
             UnicodeDecodeError: "[デコード中にエラーが発生]",
-            pickle.PickleError: ""
+            pickle.PickleError: "",
         }
 
         errorType = type(e)
@@ -203,7 +239,6 @@ class FileWriteError:
             notifyFunc(e)
 
 
-
 # ----------------------------------------------------------------------------------
 # **********************************************************************************
 
@@ -212,14 +247,19 @@ class PickleWriteError:
     def __init__(self, debugMode=True):
 
         # logger
-        self.getLogger = Logger(__name__, debugMode=debugMode)
+        self.getLogger = Logger(
+            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
+        )
         self.logger = self.getLogger.getLogger()
 
+    # ----------------------------------------------------------------------------------
 
-# ----------------------------------------------------------------------------------
-
-
-    def handler(self, fileName: str, e: Exception, notifyFunc: Optional[Callable[[str], None]] = None):
+    def handler(
+        self,
+        fileName: str,
+        e: Exception,
+        notifyFunc: Optional[Callable[[str], None]] = None,
+    ):
         errorMessage = {
             PermissionError: "[ファイルの書込権限がありません]",
             IOError: "[入出力エラーが発生]",
@@ -232,13 +272,14 @@ class PickleWriteError:
         errorType = type(e)
 
         # 2つ目の引数はgetできなかったときの表示
-        errorMessage = errorMessage.get(errorType, "[pickle書込中に何らかのエラーが発生]")
+        errorMessage = errorMessage.get(
+            errorType, "[pickle書込中に何らかのエラーが発生]"
+        )
 
         self.logger.error(f"{errorMessage} {fileName}:{e}")
 
         if not notifyFunc is None:
             notifyFunc(e)
-
 
 
 # ----------------------------------------------------------------------------------
@@ -249,14 +290,19 @@ class PickleReadError:
     def __init__(self, debugMode=True):
 
         # logger
-        self.getLogger = Logger(__name__, debugMode=debugMode)
+        self.getLogger = Logger(
+            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
+        )
         self.logger = self.getLogger.getLogger()
 
+    # ----------------------------------------------------------------------------------
 
-# ----------------------------------------------------------------------------------
-
-
-    def pickleErrorHandler(self, fileName: str, e: Exception, notifyFunc: Optional[Callable[[str], None]] = None):
+    def pickleErrorHandler(
+        self,
+        fileName: str,
+        e: Exception,
+        notifyFunc: Optional[Callable[[str], None]] = None,
+    ):
         errorMessage = {
             PermissionError: "[ファイルの書込権限がありません]",
             IOError: "[入出力エラーが発生]",
@@ -264,13 +310,15 @@ class PickleReadError:
             pickle.PickleError: "[データのpickle化中にエラーが発生]",
             ValueError: "[pickle化させようとしたデータが None]",
             FileNotFoundError: "[pickleFileが見つまりません]",
-            TypeError: "[バイナリデータではない]"
+            TypeError: "[バイナリデータではない]",
         }
 
         errorType = type(e)
 
         # 2つ目の引数はgetできなかったときの表示
-        errorMessage = errorMessage.get(errorType, "[pickle読込中に何らかのエラーが発生]")
+        errorMessage = errorMessage.get(
+            errorType, "[pickle読込中に何らかのエラーが発生]"
+        )
 
         self.logger.error(f"{errorMessage} {fileName}:{e}")
 
@@ -288,12 +336,12 @@ class AccessFileNotFoundError:
     def __init__(self, debugMode=True):
 
         # logger
-        self.getLogger = Logger(__name__, debugMode=debugMode)
+        self.getLogger = Logger(
+            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
+        )
         self.logger = self.getLogger.getLogger()
 
-
-# ----------------------------------------------------------------------------------
-
+    # ----------------------------------------------------------------------------------
 
     def accessFileNotFoundError(self, fileName: str, e: Exception):
         if isinstance(e, FileNotFoundError):
@@ -312,33 +360,58 @@ class RequestRetryAction:
     def __init__(self, debugMode=True):
 
         # logger
-        self.getLogger = Logger(__name__, debugMode=debugMode)
+        self.getLogger = Logger(
+            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
+        )
         self.logger = self.getLogger.getLogger()
 
+    # ----------------------------------------------------------------------------------
+    # statusCodeを検知してそれぞれでエラーを検知して返す
 
-# ----------------------------------------------------------------------------------
-# statusCodeを検知してそれぞれでエラーを検知して返す
-
-    def handleStatus(self, statusCode: int, retryCount: int, maxRetry: int=3, delay: int=30, notifyFunc: Optional[Callable[[str], None]] = None):
+    def handleStatus(
+        self,
+        statusCode: int,
+        retryCount: int,
+        maxRetry: int = 3,
+        delay: int = 30,
+        notifyFunc: Optional[Callable[[str], None]] = None,
+    ):
         if 500 <= statusCode < 600:
-            self.apiServerHandler(statusCode=statusCode, retryCount=retryCount, maxRetry=maxRetry, delay=delay, notifyFunc=notifyFunc)
+            self.apiServerHandler(
+                statusCode=statusCode,
+                retryCount=retryCount,
+                maxRetry=maxRetry,
+                delay=delay,
+                notifyFunc=notifyFunc,
+            )
             return 500
 
         elif 400 <= statusCode < 500:
             retryCount = maxRetry
-            self.apiHandler(statusCode=statusCode, retryCount=retryCount, maxRetry=maxRetry, delay=delay, notifyFunc=notifyFunc)
+            self.apiHandler(
+                statusCode=statusCode,
+                retryCount=retryCount,
+                maxRetry=maxRetry,
+                delay=delay,
+                notifyFunc=notifyFunc,
+            )
             return 400
 
+    # ----------------------------------------------------------------------------------
 
-# ----------------------------------------------------------------------------------
-
-
-    async def apiServerHandler(self, statusCode: int, retryCount: int, maxRetry: int=3, delay: int=30, notifyFunc: Optional[Callable[[str], None]] = None):
+    async def apiServerHandler(
+        self,
+        statusCode: int,
+        retryCount: int,
+        maxRetry: int = 3,
+        delay: int = 30,
+        notifyFunc: Optional[Callable[[str], None]] = None,
+    ):
         errorMessage = {
             500: "[Internal Server Error]: サーバーがリクエストの処理に失敗してます",
             502: "[Bad Gateway]: サーバーが別のサーバーからの無効な応答を受け取ってしまってます",
             503: "[Service Unavailable]: サーバーが一時的に利用できていない",
-            504: "[Gateway Timeout]: サーバータイムアウト"
+            504: "[Gateway Timeout]: サーバータイムアウト",
         }
 
         # 2つ目の引数はgetできなかったときの表示
@@ -348,7 +421,9 @@ class RequestRetryAction:
 
         # 上限に達した処理
         if retryCount >= maxRetry:
-            self.logger.error(f"リトライ上限に達したため終了{statusCode}:{errorMessage}")
+            self.logger.error(
+                f"リトライ上限に達したため終了{statusCode}:{errorMessage}"
+            )
             if not notifyFunc is None:
                 notifyFunc(errorMessage)
             # sys.exit(1)
@@ -356,18 +431,18 @@ class RequestRetryAction:
         self.logger.debug(f"リトライ実施")
         await asyncio.sleep(delay)
 
+    # ----------------------------------------------------------------------------------
 
-# ----------------------------------------------------------------------------------
-
-
-    async def apiHandler(self, statusCode: int, notifyFunc: Optional[Callable[[str], None]] = None):
+    async def apiHandler(
+        self, statusCode: int, notifyFunc: Optional[Callable[[str], None]] = None
+    ):
         errorMessage = {
             400: "[Bad Request]: リクエスト方法が誤ってます",
             401: "[Unauthorized]: 認証情報が正しくありません。",
             403: "[Forbidden]: 権限がないため、拒否されてます。",
             404: "[Not Found]: リソースが見つかりません（URLが間違ってます）",
             405: "[Method Not Allowed]: 許可されてないアクセス方法です（GET,POSTなどではない可能性があります）",
-            429: "[Too Many Requests]: "
+            429: "[Too Many Requests]: ",
         }
 
         # 2つ目の引数はgetできなかったときの表示
@@ -389,17 +464,18 @@ class FileReadHandler:
     def __init__(self, debugMode=True):
 
         # logger
-        self.getLogger = Logger(__name__, debugMode=debugMode)
+        self.getLogger = Logger(
+            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
+        )
         self.logger = self.getLogger.getLogger()
 
-
-# ----------------------------------------------------------------------------------
+    # ----------------------------------------------------------------------------------
 
     def fileReadHandler(self, e: Exception):
         errorMessage = {
             FileNotFoundError: "[指定のFileが見つかりません]",
             PermissionError: "[ファイルにアクセスする権限がありません]",
-            ValueError: "[File形式のTypeがアンマッチしてます]"
+            ValueError: "[File形式のTypeがアンマッチしてます]",
         }
 
         errorType = type(e)
@@ -412,6 +488,7 @@ class FileReadHandler:
         # sys.exit(1)
         return None
 
+
 # ----------------------------------------------------------------------------------
 # **********************************************************************************
 
@@ -420,18 +497,18 @@ class GeneratePromptHandler:
     def __init__(self, debugMode=True):
 
         # logger
-        self.getLogger = Logger(__name__, debugMode=debugMode)
+        self.getLogger = Logger(
+            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
+        )
         self.logger = self.getLogger.getLogger()
 
-
-# ----------------------------------------------------------------------------------
-
+    # ----------------------------------------------------------------------------------
 
     def generatePromptHandler(self, e: Exception):
         errorMessage = {
             KeyError: "[指定したColumn名がDataFrameに存在しません]",
             TypeError: "[型が違うため処理が進められません]",
-            ValueError: "[constにあるformat文に {list} が入ってない定数があります]"
+            ValueError: "[constにあるformat文に {list} が入ってない定数があります]",
         }
 
         errorType = type(e)
@@ -450,27 +527,36 @@ class ChromeHandler:
     def __init__(self, debugMode=True):
 
         # logger
-        self.getLogger = Logger(__name__, debugMode=debugMode)
+        self.getLogger = Logger(
+            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
+        )
         self.logger = self.getLogger.getLogger()
 
         # instance
         self.popup = Popup(debugMode=debugMode)
         self.sysCommand = SysCommand(debugMode=debugMode)
 
+    # ----------------------------------------------------------------------------------
 
-# ----------------------------------------------------------------------------------
-
-
-    def chromeHandler(self, e: Exception, popupTitle: str, comment: str, func: Optional[Callable[[], None]]):
+    def chromeHandler(
+        self,
+        e: Exception,
+        popupTitle: str,
+        comment: str,
+        func: Optional[Callable[[], None]],
+    ):
         errorMessage = {
             subprocess.CalledProcessError: "[Chromeのバージョンが不正です。PCの再起動が必要です。]",
             RuntimeError: "[Chromeのバージョンが不一致です。PCの再起動が必要です。]",
             ValueError: "[Chromeのバージョンが不一致です。PCの再起動が必要です。]",
-            WebDriverException: "[Chromeを正しく起動できませんでした。PCの再起動が必要です。]"
+            WebDriverException: "[Chromeを正しく起動できませんでした。PCの再起動が必要です。]",
         }
 
         errorType = type(e)
-        errorMessage = errorMessage.get(errorType, "[Chromeを正しく起動できませんでした。PCの再起動が必要です。再起動でも改善されない場合には作成者にご連絡下さい]")
+        errorMessage = errorMessage.get(
+            errorType,
+            "[Chromeを正しく起動できませんでした。PCの再起動が必要です。再起動でも改善されない場合には作成者にご連絡下さい]",
+        )
         self.logger.error(f"{errorMessage}: {e}")
 
         self.popup.popupCommentChoice(popupTitle=popupTitle, comment=comment, func=func)
@@ -484,12 +570,12 @@ class SqliteError:
     def __init__(self, debugMode=True):
 
         # logger
-        self.getLogger = Logger(__name__, debugMode=debugMode)
+        self.getLogger = Logger(
+            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
+        )
         self.logger = self.getLogger.getLogger()
 
-
-# ----------------------------------------------------------------------------------
-
+    # ----------------------------------------------------------------------------------
 
     def Handler(self, e: Exception, notifyFunc: Optional[Callable[[], None]] = None):
         errorMessages = {
@@ -505,6 +591,7 @@ class SqliteError:
 
         if not notifyFunc is None:
             notifyFunc(e)
+
 
 # ----------------------------------------------------------------------------------
 # **********************************************************************************

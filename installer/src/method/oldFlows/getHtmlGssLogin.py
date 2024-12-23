@@ -17,6 +17,7 @@ from ..base.spreadsheetRead import GSSAPILogin
 ####################################################################################
 # URLとtitle取得　オーバーライド
 
+
 class OverrideSpreadsheet(SpreadsheetRead):
     def __init__(self, sheet_url, account_id, debugMode=True):
         super().__init__(sheet_url, account_id, debugMode)
@@ -33,31 +34,42 @@ class OverrideSpreadsheet(SpreadsheetRead):
 ####################################################################################
 # ログイン オーバーライド
 
+
 class OverrideAutoLogin(AutoLogin):
     def __init__(self, chrome, debugMode=True):
         super().__init__(chrome, debugMode)
 
-
     # titleとサイトが開いてるかどうかでサイトが開いてるかを確認
     def site_open_title_check(self, gss_url, gss_title, field_name, token, notifyFunc):
-        return super().site_open_title_check(gss_url, gss_title, field_name, token, notifyFunc)
+        return super().site_open_title_check(
+            gss_url, gss_title, field_name, token, notifyFunc
+        )
 
 
 ####################################################################################
 # requests オーバーライド
 
+
 class OverrideGetHtml(GetHtml):
     def __init__(self, debugMode=True):
         super().__init__(debugMode)
 
-
-    def organized_html(self, url: str, keep_element: str, remove_tags_elements: str, remove_class_names: str):
-        return super().organized_html(url, keep_element, remove_tags_elements, remove_class_names)
+    def organized_html(
+        self,
+        url: str,
+        keep_element: str,
+        remove_tags_elements: str,
+        remove_class_names: str,
+    ):
+        return super().organized_html(
+            url, keep_element, remove_tags_elements, remove_class_names
+        )
 
 
 ####################################################################################
 # **********************************************************************************
 # スプシからURL、titleを取得、そのhtmlデータを取得
+
 
 class GetHtmlGssLogin:
     def __init__(self, chrome, sheet_url, account_id, debugMode=True):
@@ -65,19 +77,21 @@ class GetHtmlGssLogin:
         self.account_id = account_id
 
         # logger
-        self.getLogger = Logger(__name__, debugMode=debugMode)
+        self.getLogger = Logger(
+            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
+        )
         self.logger = self.getLogger.getLogger()
 
-
         # インスタンス
-        self.get_in_gss= OverrideSpreadsheet(sheet_url=sheet_url, account_id=account_id, debugMode=debugMode)
+        self.get_in_gss = OverrideSpreadsheet(
+            sheet_url=sheet_url, account_id=account_id, debugMode=debugMode
+        )
         self.login = OverrideAutoLogin(chrome=chrome, debugMode=debugMode)
         self.get_html = OverrideGetHtml(debugMode=debugMode)
         self.spreadsheet = GSSAPILogin(debugMode=debugMode)
 
-
-# ----------------------------------------------------------------------------------
-# クラスの除外リストをスプシより取得
+    # ----------------------------------------------------------------------------------
+    # クラスの除外リストをスプシより取得
 
     def _get_remove_class_gsslist(self):
         self.logger.info(f"******** _get_remove_class_gsslist start ********")
@@ -85,7 +99,7 @@ class GetHtmlGssLogin:
         sheet_df = self.spreadsheet.get_df_in_gss(
             sheet_name=GssSheetName.sheet_name_a.value,
             jsonKeyName=KeyFile.json_key_file.value,
-            spreadsheetId=GssSheetId.sheet_id.value
+            spreadsheetId=GssSheetId.sheet_id.value,
         )
         self.logger.debug(f"sheet_df: {sheet_df.head()}")
 
@@ -97,7 +111,7 @@ class GetHtmlGssLogin:
             if pd.notna(class_name):
                 self.logger.debug(f"{index} class_name: {class_name}")
 
-                remove_class_list.append({'class_name': class_name})
+                remove_class_list.append({"class_name": class_name})
 
         self.logger.info(f"******** _get_remove_class_gsslist end ********")
 
@@ -105,9 +119,8 @@ class GetHtmlGssLogin:
 
         return remove_class_list
 
-
-# ----------------------------------------------------------------------------------
-# flowの定義
+    # ----------------------------------------------------------------------------------
+    # flowの定義
 
     def process(self, url, notifyFunc, token: str):
         try:
@@ -117,24 +130,29 @@ class GetHtmlGssLogin:
             remove_class_names = self._get_remove_class_gsslist()
 
             # ログインチェック
-            self.login.site_open_title_check(gss_url=url, gss_title=name, field_name=self.account_id, notifyFunc=notifyFunc, token=token)
+            self.login.site_open_title_check(
+                gss_url=url,
+                gss_title=name,
+                field_name=self.account_id,
+                notifyFunc=notifyFunc,
+                token=token,
+            )
 
             # htmlを取得して欲しい情報に整理
             organized_html = self.get_html.organized_html(
                 url=url,
-                keep_element='body',
-                remove_tags_elements='a',
-                remove_class_names=remove_class_names
+                keep_element="body",
+                remove_tags_elements="a",
+                remove_class_names=remove_class_names,
             )
             self.logger.info(f"******** get_html_gss_login_process end ********")
 
             return organized_html
 
-
         except Exception as e:
             self.logger.error(f"get_html_gss_login_process 処理中にエラーが発生{e}")
             raise
 
+
 # ----------------------------------------------------------------------------------
 # **********************************************************************************
-

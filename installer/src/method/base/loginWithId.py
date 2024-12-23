@@ -38,7 +38,9 @@ decoInstanceClick = ClickDeco(debugMode=True)
 class SingleSiteIDLogin:
     def __init__(self, chrome: WebDriver, debugMode=True):
         # logger
-        self.getLogger = Logger(__name__, debugMode=debugMode)
+        self.getLogger = Logger(
+            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
+        )
         self.logger = self.getLogger.getLogger()
 
         self.chrome = chrome
@@ -48,45 +50,53 @@ class SingleSiteIDLogin:
         self.wait = Wait(chrome=self.chrome, debugMode=debugMode)
         self.path = BaseToPath(debugMode=debugMode)
         self.pickle_write = LimitSabDirFileWrite(debugMode=debugMode)
-        self.pickle_read =ResultFileRead(debugMode=debugMode)
+        self.pickle_read = ResultFileRead(debugMode=debugMode)
 
-
-# ----------------------------------------------------------------------------------
-# IDログイン
-# reCAPTCHA OK
+    # ----------------------------------------------------------------------------------
+    # IDログイン
+    # reCAPTCHA OK
 
     def flowLoginID(self, login_info: dict, timeout: int = 120):
-        self.logger.debug(f'login_info: {login_info}')
+        self.logger.debug(f"login_info: {login_info}")
 
         # サイトを開いてCookieを追加
-        self.openSite(login_url=login_info['LOGIN_URL'])
+        self.openSite(login_url=login_info["LOGIN_URL"])
 
-        self.inputId(by=login_info['ID_BY'], value=login_info['ID_VALUE'], inputText=login_info['ID_TEXT'])
+        self.inputId(
+            by=login_info["ID_BY"],
+            value=login_info["ID_VALUE"],
+            inputText=login_info["ID_TEXT"],
+        )
 
-        self.inputPass(by=login_info['PASS_BY'], value=login_info['PASS_VALUE'], inputText=login_info['PASS_TEXT'])
+        self.inputPass(
+            by=login_info["PASS_BY"],
+            value=login_info["PASS_VALUE"],
+            inputText=login_info["PASS_TEXT"],
+        )
 
         # クリックを繰り返しPOPUPがなくなるまで繰り返す
-        self.click_login_btn_in_recaptcha(by=login_info['BTN_BY'], value=login_info['BTN_VALUE'])
+        self.click_login_btn_in_recaptcha(
+            by=login_info["BTN_BY"], value=login_info["BTN_VALUE"]
+        )
 
         # 検索ページなどが出てくる対策
         # PCのスペックに合わせて設定
         self.wait.jsPageChecker(chrome=self.chrome, timeout=10)
 
         # reCAPTCHA対策を完了確認
-        return self.login_element_check(by=login_info['LOGIN_AFTER_ELEMENT_BY'], value=login_info['LOGIN_AFTER_ELEMENT_VALUE'], timeout=timeout)
+        return self.login_element_check(
+            by=login_info["LOGIN_AFTER_ELEMENT_BY"],
+            value=login_info["LOGIN_AFTER_ELEMENT_VALUE"],
+            timeout=timeout,
+        )
 
-
-# ----------------------------------------------------------------------------------
-
-
+    # ----------------------------------------------------------------------------------
 
     @decoJsInstance.jsCompleteWait
     def openSite(self, login_url: str):
         return self.chrome.get(url=login_url)
 
-
-# ----------------------------------------------------------------------------------
-
+    # ----------------------------------------------------------------------------------
 
     def currentUrl(self):
         try:
@@ -96,41 +106,36 @@ class SingleSiteIDLogin:
             self.logger.error(f"なにかしらのエラー{e}")
         return currentUrl
 
-
-# ----------------------------------------------------------------------------------
-# IDの取得
+    # ----------------------------------------------------------------------------------
+    # IDの取得
 
     @decoInstanceInput.inputWait
     def inputId(self, by: str, value: str, inputText: str):
         return self.element.clickClearInput(by=by, value=value, inputText=inputText)
 
-
-# ----------------------------------------------------------------------------------
-# passの入力
+    # ----------------------------------------------------------------------------------
+    # passの入力
 
     @decoInstanceInput.inputWait
     def inputPass(self, by: str, value: str, inputText: str):
         return self.element.clickClearInput(by=by, value=value, inputText=inputText)
 
-
-# ----------------------------------------------------------------------------------
-# ログインボタン押下
+    # ----------------------------------------------------------------------------------
+    # ログインボタン押下
 
     def clickLoginBtn(self, by: str, value: str):
-        self.logger.debug(f'value: {value}')
+        self.logger.debug(f"value: {value}")
         return self.element.clickElement(by=by, value=value)
 
-
-# ----------------------------------------------------------------------------------
-# ログインボタン押下
-# reCAPTCHA
+    # ----------------------------------------------------------------------------------
+    # ログインボタン押下
+    # reCAPTCHA
 
     def click_login_btn_in_recaptcha(self, by: str, value: str):
-        self.logger.debug(f'value: {value}')
+        self.logger.debug(f"value: {value}")
         return self.element.recaptcha_click_element(by=by, value=value)
 
-
-# ----------------------------------------------------------------------------------
+    # ----------------------------------------------------------------------------------
 
     def loginUrlCheck(self, url: str):
         self.logger.debug(f"\nurl: {url}\ncurrentUrl: {self.currentUrl()}")
@@ -142,9 +147,7 @@ class SingleSiteIDLogin:
             self.logger.error(f"{__name__}: ログインに失敗")
             return False
 
-
-# ----------------------------------------------------------------------------------
-
+    # ----------------------------------------------------------------------------------
 
     def login_element_check(self, by: str, value: str, timeout: int):
         try:
@@ -153,22 +156,28 @@ class SingleSiteIDLogin:
             return True
 
         except TimeoutException:
-            self.logger.error(f"{__name__}: reCAPTCHAの処理時間に {timeout} 秒以上 かかってしまいましたためtimeout")
+            self.logger.error(
+                f"{__name__}: reCAPTCHAの処理時間に {timeout} 秒以上 かかってしまいましたためtimeout"
+            )
             return False
 
+    # ----------------------------------------------------------------------------------
 
-# ----------------------------------------------------------------------------------
-
-
-    def actionBeforeLogin(self, url: str, login_info: dict, delay: int=2, maxRetries: int = 3):
+    def actionBeforeLogin(
+        self, url: str, login_info: dict, delay: int = 2, maxRetries: int = 3
+    ):
         # 特定のサイトにアクセス
         self.openSite(url=url)
 
         retries = 0
         while retries < maxRetries:
             try:
-                self.clickLoginBtn(by=login_info['bypassIdBy'], value=login_info['bypassIdValue'])
-                element = self.wait.canWaitInput(by=login_info['idBy'], value=login_info['idValue'])
+                self.clickLoginBtn(
+                    by=login_info["bypassIdBy"], value=login_info["bypassIdValue"]
+                )
+                element = self.wait.canWaitInput(
+                    by=login_info["idBy"], value=login_info["idValue"]
+                )
                 time.sleep(delay)
 
                 if element:
@@ -177,24 +186,24 @@ class SingleSiteIDLogin:
                     break
 
             except TimeoutException:
-                self.logger.warning(f"要素が見つからなかったため、再試行します。リトライ回数: {retries + 1}/{maxRetries}")
+                self.logger.warning(
+                    f"要素が見つからなかったため、再試行します。リトライ回数: {retries + 1}/{maxRetries}"
+                )
                 retries += 1
                 # self.clickLoginBtn(by=login_info['bypassIdBy'], value=login_info['bypassIdValue'])
                 time.sleep(delay)  # リトライの間に少し待機して再試行する
 
         if retries == maxRetries:
-            self.logger.error("指定回数のリトライを行いましたが、要素にアクセスできませんでした")
+            self.logger.error(
+                "指定回数のリトライを行いましたが、要素にアクセスできませんでした"
+            )
 
-
-# ----------------------------------------------------------------------------------
-
+    # ----------------------------------------------------------------------------------
 
     def bypassOpenSite(self):
         return self.chrome.get(self.homeUrl)
 
-
-# ----------------------------------------------------------------------------------
-
+    # ----------------------------------------------------------------------------------
 
     def _getCookie(self):
         cookies = self.chrome.get_cookies()
@@ -203,24 +212,22 @@ class SingleSiteIDLogin:
         # checked_cookie = self.canValueInCookie(cookie=cookie)
         return cookies
 
-
-# ----------------------------------------------------------------------------------
-# Cookieの値が入っているか確認
-# TODO 使わない
-
+    # ----------------------------------------------------------------------------------
+    # Cookieの値が入っているか確認
+    # TODO 使わない
 
     def canValueInCookie(self, cookie: Dict):
-        if not cookie.get('name') or not cookie.get('value'):
+        if not cookie.get("name") or not cookie.get("value"):
             self.logger.warning(f"cookieに必要な情報が記載されてません {cookie}")
             return None
         else:
             return cookie
 
+    # ----------------------------------------------------------------------------------
 
-# ----------------------------------------------------------------------------------
-
-
-    async def flow_cookie_pickle_save(self, login_url: str, login_info: dict, timeout: int =180):
+    async def flow_cookie_pickle_save(
+        self, login_url: str, login_info: dict, timeout: int = 180
+    ):
         # ログインの実施
         self.flowLoginID(login_url=login_url, login_info=login_info, timeout=timeout)
 
@@ -237,9 +244,7 @@ class MultiSiteIDLogin(SingleSiteIDLogin):
     def __init__(self, chrome, debugMode=True):
         super().__init__(chrome, debugMode)
 
-
-# ----------------------------------------------------------------------------------
-
+    # ----------------------------------------------------------------------------------
 
     def _set_pattern(self, site_name: str):
         login_pattern_dict = LoginInfo.SITE_PATTERNS.value
@@ -248,12 +253,27 @@ class MultiSiteIDLogin(SingleSiteIDLogin):
 
         return login_info
 
+    # ----------------------------------------------------------------------------------
 
-# ----------------------------------------------------------------------------------
-
-
-    def flow_cookie_save_cap(self, login_url, login_info, cap_after_element_by, cap_after_element_path, tableName, columnsName, cap_timeout = 180):
-        return super().flow_cookie_save_cap(login_url, login_info, cap_after_element_by, cap_after_element_path, tableName, columnsName, cap_timeout)
+    def flow_cookie_save_cap(
+        self,
+        login_url,
+        login_info,
+        cap_after_element_by,
+        cap_after_element_path,
+        tableName,
+        columnsName,
+        cap_timeout=180,
+    ):
+        return super().flow_cookie_save_cap(
+            login_url,
+            login_info,
+            cap_after_element_by,
+            cap_after_element_path,
+            tableName,
+            columnsName,
+            cap_timeout,
+        )
 
 
 # ----------------------------------------------------------------------------------

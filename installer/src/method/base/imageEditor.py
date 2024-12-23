@@ -13,7 +13,7 @@ from io import BytesIO
 from .utils import Logger
 from .path import BaseToPath
 from ..constElementInfo import ImageInfo
-from ..const import Extension
+from const_str import FileName, Extension
 
 
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
@@ -23,23 +23,25 @@ from ..const import Extension
 class ImageEditor:
     def __init__(self, debugMode=True):
         # logger
-        self.getLogger = Logger(__name__, debugMode=debugMode)
+        self.getLogger = Logger(
+            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
+        )
         self.logger = self.getLogger.getLogger()
 
         self.path = BaseToPath(debugMode=debugMode)
 
         self.imageSize = (1080, 1080)
 
-
-# ----------------------------------------------------------------------------------
-
+    # ----------------------------------------------------------------------------------
 
     def executePatternEditors(self, dataDict: dict, buildingName: str):
-        patterns = ['A', 'B', 'C', 'D']
+        patterns = ["A", "B", "C", "D"]
 
         for pattern in patterns:
             if pattern not in dataDict:
-                self.logger.error(f"{pattern} パターンのデータが欠けているため、{pattern} とそれ以降のすべてのパターンをスキップします。")
+                self.logger.error(
+                    f"{pattern} パターンのデータが欠けているため、{pattern} とそれ以降のすべてのパターンをスキップします。"
+                )
                 break
 
             # パターン固有のデータを取得
@@ -51,61 +53,94 @@ class ImageEditor:
             commentSize = ImageInfo.COMMENT_SIZE.value
             fontFileName = ImageInfo.FONT_NAME.value
             fontPath = self.inputDataFolderPath(fileName=fontFileName)
-            fontColor = ImageInfo.FONT_COLORS.value[pattern]  # パターンに対応するフォントカラーを取得
+            fontColor = ImageInfo.FONT_COLORS.value[
+                pattern
+            ]  # パターンに対応するフォントカラーを取得
             underBottomSize = ImageInfo.UNDER_BOTTOM_SIZE.value
             underBottomColor = ImageInfo.UNDER_BOTTOM_COLOR.value
 
             # 画像作成メソッドにパターン固有の情報を渡す
-            if not self.createImage(pattern_data, fontPath, baseImagePath, fontSize, commentSize, pattern, fontColor, underBottomSize, underBottomColor, buildingName):
-                self.logger.error(f"パターン {pattern} の画像データが揃ってないため、以降のパターンをスキップします。")
+            if not self.createImage(
+                pattern_data,
+                fontPath,
+                baseImagePath,
+                fontSize,
+                commentSize,
+                pattern,
+                fontColor,
+                underBottomSize,
+                underBottomColor,
+                buildingName,
+            ):
+                self.logger.error(
+                    f"パターン {pattern} の画像データが揃ってないため、以降のパターンをスキップします。"
+                )
                 break
 
         self.logger.info(f"画像処理が完了しました。")
 
-
-# ----------------------------------------------------------------------------------
-
+    # ----------------------------------------------------------------------------------
 
     def checkImageAndTextCount(self, data: dict, pattern: str):
         # 必要な項目をパターンごとに定義
         required_keys = {
-            'A': ['imagePath_1', 'text_1', 'text_2', 'text_3'],
-            'B': ['imagePath_1', 'imagePath_2', 'text_1', 'text_2', 'text_3'],
-            'C': ['imagePath_1', 'imagePath_2', 'text_1', 'text_2'],
-            'D': ['imagePath_1', 'imagePath_2', 'text_1', 'text_2']
+            "A": ["imagePath_1", "text_1", "text_2", "text_3"],
+            "B": ["imagePath_1", "imagePath_2", "text_1", "text_2", "text_3"],
+            "C": ["imagePath_1", "imagePath_2", "text_1", "text_2"],
+            "D": ["imagePath_1", "imagePath_2", "text_1", "text_2"],
         }
 
         # 必要なキーが存在し、かつそのキーに値があるかをチェック
-        missing_or_empty_keys = [key for key in required_keys[pattern] if key not in data or not data[key]]
+        missing_or_empty_keys = [
+            key for key in required_keys[pattern] if key not in data or not data[key]
+        ]
 
         if missing_or_empty_keys:
-            self.logger.error(f"{pattern} に必要なデータが不足しています。欠けているキーまたは空のキー: {missing_or_empty_keys}")
+            self.logger.error(
+                f"{pattern} に必要なデータが不足しています。欠けているキーまたは空のキー: {missing_or_empty_keys}"
+            )
             return False
 
         # imagePath の有効性をチェック
-        image_keys = [key for key in required_keys[pattern] if 'imagePath' in key]
+        image_keys = [key for key in required_keys[pattern] if "imagePath" in key]
         for key in image_keys:
             try:
                 response = requests.head(data[key], allow_redirects=True)
                 if response.status_code < 200 or response.status_code >= 400:
-                    self.logger.error(f"{pattern} の画像が見つかりません: \n{data[key]}")
+                    self.logger.error(
+                        f"{pattern} の画像が見つかりません: \n{data[key]}"
+                    )
                     return False
             except requests.RequestException as e:
-                self.logger.error(f"{pattern} の画像データにアクセスできません: \n{data[key]}\nエラー: {e}")
+                self.logger.error(
+                    f"{pattern} の画像データにアクセスできません: \n{data[key]}\nエラー: {e}"
+                )
                 return False
 
         return True
 
+    # ----------------------------------------------------------------------------------
 
-# ----------------------------------------------------------------------------------
-
-
-    def createImage(self, data: dict, fontPath: str, baseImagePath: str, fontSize: int, commentSize, pattern: str, fontColor: Tuple[int, int, int], underBottomSize: int, underBottomColor: Tuple[int, int, int], buildingName: str):
-        '''
+    def createImage(
+        self,
+        data: dict,
+        fontPath: str,
+        baseImagePath: str,
+        fontSize: int,
+        commentSize,
+        pattern: str,
+        fontColor: Tuple[int, int, int],
+        underBottomSize: int,
+        underBottomColor: Tuple[int, int, int],
+        buildingName: str,
+    ):
+        """
         fontPath→使用したいフォントを指定する
         baseImagePath→ベース画像を指定する
-        '''
-        self.logger.info(f"createImage 呼び出し時の {pattern} の data の型: {type(data)}")
+        """
+        self.logger.info(
+            f"createImage 呼び出し時の {pattern} の data の型: {type(data)}"
+        )
         self.logger.info(f"createImage 呼び出し時の {pattern} の data の内容: {data}")
 
         # 画像データが揃っているかをチェック
@@ -119,18 +154,20 @@ class ImageEditor:
         positions = ImageInfo.POSITIONS.value[pattern]
 
         # 画像の配置
-        if pattern == 'A':
+        if pattern == "A":
             # Pattern A の場合
-            if 'imagePath_1' in data:
+            if "imagePath_1" in data:
                 # 1. Image1 の配置
-                self.drawImageWithMode(base_image, data['imagePath_1'], positions['IMAGE_CENTER'])
+                self.drawImageWithMode(
+                    base_image, data["imagePath_1"], positions["IMAGE_CENTER"]
+                )
 
             # 2. 半透明のラインの描画（BACK_BOTTOM）
             if "BACK_TOP" in positions:
                 back_bottom_box = positions["BACK_TOP"]
 
                 # ライン用の新しい透明なレイヤーを作成
-                overlay = Image.new('RGBA', base_image.size, (255, 255, 255, 0))
+                overlay = Image.new("RGBA", base_image.size, (255, 255, 255, 0))
                 overlay_draw = ImageDraw.Draw(overlay)
 
                 # 半透明のラインを描画
@@ -144,7 +181,7 @@ class ImageEditor:
                 back_bottom_box = positions["BACK_BOTTOM"]
 
                 # ライン用の新しい透明なレイヤーを作成
-                overlay = Image.new('RGBA', base_image.size, (255, 255, 255, 0))
+                overlay = Image.new("RGBA", base_image.size, (255, 255, 255, 0))
                 overlay_draw = ImageDraw.Draw(overlay)
 
                 # 半透明のラインを描画
@@ -160,69 +197,177 @@ class ImageEditor:
             print(f"font: {font}, type:{type(font)}")
 
             # テキスト1を右揃えで配置（アウトライン付き）
-            if 'text_1' in data and 'TEXT_LEFT_TOP' in positions:
-                self.drawTextWithOutline(draw, data['text_1'], positions['TEXT_LEFT_TOP'], fontPath, initialFontSize=fontSize, lineHeight=fontSize, fill=fontColor, outline_fill=(255, 255, 255), outline_width=2, center=False)
+            if "text_1" in data and "TEXT_LEFT_TOP" in positions:
+                self.drawTextWithOutline(
+                    draw,
+                    data["text_1"],
+                    positions["TEXT_LEFT_TOP"],
+                    fontPath,
+                    initialFontSize=fontSize,
+                    lineHeight=fontSize,
+                    fill=fontColor,
+                    outline_fill=(255, 255, 255),
+                    outline_width=2,
+                    center=False,
+                )
 
             # テキスト2を枠の中央に配置（アウトライン付き）
-            if 'text_2' in data and 'TEXT_RIGHT_TOP' in positions:
-                self.drawTextWithOutline(draw, data['text_2'], positions['TEXT_RIGHT_TOP'], fontPath, initialFontSize=fontSize, lineHeight=fontSize, fill=fontColor, outline_fill=(255, 255, 255), outline_width=2, right=True)
+            if "text_2" in data and "TEXT_RIGHT_TOP" in positions:
+                self.drawTextWithOutline(
+                    draw,
+                    data["text_2"],
+                    positions["TEXT_RIGHT_TOP"],
+                    fontPath,
+                    initialFontSize=fontSize,
+                    lineHeight=fontSize,
+                    fill=fontColor,
+                    outline_fill=(255, 255, 255),
+                    outline_width=2,
+                    right=True,
+                )
 
             # テキスト3は通常の横書き（アウトライン付き）
-            if 'text_3' in data and 'TEXT_BOTTOM_LEFT' in positions:
-                self.drawTextWithOutline(draw, data['text_3'], positions['TEXT_BOTTOM_LEFT'], fontPath, initialFontSize=fontSize, lineHeight=40, fill=fontColor, outline_fill=(255, 255, 255), outline_width=2)
+            if "text_3" in data and "TEXT_BOTTOM_LEFT" in positions:
+                self.drawTextWithOutline(
+                    draw,
+                    data["text_3"],
+                    positions["TEXT_BOTTOM_LEFT"],
+                    fontPath,
+                    initialFontSize=fontSize,
+                    lineHeight=40,
+                    fill=fontColor,
+                    outline_fill=(255, 255, 255),
+                    outline_width=2,
+                )
 
         # Pattern B の場合
-        elif pattern == 'B':
-            if 'imagePath_1' in data:
-                self.drawImageWithMode(base_image, data['imagePath_1'], positions['IMAGE_TOP_LEFT'])
+        elif pattern == "B":
+            if "imagePath_1" in data:
+                self.drawImageWithMode(
+                    base_image, data["imagePath_1"], positions["IMAGE_TOP_LEFT"]
+                )
 
-            if 'imagePath_2' in data:
-                self.drawImageWithMode(base_image, data['imagePath_2'], positions['IMAGE_BOTTOM_LEFT'])
+            if "imagePath_2" in data:
+                self.drawImageWithMode(
+                    base_image, data["imagePath_2"], positions["IMAGE_BOTTOM_LEFT"]
+                )
 
             # テキストの配置
             draw = ImageDraw.Draw(base_image)
-            if 'text_1' in data and 'TEXT_TOP_RIGHT' in positions:
-                self.drawTextWithOutline(draw, data['text_1'], positions['TEXT_TOP_RIGHT'], fontPath, initialFontSize=fontSize, fill=fontColor, lineHeight=40, outline_fill=(255, 255, 255), outline_width=2)
+            if "text_1" in data and "TEXT_TOP_RIGHT" in positions:
+                self.drawTextWithOutline(
+                    draw,
+                    data["text_1"],
+                    positions["TEXT_TOP_RIGHT"],
+                    fontPath,
+                    initialFontSize=fontSize,
+                    fill=fontColor,
+                    lineHeight=40,
+                    outline_fill=(255, 255, 255),
+                    outline_width=2,
+                )
 
-            if 'text_2' in data and 'TEXT_BOTTOM_RIGHT' in positions:
-                self.drawTextWithOutline(draw, data['text_2'], positions['TEXT_BOTTOM_RIGHT'], fontPath, initialFontSize=fontSize, fill=fontColor, lineHeight=40, outline_fill=(255, 255, 255), outline_width=2, center=True)
+            if "text_2" in data and "TEXT_BOTTOM_RIGHT" in positions:
+                self.drawTextWithOutline(
+                    draw,
+                    data["text_2"],
+                    positions["TEXT_BOTTOM_RIGHT"],
+                    fontPath,
+                    initialFontSize=fontSize,
+                    fill=fontColor,
+                    lineHeight=40,
+                    outline_fill=(255, 255, 255),
+                    outline_width=2,
+                    center=True,
+                )
 
-            if 'text_3' in data and 'TEXT_UNDER_BOTTOM' in positions:
-                self.drawTextWithOutline(draw, data['text_3'], positions['TEXT_UNDER_BOTTOM'], fontPath, initialFontSize=underBottomSize, fill=underBottomColor, lineHeight=40, outline_fill=(255, 255, 255), outline_width=2)
+            if "text_3" in data and "TEXT_UNDER_BOTTOM" in positions:
+                self.drawTextWithOutline(
+                    draw,
+                    data["text_3"],
+                    positions["TEXT_UNDER_BOTTOM"],
+                    fontPath,
+                    initialFontSize=underBottomSize,
+                    fill=underBottomColor,
+                    lineHeight=40,
+                    outline_fill=(255, 255, 255),
+                    outline_width=2,
+                )
 
         else:
             # Pattern C, D の場合
-            if 'imagePath_1' in data:
-                self.drawImageWithMode(base_image, data['imagePath_1'], positions['IMAGE_TOP_LEFT'])
+            if "imagePath_1" in data:
+                self.drawImageWithMode(
+                    base_image, data["imagePath_1"], positions["IMAGE_TOP_LEFT"]
+                )
 
-            if 'imagePath_2' in data:
-                self.drawImageWithMode(base_image, data['imagePath_2'], positions['IMAGE_BOTTOM_LEFT'])
+            if "imagePath_2" in data:
+                self.drawImageWithMode(
+                    base_image, data["imagePath_2"], positions["IMAGE_BOTTOM_LEFT"]
+                )
 
             # テキストの配置
             draw = ImageDraw.Draw(base_image)
-            if 'text_1' in data and 'TEXT_TOP_RIGHT' in positions:
-                self.drawTextWithOutline(draw, data['text_1'], positions['TEXT_TOP_RIGHT'], fontPath, initialFontSize=fontSize, fill=fontColor, lineHeight=40, outline_fill=(255, 255, 255), outline_width=2)
+            if "text_1" in data and "TEXT_TOP_RIGHT" in positions:
+                self.drawTextWithOutline(
+                    draw,
+                    data["text_1"],
+                    positions["TEXT_TOP_RIGHT"],
+                    fontPath,
+                    initialFontSize=fontSize,
+                    fill=fontColor,
+                    lineHeight=40,
+                    outline_fill=(255, 255, 255),
+                    outline_width=2,
+                )
 
-            if 'text_2' in data and 'TEXT_BOTTOM_RIGHT' in positions:
-                self.drawTextWithWrapping(draw, data['text_2'], fontPath, positions['TEXT_BOTTOM_RIGHT'], initialFontSize=commentSize, lineHeight=fontSize, fill=fontColor)
+            if "text_2" in data and "TEXT_BOTTOM_RIGHT" in positions:
+                self.drawTextWithWrapping(
+                    draw,
+                    data["text_2"],
+                    fontPath,
+                    positions["TEXT_BOTTOM_RIGHT"],
+                    initialFontSize=commentSize,
+                    lineHeight=fontSize,
+                    fill=fontColor,
+                )
 
-            if 'text_3' in data and 'TEXT_UNDER_BOTTOM' in positions:
-                self.drawTextWithOutline(draw, data['text_3'], positions['TEXT_UNDER_BOTTOM'], fontPath, initialFontSize=underBottomSize, fill=underBottomColor, lineHeight=40, outline_fill=(255, 255, 255), outline_width=2)
+            if "text_3" in data and "TEXT_UNDER_BOTTOM" in positions:
+                self.drawTextWithOutline(
+                    draw,
+                    data["text_3"],
+                    positions["TEXT_UNDER_BOTTOM"],
+                    fontPath,
+                    initialFontSize=underBottomSize,
+                    fill=underBottomColor,
+                    lineHeight=40,
+                    outline_fill=(255, 255, 255),
+                    outline_width=2,
+                )
 
         # 画像の保存
         extension = Extension.PNG.value
         fileName = f"{buildingName}_{pattern}"
-        outputFilePath = self.getResultSubDirFilePath(subDirName=buildingName, fileName=fileName, extension=extension)
+        outputFilePath = self.getResultSubDirFilePath(
+            subDirName=buildingName, fileName=fileName, extension=extension
+        )
         base_image.save(outputFilePath, format="PNG")
         self.logger.info(f"保存完了: {outputFilePath}")
 
         return True
 
+    # ----------------------------------------------------------------------------------
 
-# ----------------------------------------------------------------------------------
-
-
-    def drawTextWithOutlineRightAligned(self, draw: ImageDraw.ImageDraw, text: str, boundingBox: Tuple[int, int, int, int], font: ImageFont.FreeTypeFont, fill: Tuple[int, int, int], outline_fill: Tuple[int, int, int] = (0, 0, 0), outline_width: int = 2):
+    def drawTextWithOutlineRightAligned(
+        self,
+        draw: ImageDraw.ImageDraw,
+        text: str,
+        boundingBox: Tuple[int, int, int, int],
+        font: ImageFont.FreeTypeFont,
+        fill: Tuple[int, int, int],
+        outline_fill: Tuple[int, int, int] = (0, 0, 0),
+        outline_width: int = 2,
+    ):
         """
         テキストを右揃えにしてアウトライン付きで描画します。
         """
@@ -240,29 +385,29 @@ class ImageEditor:
             for offset_y in range(-outline_width, outline_width + 1):
                 if offset_x == 0 and offset_y == 0:
                     continue
-                draw.text((x + offset_x, y + offset_y), text, font=font, fill=outline_fill)
+                draw.text(
+                    (x + offset_x, y + offset_y), text, font=font, fill=outline_fill
+                )
 
         # テキスト本体を描画
         draw.text((x, y), text, font=font, fill=fill)
 
-
-# ----------------------------------------------------------------------------------
-
+    # ----------------------------------------------------------------------------------
 
     def drawTextWithOutline(
-            self,
-            draw: ImageDraw.ImageDraw,
-            text: str,
-            boundingBox: Tuple[int, int, int, int],
-            fontPath: str,
-            initialFontSize: int,
-            lineHeight: int,
-            fill: Tuple[int, int, int] = (0, 0, 0),
-            outline_fill: Tuple[int, int, int] = (255, 255, 255),
-            outline_width: int = 2,
-            center: bool = False,  # 中央揃えオプション
-            right: bool = False    # 右揃えオプション
-        ):
+        self,
+        draw: ImageDraw.ImageDraw,
+        text: str,
+        boundingBox: Tuple[int, int, int, int],
+        fontPath: str,
+        initialFontSize: int,
+        lineHeight: int,
+        fill: Tuple[int, int, int] = (0, 0, 0),
+        outline_fill: Tuple[int, int, int] = (255, 255, 255),
+        outline_width: int = 2,
+        center: bool = False,  # 中央揃えオプション
+        right: bool = False,  # 右揃えオプション
+    ):
         """
         アウトライン付きのテキストを描画し、必要であればフォントサイズを小さくして枠に収まるように調整します。
         """
@@ -282,12 +427,14 @@ class ImageEditor:
                 break
             font_size -= 2
             if font_size <= 0:  # 最小フォントサイズを超えた場合
-                self.logger.error(f"テキスト '{text}' を枠に収めるのに十分なフォントサイズが見つかりません。")
+                self.logger.error(
+                    f"テキスト '{text}' を枠に収めるのに十分なフォントサイズが見つかりません。"
+                )
                 return
             font = ImageFont.truetype(font_path_str, font_size)
 
         # 改行を含むテキストを分割
-        lines = text.split('\n')
+        lines = text.split("\n")
 
         # 初期位置を設定
         x = boundingBox[0]
@@ -314,7 +461,9 @@ class ImageEditor:
                 for offset_y in range(-outline_width, outline_width + 1):
                     if offset_x == 0 and offset_y == 0:
                         continue
-                    draw.text((x + offset_x, y + offset_y), line, font=font, fill=outline_fill)
+                    draw.text(
+                        (x + offset_x, y + offset_y), line, font=font, fill=outline_fill
+                    )
 
             # テキスト本体を描画
             draw.text((x, y), line, font=font, fill=fill)
@@ -322,22 +471,18 @@ class ImageEditor:
             # 次の行のy位置を計算（中央揃えオプションが有効な場合のみ行ごとに）
             y += lineHeight
 
-
-
-
-# ----------------------------------------------------------------------------------
-
+    # ----------------------------------------------------------------------------------
 
     def drawTextWithWrapping(
-            self,
-            draw: ImageDraw.ImageDraw,
-            text: str,
-            fontPath: str,
-            boundingBox: Tuple[int, int, int, int],
-            initialFontSize: int,
-            lineHeight: int,
-            fill: Tuple[int, int, int] = (0, 0, 0)
-        ):
+        self,
+        draw: ImageDraw.ImageDraw,
+        text: str,
+        fontPath: str,
+        boundingBox: Tuple[int, int, int, int],
+        initialFontSize: int,
+        lineHeight: int,
+        fill: Tuple[int, int, int] = (0, 0, 0),
+    ):
         """
         指定されたバウンディングボックス内にテキストを描画し、必要であれば改行します。
         """
@@ -386,16 +531,16 @@ class ImageEditor:
             draw.text((x, y), line, font=font, fill=fill)
             y += lineHeight
 
-
-# ----------------------------------------------------------------------------------
-
+    # ----------------------------------------------------------------------------------
 
     def drawImageWithMode(
-            self,
-            baseImage: Image.Image,
-            imagePath: str,
-            boundingBox: Tuple[int, int, int, int],  # 新しいパラメータ、(x1, y1, x2, y2) のタプル
-        ):
+        self,
+        baseImage: Image.Image,
+        imagePath: str,
+        boundingBox: Tuple[
+            int, int, int, int
+        ],  # 新しいパラメータ、(x1, y1, x2, y2) のタプル
+    ):
         # 画像を取得して `insertImage` を定義する
         if imagePath.startswith("http://") or imagePath.startswith("https://"):
             try:
@@ -439,19 +584,13 @@ class ImageEditor:
         # 画像の貼り付け
         baseImage.paste(insertImage, (x_offset, y_offset), insertImage)
 
-
-
-
-# ----------------------------------------------------------------------------------
-# resultOutput
-
+    # ----------------------------------------------------------------------------------
+    # resultOutput
 
     def getResultSubDirFilePath(self, subDirName: str, fileName: str, extension: str):
         return self.path.getResultSubDirFilePath(subDirName, fileName, extension)
 
-
-# ----------------------------------------------------------------------------------
-
+    # ----------------------------------------------------------------------------------
 
     def inputDataFolderPath(self, fileName: str):
         return self.path.getInputDataFilePath(fileName=fileName)
@@ -461,43 +600,38 @@ class ImageEditor:
 
 
 data_A = {
-    'imagePath_1': 'https://property.es-img.jp/rent/img/1136293183700000023966/0000000001136293183700000023966_10.jpg?iid=509482932',
-    'text_1': '物件情報',
-    'text_2': '東京臨海高速鉄道りんかい線',
-    'text_3': 'リゾートゲートウェイ駅    徒歩30分'
+    "imagePath_1": "https://property.es-img.jp/rent/img/1136293183700000023966/0000000001136293183700000023966_10.jpg?iid=509482932",
+    "text_1": "物件情報",
+    "text_2": "東京臨海高速鉄道りんかい線",
+    "text_3": "リゾートゲートウェイ駅    徒歩30分",
 }
 
 data_B = {
-    'imagePath_1': 'https://property.es-img.jp/rent/img/1136293183700000019925/0000000001136293183700000019925_1.jpg?iid=4032567125',
-    'imagePath_2': 'https://property.es-img.jp/rent/img/1136293183700000019925/0000000001136293183700000019925_23.jpg?iid=3611105031',
-    'text_1': '•　専有面積 22㎡\n\n•　モニタ付インターホン\n\n•　システムキッチン\n\n•　2口コンロ\n\n•　ガスコンロ',
-    'text_2': 'モニターが付いていることで、訪問者を事前に確認でき、不審者を防ぐことができます。特に賃貸物件では、他人と共有する空間が多いため、安心感が増します。',
-    'text_3': '敷金 1ヶ月  礼金 1ヶ月'
+    "imagePath_1": "https://property.es-img.jp/rent/img/1136293183700000019925/0000000001136293183700000019925_1.jpg?iid=4032567125",
+    "imagePath_2": "https://property.es-img.jp/rent/img/1136293183700000019925/0000000001136293183700000019925_23.jpg?iid=3611105031",
+    "text_1": "•　専有面積 22㎡\n\n•　モニタ付インターホン\n\n•　システムキッチン\n\n•　2口コンロ\n\n•　ガスコンロ",
+    "text_2": "モニターが付いていることで、訪問者を事前に確認でき、不審者を防ぐことができます。特に賃貸物件では、他人と共有する空間が多いため、安心感が増します。",
+    "text_3": "敷金 1ヶ月  礼金 1ヶ月",
 }
 
 data_C = {
-    'imagePath_1': 'https://property.es-img.jp/rent/img/1136293183700000019925/0000000001136293183700000019925_6.jpg?iid=3655407388',
-    'imagePath_2': 'https://property.es-img.jp/rent/img/1136293183700000019925/0000000001136293183700000019925_13.jpg?iid=119543694',
-    'text_1': '•　モニタ付インターホン\n\n•　システムキッチン\n\n•　2口コンロ\n\n•　ガスコンロ',
-    'text_2': 'モニターが付いていることで、訪問者を事前に確認でき、不審者を防ぐことができます。特に賃貸物件では、他人と共有する空間が多いため、安心感が増します。'
+    "imagePath_1": "https://property.es-img.jp/rent/img/1136293183700000019925/0000000001136293183700000019925_6.jpg?iid=3655407388",
+    "imagePath_2": "https://property.es-img.jp/rent/img/1136293183700000019925/0000000001136293183700000019925_13.jpg?iid=119543694",
+    "text_1": "•　モニタ付インターホン\n\n•　システムキッチン\n\n•　2口コンロ\n\n•　ガスコンロ",
+    "text_2": "モニターが付いていることで、訪問者を事前に確認でき、不審者を防ぐことができます。特に賃貸物件では、他人と共有する空間が多いため、安心感が増します。",
 }
 
 data_D = {
-    'imagePath_1': 'https://property.es-img.jp/rent/img/1136293183700000019925/0000000001136293183700000019925_3.jpg?iid=3660388147',
-    'imagePath_2': 'https://property.es-img.jp/rent/img/1136293183700000019925/0000000001136293183700000019925_5.jpg?iid=147986314',
-    'text_1': '•　モニタ付インターホン\n\n•　システムキッチン\n\n•　2口コンロ\n\n•　ガスコンロ',
-    'text_2': 'モニターが付いていることで、訪問者を事前に確認でき、不審者を防ぐことができます。特に賃貸物件では、他人と共有する空間が多いため、安心感が増します。'
+    "imagePath_1": "https://property.es-img.jp/rent/img/1136293183700000019925/0000000001136293183700000019925_3.jpg?iid=3660388147",
+    "imagePath_2": "https://property.es-img.jp/rent/img/1136293183700000019925/0000000001136293183700000019925_5.jpg?iid=147986314",
+    "text_1": "•　モニタ付インターホン\n\n•　システムキッチン\n\n•　2口コンロ\n\n•　ガスコンロ",
+    "text_2": "モニターが付いていることで、訪問者を事前に確認でき、不審者を防ぐことができます。特に賃貸物件では、他人と共有する空間が多いため、安心感が増します。",
 }
 
 # 各データをパターンごとにまとめる辞書
-data = {
-    'A': data_A,
-    'B': data_B,
-    'C': data_C,
-    'D': data_D
-}
+data = {"A": data_A, "B": data_B, "C": data_C, "D": data_D}
 
-buildingName = 'ネオマイム横浜阪東橋弐番館 802号室'
+buildingName = "ネオマイム横浜阪東橋弐番館 802号室"
 
 
 # Instantiate the main ImageEditor class and execute pattern editors

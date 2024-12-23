@@ -7,6 +7,8 @@ import tkinter as tk  # python -m tkinter このコマンドで使えるかど�
 from tkinter import messagebox
 from typing import Callable, Optional
 
+from const_str import FileName
+
 
 # 自作モジュール
 from .utils import Logger
@@ -19,12 +21,12 @@ class Popup:
     def __init__(self, debugMode=True):
 
         # logger
-        self.getLogger = Logger(__name__, debugMode=debugMode)
+        self.getLogger = Logger(
+            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
+        )
         self.logger = self.getLogger.getLogger()
 
-
-# ----------------------------------------------------------------------------------
-
+    # ----------------------------------------------------------------------------------
 
     def popupCommentOnly(self, popupTitle: str, comment: str):
         root = tk.Tk()
@@ -33,10 +35,11 @@ class Popup:
 
         root.destroy()  # メインウィンドウを破棄
 
-# ----------------------------------------------------------------------------------
+    # ----------------------------------------------------------------------------------
 
-
-    def popupCommentChoice(self, popupTitle: str, comment: str, func: Optional[Callable[[], None]]):
+    def popupCommentChoice(
+        self, popupTitle: str, comment: str, func: Optional[Callable[[], None]]
+    ):
         root = tk.Tk()
         root.withdraw()
         result = messagebox.askyesno(popupTitle, comment)

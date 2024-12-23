@@ -19,6 +19,7 @@ from base.spreadsheetRead import GetDataGSSAPI
 from base.elementManager import ElementManager
 
 # const
+from const_str import FileName
 from const_element import LoginInfo, GssInfo, SellInfo
 
 # ----------------------------------------------------------------------------------
@@ -29,7 +30,7 @@ class FlowGCNewItem:
     def __init__(self, debugMode=True):
 
         # logger
-        self.getLogger = Logger(__name__, debugMode=debugMode)
+        self.getLogger = Logger(moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode)
         self.logger = self.getLogger.getLogger()
 
         # chrome

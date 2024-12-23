@@ -19,6 +19,9 @@ from .utils import Logger
 from .path import BaseToPath
 from .decorators import Decorators
 
+from const_str import FileName
+
+
 load_dotenv()
 
 decoInstance = Decorators(debugMode=True)
@@ -34,16 +37,17 @@ class SpreadsheetRead:
         self.account_id = account_id
 
         # logger
-        self.getLogger = Logger(__name__, debugMode=debugMode)
+        self.getLogger = Logger(
+            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
+        )
         self.logger = self.getLogger.getLogger()
 
         self.path = BaseToPath(debugMode=debugMode)
         self.df = self.load_spreadsheet()
 
-
-####################################################################################
-# ----------------------------------------------------------------------------------
-# スプシ読み込みからpandasでの解析→文字列データを仮想的なファイルを作成
+    ####################################################################################
+    # ----------------------------------------------------------------------------------
+    # スプシ読み込みからpandasでの解析→文字列データを仮想的なファイルを作成
 
     def load_spreadsheet(self, key_col):
         # スプシデータにアクセス
@@ -53,41 +57,39 @@ class SpreadsheetRead:
         # on_bad_lines='skip'→パラメータに'skip'を指定することで、不正な形式スキップして表示できる（絵文字、特殊文字）
         # StringIOは、文字列データをファイルのように扱えるようにするもの。メモリ上に仮想的なテキストファイルを作成する
         # .set_index('account')これによってIndexを'account'に設定できる。
-        string_data = spreadsheet.content.decode('utf-8')
+        string_data = spreadsheet.content.decode("utf-8")
         data_io = io.StringIO(string_data)
 
-        df = pd.read_csv(data_io, on_bad_lines='skip')
+        df = pd.read_csv(data_io, on_bad_lines="skip")
 
         # Indexを「account_id」にしたデータフレームを返してる
         return df.set_index(key_col)
 
-
-# ----------------------------------------------------------------------------------
-# Columnまでの公式を入れ込んだ関数
+    # ----------------------------------------------------------------------------------
+    # Columnまでの公式を入れ込んだ関数
 
     def _sort_column_name(self, column_name):
         sort_value = self.df.loc[self.account_id, column_name]
         return sort_value
 
-
-# ----------------------------------------------------------------------------------
-# スプシからurlを取得
+    # ----------------------------------------------------------------------------------
+    # スプシからurlを取得
 
     def get_url_in_gss(self):
-        column_name = 'url'
+        column_name = "url"
         url = self._sort_column_name(column_name=column_name)
         self.logger.debug(f"url: {url}")
         return url
 
-
-# ----------------------------------------------------------------------------------
-# 取得したURLに付属してnameを取得
+    # ----------------------------------------------------------------------------------
+    # 取得したURLに付属してnameを取得
 
     def get_name_in_gss(self):
-        column_name = 'name'
+        column_name = "name"
         name = self._sort_column_name(column_name=column_name)
         self.logger.debug(f"name: {name}")
         return name
+
 
 # ----------------------------------------------------------------------------------
 # **********************************************************************************
@@ -98,12 +100,12 @@ class GSSReadNoID:
         self.gss_url = gss_url
 
         # logger
-        self.getLogger = Logger(__name__, debugMode=debugMode)
+        self.getLogger = Logger(
+            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
+        )
         self.logger = self.getLogger.getLogger()
 
-
-####################################################################################
-
+    ####################################################################################
 
     def spreadsheet_to_df(self):
         # スプシデータにアクセス
@@ -113,14 +115,13 @@ class GSSReadNoID:
 
         self.logger.debug(f"self.gss_url: {self.gss_url}")
 
-        string_data = spreadsheet.content.decode('utf-8')
+        string_data = spreadsheet.content.decode("utf-8")
         data_io = io.StringIO(string_data)
 
-        df = pd.read_csv(data_io, on_bad_lines='skip')
+        df = pd.read_csv(data_io, on_bad_lines="skip")
 
         # Indexを「account_id」にしたデータフレームを返してる
         return df
-
 
 
 # ----------------------------------------------------------------------------------
@@ -129,32 +130,36 @@ class GSSReadNoID:
 # APIを使ってGSSの読み込み
 # 複数のシートからの読み込みが必要な場合はこっち
 
+
 class GetDataGSSAPI:
     def __init__(self, debugMode=True):
 
         # logger
-        self.getLogger = Logger(__name__, debugMode=debugMode)
+        self.getLogger = Logger(
+            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
+        )
         self.logger = self.getLogger.getLogger()
 
         # インスタンス
         self.path = BaseToPath(debugMode=debugMode)
         self.decorators = Decorators(debugMode=debugMode)
 
-
-
-
-# ----------------------------------------------------------------------------------
-# APIを使ってGSSからデータを取得してDataFrameに変換
-# TODO ここの3点セットをINFOにして辞書で渡す
+    # ----------------------------------------------------------------------------------
+    # APIを使ってGSSからデータを取得してDataFrameに変換
+    # TODO ここの3点セットをINFOにして辞書で渡す
 
     @decoInstance.retryAction(maxRetry=3, delay=30)
-    def getDataFrameFromGss(self, gss_info : Dict):
-        client = self.client(jsonKeyName=gss_info['jsonKeyName'])
+    def getDataFrameFromGss(self, gss_info: Dict):
+        client = self.client(jsonKeyName=gss_info["jsonKeyName"])
 
-        self.logger.debug(f"利用可能なワークシート: {client.open_by_key(gss_info['spreadsheetId']).worksheets()}")
+        self.logger.debug(
+            f"利用可能なワークシート: {client.open_by_key(gss_info['spreadsheetId']).worksheets()}"
+        )
 
         # 対象のスプシを開く
-        worksheet = client.open_by_key(gss_info['spreadsheetId']).worksheet(gss_info['workSheetName'])
+        worksheet = client.open_by_key(gss_info["spreadsheetId"]).worksheet(
+            gss_info["workSheetName"]
+        )
 
         # デバッグ用
         all_values = worksheet.get_all_values()
@@ -170,28 +175,25 @@ class GetDataGSSAPI:
 
         return df
 
-
-# ----------------------------------------------------------------------------------
-# スプシの認証プロパティ
+    # ----------------------------------------------------------------------------------
+    # スプシの認証プロパティ
 
     def creds(self, jsonKeyName: str):
-        SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
+        SCOPES = ["https://www.googleapis.com/auth/spreadsheets"]
         jsonKeyPath = self.path.getInputDataFilePath(fileName=jsonKeyName)
         creds = Credentials.from_service_account_file(jsonKeyPath, scopes=SCOPES)
         return creds
 
-
-# ----------------------------------------------------------------------------------
-# スプシアクセスのプロパティ
+    # ----------------------------------------------------------------------------------
+    # スプシアクセスのプロパティ
 
     def client(self, jsonKeyName: str):
         creds = self.creds(jsonKeyName=jsonKeyName)
         client = gspread.authorize(creds)
         return client
 
-
-# ----------------------------------------------------------------------------------
-# DataFrameから写真のURLを取得 テストOK
+    # ----------------------------------------------------------------------------------
+    # DataFrameから写真のURLを取得 テストOK
 
     def getPhotoUrl(self, df: pd.DataFrame, colName: str):
         self.logger.info(f"********** getPhoto start **********")

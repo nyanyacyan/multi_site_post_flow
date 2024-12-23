@@ -23,26 +23,29 @@ from const_element import LoginInfo
 # **********************************************************************************
 # 一連の流れ
 
+
 class FlowRRMTCNewItem:
     def __init__(self, debugMode=True):
 
         # logger
-        self.getLogger = Logger(__name__, debugMode=debugMode)
+        self.getLogger = Logger(
+            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
+        )
         self.logger = self.getLogger.getLogger()
 
         # chrome
         self.chromeManager = ChromeManager(debugMode=debugMode)
         self.chrome = self.chromeManager.flowSetupChrome()
 
-
         # インスタンス
         self.login = SingleSiteIDLogin(chrome=self.chrome, debugMode=debugMode)
-        self.random_sleep = SeleniumBasicOperations(chrome=self.chrome, debugMode=debugMode)
+        self.random_sleep = SeleniumBasicOperations(
+            chrome=self.chrome, debugMode=debugMode
+        )
 
-
-####################################################################################
-# ----------------------------------------------------------------------------------
-#todo 各メソッドをまとめる
+    ####################################################################################
+    # ----------------------------------------------------------------------------------
+    # todo 各メソッドをまとめる
 
     async def process(self, login_info: Dict):
         # IDログイン
@@ -54,18 +57,12 @@ class FlowRRMTCNewItem:
         # 操作していく
 
 
-
-
-
-
-
-
 # ----------------------------------------------------------------------------------
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # テスト実施
 
-if __name__ == '__main__':
-    login_info = LoginInfo.SITE_PATTERNS.value['RRMT_CLUB']
+if __name__ == "__main__":
+    login_info = LoginInfo.SITE_PATTERNS.value["RRMT_CLUB"]
     print(f"login_info: {login_info}")
     test_flow = FlowRRMTCNewItem()
     asyncio.run(test_flow.process(login_info))

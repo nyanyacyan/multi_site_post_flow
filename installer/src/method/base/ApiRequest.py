@@ -14,8 +14,10 @@ from .utils import Logger
 from .decorators import Decorators
 from .errorHandlers import ResponseStatusCode
 
-decoInstance = Decorators(debugMode=True)
+from const_str import FileName
 
+
+decoInstance = Decorators(debugMode=True)
 
 
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
@@ -26,38 +28,40 @@ class ApiRequest:
     def __init__(self, debugMode=True):
 
         # logger
-        self.getLogger = Logger(__name__, debugMode=debugMode)
+        self.getLogger = Logger(
+            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
+        )
         self.logger = self.getLogger.getLogger()
 
         # インスタンス
         self.errorHandler = ResponseStatusCode(debugMode=debugMode)
 
-
-# ----------------------------------------------------------------------------------
-# 非同期のセッションを作成
+    # ----------------------------------------------------------------------------------
+    # 非同期のセッションを作成
 
     async def createSession(self):
         return aiohttp.ClientSession()
 
-
-# ----------------------------------------------------------------------------------
-# テスト環境用のセッションを作成
+    # ----------------------------------------------------------------------------------
+    # テスト環境用のセッションを作成
 
     async def _testCreateSession(self):
         return aiohttp.ClientSession(connector=aiohttp.TCPConnector(ssl=False))
 
-
-# ----------------------------------------------------------------------------------
-
+    # ----------------------------------------------------------------------------------
 
     @decoInstance.requestRetryAction(maxRetry=3, delay=30, notifyFunc=None)
     async def apiRequest(
         self,
         method: str,  # GET, POSTなど
         endpointUrl: str,  # 指定のURL
-        headers: Optional[Dict[str, str]] = None,  # APIによって入力 セキュリティ、APIkey、resのデータ形式
+        headers: Optional[
+            Dict[str, str]
+        ] = None,  # APIによって入力 セキュリティ、APIkey、resのデータ形式
         params: Optional[Dict[str, str]] = None,  # 各パラメーターを入力
-        json: Optional[Dict[str, Any]] = None,  # APIに伝えたり、APIの内容を書き換えたりするときに使う（body）
+        json: Optional[
+            Dict[str, Any]
+        ] = None,  # APIに伝えたり、APIの内容を書き換えたりするときに使う（body）
         data: Optional[Dict[str, str]] = None,  # 各パラメーターを入力
     ):
 
@@ -68,7 +72,15 @@ class ApiRequest:
 
         # それぞれ別の部屋で実施してセッションを作った後にリクエストする
         async with aiohttp.ClientSession() as session:
-            async with session.request(method=method, url=endpointUrl, headers=headers, params=params, json=json, data=data,ssl=ssl_context) as response:
+            async with session.request(
+                method=method,
+                url=endpointUrl,
+                headers=headers,
+                params=params,
+                json=json,
+                data=data,
+                ssl=ssl_context,
+            ) as response:
 
                 statusCode = response.status
                 if statusCode == 200:

@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------------------
 # 2023/5/8更新
 
-#? APIを使って書き込みする
+# ? APIを使って書き込みする
 # ----------------------------------------------------------------------------------
 import os, time, sys
 import gspread
@@ -15,6 +15,7 @@ from gspread_dataframe import set_with_dataframe
 from gspread.exceptions import APIError
 from dotenv import load_dotenv
 
+from const_str import FileName
 
 
 # 自作モジュール
@@ -34,7 +35,9 @@ class SpreadsheetWrite:
     def __init__(self, jsonKeyName: str, debugMode=True):
 
         # logger
-        self.getLogger = Logger(__name__, debugMode=debugMode)
+        self.getLogger = Logger(
+            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
+        )
         self.logger = self.getLogger.getLogger()
 
         # インスタンス
@@ -48,21 +51,24 @@ class SpreadsheetWrite:
         self._creds = None
         self._client = None
 
-
-####################################################################################
-# ----------------------------------------------------------------------------------
-# スプシの認証情報を設定
+    ####################################################################################
+    # ----------------------------------------------------------------------------------
+    # スプシの認証情報を設定
 
     @property
     def creds(self) -> ServiceAccountCredentials:
         if self._creds is None:
-            scope = ['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive']
-            self._creds = ServiceAccountCredentials.from_json_keyfile_name(self.jsonKeyName, scope)
+            scope = [
+                "https://www.googleapis.com/auth/spreadsheets",
+                "https://www.googleapis.com/auth/drive",
+            ]
+            self._creds = ServiceAccountCredentials.from_json_keyfile_name(
+                self.jsonKeyName, scope
+            )
         return self._creds
 
-
-# ----------------------------------------------------------------------------------
-# スプシへのアクセス
+    # ----------------------------------------------------------------------------------
+    # スプシへのアクセス
 
     @property
     def client(self) -> gspread.Client:
@@ -70,9 +76,8 @@ class SpreadsheetWrite:
             self._client = gspread.authorize(self.creds)
         return self._client
 
-
-# ----------------------------------------------------------------------------------
-# データをWorksheetに書き込む
+    # ----------------------------------------------------------------------------------
+    # データをWorksheetに書き込む
 
     @retryAction(maxRetry=3, delay=30)
     def writeData(self, spreadsheetId: str, sheetName: str, cell: str, data: Any):
@@ -82,28 +87,35 @@ class SpreadsheetWrite:
         self.logger.info(f"{data}を{cell}への書き込み完了")
         return writeData
 
+    # ----------------------------------------------------------------------------------
 
-# ----------------------------------------------------------------------------------
+    #! ここ以降はサーバーエラーに対してリトライの設定なし
 
-#! ここ以降はサーバーエラーに対してリトライの設定なし
+    # ----------------------------------------------------------------------------------
+    # cellの値がない行を特定
 
-
-
-# ----------------------------------------------------------------------------------
-# cellの値がない行を特定
-
-    def _gss_none_cell_update(self, worksheet: str, col_left_num: int, start_row: int, input_values: int):
+    def _gss_none_cell_update(
+        self, worksheet: str, col_left_num: int, start_row: int, input_values: int
+    ):
         self.logger.info(f"********** _column_none_cell 開始 **********")
 
         try:
-            self.logger.debug(f"self.spreadsheetId: {self.spreadsheetId}, start_row: {start_row}")
-            self.logger.debug(f"worksheet: {worksheet}, col_left_num: {col_left_num}, start_row: {start_row}")
+            self.logger.debug(
+                f"self.spreadsheetId: {self.spreadsheetId}, start_row: {start_row}"
+            )
+            self.logger.debug(
+                f"worksheet: {worksheet}, col_left_num: {col_left_num}, start_row: {start_row}"
+            )
 
-
-    # スプシへのアクセスを定義（API）
-            #* Scopeはこの場所で特定が必要
-            scope = ['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive']
-            c = ServiceAccountCredentials.from_json_keyfile_name(self.jsonKeyName, scope)
+            # スプシへのアクセスを定義（API）
+            # * Scopeはこの場所で特定が必要
+            scope = [
+                "https://www.googleapis.com/auth/spreadsheets",
+                "https://www.googleapis.com/auth/drive",
+            ]
+            c = ServiceAccountCredentials.from_json_keyfile_name(
+                self.jsonKeyName, scope
+            )
             gs = gspread.authorize(c)
 
             # 指定のスプシへアクセス
@@ -116,7 +128,7 @@ class SpreadsheetWrite:
 
             # Noneのcellを見つけたIndexを見つけてそのIndexを取得
             for i, cell in enumerate(col_row, start=start_row):
-                if cell == '':
+                if cell == "":
                     none_cell_row = i
 
             # もしなにもなかったらスタートする行の次の行がスタート
@@ -154,9 +166,8 @@ class SpreadsheetWrite:
             self.logger.error(f"スプシ: 処理中にエラーが発生{e}")
             raise
 
-
-# ----------------------------------------------------------------------------------
-# cellの値がない場所を指定
+    # ----------------------------------------------------------------------------------
+    # cellの値がない場所を指定
 
     def update_timestamps(self, worksheet: str):
         self.logger.info(f"********** update_timestamps 開始 **********")
@@ -164,10 +175,14 @@ class SpreadsheetWrite:
         try:
             self.logger.debug(f"worksheet: {worksheet}")
 
-
-    # スプシへのアクセスを定義（API）
-            scope = ['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive']
-            c = ServiceAccountCredentials.from_json_keyfile_name(self.jsonKeyName, scope)
+            # スプシへのアクセスを定義（API）
+            scope = [
+                "https://www.googleapis.com/auth/spreadsheets",
+                "https://www.googleapis.com/auth/drive",
+            ]
+            c = ServiceAccountCredentials.from_json_keyfile_name(
+                self.jsonKeyName, scope
+            )
             gs = gspread.authorize(c)
 
             select_sheet = gs.open_by_key(self.spreadsheetId).worksheet(worksheet)
@@ -180,12 +195,13 @@ class SpreadsheetWrite:
             # filtered_a_values = get_a_values[2:]
             # filtered_b_values = get_b_values[2:]
 
-
-            current_date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            current_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
             for index, b_val in enumerate(get_b_values[2:], start=3):
                 try:
-                    a_val = get_a_values[index -1] if index - 1 < len(get_a_values) else ""
+                    a_val = (
+                        get_a_values[index - 1] if index - 1 < len(get_a_values) else ""
+                    )
 
                 except IndexError:
                     a_val = ""
@@ -196,9 +212,7 @@ class SpreadsheetWrite:
                     select_sheet.update(date_cell, [[current_date]])
                     self.logger.debug(f"a_val: {a_val}, b_val: {b_val}")
 
-
             self.logger.info(f"********** update_timestamps 終了 **********")
-
 
         except APIError as e:
             if e.response.status_code == 429:
@@ -218,26 +232,35 @@ class SpreadsheetWrite:
             self.logger.error(f"スプシ: 処理中にエラーが発生: {e}")
             raise
 
+    # ----------------------------------------------------------------------------------
+    # noneのcellを見つけて、そのcellの次の行から書き込む
 
-# ----------------------------------------------------------------------------------
-# noneのcellを見つけて、そのcellの次の行から書き込む
-
-    def _gss_none_cell_next_row_df_write(self, worksheet: str, col_left_num: int, start_row: int, df: pd.DataFrame):
+    def _gss_none_cell_next_row_df_write(
+        self, worksheet: str, col_left_num: int, start_row: int, df: pd.DataFrame
+    ):
         self.logger.info(f"********** _gss_none_cell_next_row_df_write 開始 **********")
 
         try:
-            self.logger.debug(f"self.spreadsheetId: {self.spreadsheetId}, start_row: {start_row}")
+            self.logger.debug(
+                f"self.spreadsheetId: {self.spreadsheetId}, start_row: {start_row}"
+            )
 
-            self.logger.debug(f"worksheet: {worksheet}, col_left_num: {col_left_num}, start_row: {start_row}")
+            self.logger.debug(
+                f"worksheet: {worksheet}, col_left_num: {col_left_num}, start_row: {start_row}"
+            )
 
-
-    # スプシへのアクセスを定義（API）
-            #* Scopeはこの場所で特定が必要
-            scope = ['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive']
-            c = ServiceAccountCredentials.from_json_keyfile_name(self.jsonKeyName, scope)
+            # スプシへのアクセスを定義（API）
+            # * Scopeはこの場所で特定が必要
+            scope = [
+                "https://www.googleapis.com/auth/spreadsheets",
+                "https://www.googleapis.com/auth/drive",
+            ]
+            c = ServiceAccountCredentials.from_json_keyfile_name(
+                self.jsonKeyName, scope
+            )
             gs = gspread.authorize(c)
 
-    # 指定のスプシへアクセス
+            # 指定のスプシへアクセス
             select_sheet = gs.open_by_key(self.spreadsheetId).worksheet(worksheet)
 
             self.logger.debug(f"select_sheet: {select_sheet}")
@@ -245,19 +268,15 @@ class SpreadsheetWrite:
             self.logger.info(df.head())
             self.logger.info(df.index)
 
-
-
-
             # 特定のcolumnの値を入手
             col_val = select_sheet.col_values(col_left_num)
 
             self.logger.warning(f"col_val: {col_val}")
 
-
             # noneのcellの次の行から書き込む
             # Noneのcellを見つけたIndexを見つけてそのIndexを取得
             for i, cell in enumerate(col_val, start=start_row):
-                if cell == '':
+                if cell == "":
                     none_cell_row = i
                     none_cell_next = none_cell_row + 1
             # もしなにもなかったらスタートする行の次の行がスタート
@@ -267,11 +286,12 @@ class SpreadsheetWrite:
 
             self.logger.debug(f"none_cell_next: {none_cell_next}")
 
-
             # cellにDataFrameを書き込む
-            set_with_dataframe(select_sheet, df , row=none_cell_next, col=col_left_num)
+            set_with_dataframe(select_sheet, df, row=none_cell_next, col=col_left_num)
 
-            self.logger.info(f"********** _gss_none_cell_next_row_df_write 終了 **********")
+            self.logger.info(
+                f"********** _gss_none_cell_next_row_df_write 終了 **********"
+            )
 
         except errors.HttpError as e:
             self.logger.error(f"スプシ: 認証失敗{e}")
@@ -285,26 +305,37 @@ class SpreadsheetWrite:
             self.logger.error(f"スプシ: 処理中にエラーが発生{e}")
             raise
 
+    # ----------------------------------------------------------------------------------
+    # noneのcellを見つけて、そのcellの次の行から書き込む
 
-# ----------------------------------------------------------------------------------
-# noneのcellを見つけて、そのcellの次の行から書き込む
-
-    def _gss_none_cell_next_row_df_write_at_grid(self, worksheet_name: str, col_left_num: int, start_row: int, df: pd.DataFrame):
-        self.logger.info(f"********** _gss_none_cell_next_row_df_write_at_grid 開始 **********")
+    def _gss_none_cell_next_row_df_write_at_grid(
+        self, worksheet_name: str, col_left_num: int, start_row: int, df: pd.DataFrame
+    ):
+        self.logger.info(
+            f"********** _gss_none_cell_next_row_df_write_at_grid 開始 **********"
+        )
 
         try:
-            self.logger.debug(f"self.spreadsheetId: {self.spreadsheetId}, start_row: {start_row}")
+            self.logger.debug(
+                f"self.spreadsheetId: {self.spreadsheetId}, start_row: {start_row}"
+            )
 
-            self.logger.debug(f"worksheet_name: {worksheet_name}, col_left_num: {col_left_num}, start_row: {start_row}")
+            self.logger.debug(
+                f"worksheet_name: {worksheet_name}, col_left_num: {col_left_num}, start_row: {start_row}"
+            )
 
-
-    # スプシへのアクセスを定義（API）
-            #* Scopeはこの場所で特定が必要
-            scope = ['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive']
-            c = ServiceAccountCredentials.from_json_keyfile_name(self.jsonKeyName, scope)
+            # スプシへのアクセスを定義（API）
+            # * Scopeはこの場所で特定が必要
+            scope = [
+                "https://www.googleapis.com/auth/spreadsheets",
+                "https://www.googleapis.com/auth/drive",
+            ]
+            c = ServiceAccountCredentials.from_json_keyfile_name(
+                self.jsonKeyName, scope
+            )
             gs = gspread.authorize(c)
 
-    # 指定のスプシへアクセス
+            # 指定のスプシへアクセス
             select_sheet = gs.open_by_key(self.spreadsheetId).worksheet(worksheet_name)
 
             self.logger.debug(f"select_sheet: {select_sheet}")
@@ -317,11 +348,10 @@ class SpreadsheetWrite:
 
             self.logger.warning(f"col_val: {col_val}")
 
-
             # noneのcellの次の行から書き込む
             # Noneのcellを見つけたIndexを見つけてそのIndexを取得
             for i, cell in enumerate(col_val, start=start_row):
-                if cell == '':
+                if cell == "":
                     none_cell_row = i
                     none_cell_next = none_cell_row + 1
             # もしなにもなかったらスタートする行の次の行がスタート
@@ -331,9 +361,8 @@ class SpreadsheetWrite:
 
             self.logger.debug(f"none_cell_next: {none_cell_next}")
 
-
             # cellにDataFrameを書き込む
-            set_with_dataframe(select_sheet, df , row=none_cell_next, col=col_left_num)
+            set_with_dataframe(select_sheet, df, row=none_cell_next, col=col_left_num)
 
             # gridを追加
             self._grid_input(
@@ -341,11 +370,12 @@ class SpreadsheetWrite:
                 worksheet=select_sheet,
                 start_row=none_cell_next,
                 start_col=col_left_num,
-                spreadsheet=gs.open_by_key(self.spreadsheetId)
+                spreadsheet=gs.open_by_key(self.spreadsheetId),
             )
 
-
-            self.logger.info(f"********** _gss_none_cell_next_row_df_write_at_grid 終了 **********")
+            self.logger.info(
+                f"********** _gss_none_cell_next_row_df_write_at_grid 終了 **********"
+            )
 
         except errors.HttpError as e:
             self.logger.error(f"スプシ: 認証失敗{e}")
@@ -359,11 +389,17 @@ class SpreadsheetWrite:
             self.logger.error(f"スプシ: 処理中にエラーが発生{e}")
             raise
 
+    # ----------------------------------------------------------------------------------
+    # グリッドを入れる
 
-# ----------------------------------------------------------------------------------
-# グリッドを入れる
-
-    def _grid_input(self, df: pd.DataFrame, worksheet: str, start_row: int, start_col: int, spreadsheet: str):
+    def _grid_input(
+        self,
+        df: pd.DataFrame,
+        worksheet: str,
+        start_row: int,
+        start_col: int,
+        spreadsheet: str,
+    ):
         try:
             self.logger.info(f"********** _grid_input 開始 **********")
 
@@ -374,13 +410,13 @@ class SpreadsheetWrite:
                 self.logger.debug(f"num_cols: {num_cols}")
 
                 requests = {
-                    "updateBorders":{
+                    "updateBorders": {
                         "range": {
-                            "sheetId": worksheet._properties['sheetId'],
+                            "sheetId": worksheet._properties["sheetId"],
                             "startRowIndex": start_row - 1,
                             "endRowIndex": start_row - 1 + num_rows + 1,
                             "startColumnIndex": start_col - 1,
-                            "endColumnIndex": start_col - 1 + num_cols
+                            "endColumnIndex": start_col - 1 + num_cols,
                         },
                         "top": {
                             "style": "SOLID",
@@ -389,7 +425,7 @@ class SpreadsheetWrite:
                                 "red": 0,
                                 "green": 0,
                                 "blue": 0,
-                            }
+                            },
                         },
                         "bottom": {
                             "style": "SOLID",
@@ -398,7 +434,7 @@ class SpreadsheetWrite:
                                 "red": 0,
                                 "green": 0,
                                 "blue": 0,
-                            }
+                            },
                         },
                         "left": {
                             "style": "SOLID",
@@ -407,7 +443,7 @@ class SpreadsheetWrite:
                                 "red": 0,
                                 "green": 0,
                                 "blue": 0,
-                            }
+                            },
                         },
                         "right": {
                             "style": "SOLID",
@@ -416,9 +452,8 @@ class SpreadsheetWrite:
                                 "red": 0,
                                 "green": 0,
                                 "blue": 0,
-                            }
-
-                        # 空の横の部分に線を引く
+                            },
+                            # 空の横の部分に線を引く
                         },
                         "innerHorizontal": {
                             "style": "SOLID",
@@ -427,9 +462,8 @@ class SpreadsheetWrite:
                                 "red": 0,
                                 "green": 0,
                                 "blue": 0,
-                            }
-
-                        # 空の縦の部分に線を引く
+                            },
+                            # 空の縦の部分に線を引く
                         },
                         "innerVertical": {
                             "style": "SOLID",
@@ -438,22 +472,21 @@ class SpreadsheetWrite:
                                 "red": 0,
                                 "green": 0,
                                 "blue": 0,
-                            }
-                        }
+                            },
+                        },
                     }
                 }
 
             else:
                 self.logger.debug(f"DataFrameが空になってしまってる")
 
-
-            spreadsheet.batch_update({'requests': [requests]})
-
+            spreadsheet.batch_update({"requests": [requests]})
 
             self.logger.info(f"********** _grid_input 終了 **********")
 
         except Exception as e:
             self.logger.error(f"_grid_input: 処理中にエラーが発生: {e}")
             raise
+
 
 # **********************************************************************************

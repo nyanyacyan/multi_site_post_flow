@@ -12,16 +12,18 @@ from .base.utils import Logger
 from .base.chrome import ChromeManager
 
 
-
 # ----------------------------------------------------------------------------------
 # **********************************************************************************
 # 一連の流れ
+
 
 class FlowOP:
     def __init__(self, debugMode=True):
 
         # logger
-        self.getLogger = Logger(__name__, debugMode=debugMode)
+        self.getLogger = Logger(
+            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
+        )
         self.logger = self.getLogger.getLogger()
 
         # chrome
@@ -30,30 +32,20 @@ class FlowOP:
 
         # const
 
-
-
         # インスタンス
 
-
-
-####################################################################################
-# ----------------------------------------------------------------------------------
-#todo 各メソッドをまとめる
+    ####################################################################################
+    # ----------------------------------------------------------------------------------
+    # todo 各メソッドをまとめる
 
     async def process(self):
         await self.gss_to_notify.flowProcess()
-
-
-
-
-
-
 
 
 # ----------------------------------------------------------------------------------
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # テスト実施
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     test_flow = Flow()
     asyncio.run(test_flow.process())

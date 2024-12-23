@@ -9,6 +9,7 @@ import sqlite3
 
 # 自作モジュール
 from utils import Logger
+from const_str import FileName
 
 
 # ----------------------------------------------------------------------------------
@@ -19,15 +20,15 @@ class SqliteChecker:
     def __init__(self, debugMode=True):
 
         # logger
-        self.getLogger = Logger(__name__, debugMode=debugMode)
+        self.getLogger = Logger(
+            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
+        )
         self.logger = self.getLogger.getLogger()
 
-
-# ----------------------------------------------------------------------------------
-
+    # ----------------------------------------------------------------------------------
 
     def get_database_info(self, db_path: str):
-        '''
+        """
         cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
         →これで取得できるデータ（tables_info）は
         [
@@ -36,7 +37,7 @@ class SqliteChecker:
             (2, 'email', 'TEXT', 0, None, 0)
         ]
 
-        '''
+        """
         # SQLite データベースに接続
         connection = sqlite3.connect(db_path)
         cursor = connection.cursor()
@@ -58,11 +59,12 @@ class SqliteChecker:
         connection.close()
         return db_info
 
+
 # ----------------------------------------------------------------------------------
 
 
-if __name__ == '__main__':
-    print('デバッグを開始')
+if __name__ == "__main__":
+    print("デバッグを開始")
     sqlite_checker = SqliteChecker(debugMode=True)
 
     #! ここを調べたいPathに変更

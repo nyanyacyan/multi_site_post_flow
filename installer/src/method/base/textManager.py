@@ -9,6 +9,7 @@ from typing import List
 
 # 自作モジュール
 from .utils import Logger
+from const_str import FileName
 
 
 # **********************************************************************************
@@ -18,28 +19,37 @@ class TextManager:
     def __init__(self, debugMode=True):
 
         # logger
-        self.getLogger = Logger(__name__, debugMode=debugMode)
+        self.getLogger = Logger(
+            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
+        )
         self.logger = self.getLogger.getLogger()
 
-
-# ----------------------------------------------------------------------------------
-# 大元のリストからNGWordを除外したリストを作成
+    # ----------------------------------------------------------------------------------
+    # 大元のリストからNGWordを除外したリストを作成
 
     def filterWords(self, textList: list, ngWords: list):
         self.logger.warning(f"\ntextList: {textList}\nngWords: {ngWords}")
         self.logger.warning(f"\ntextList: {len(textList)}\nngWords: {len(ngWords)}")
-        self.logger.warning(f"\ntextListType: {type(textList)}\nngWordsType: {type(ngWords)}")
+        self.logger.warning(
+            f"\ntextListType: {type(textList)}\nngWordsType: {type(ngWords)}"
+        )
 
-        if isinstance(textList, list) and len(textList) == 1 or isinstance(textList, str):
+        if (
+            isinstance(textList, list)
+            and len(textList) == 1
+            or isinstance(textList, str)
+        ):
             self.logger.info(f"textListが {len(textList)} つしかないためリスト編集実施")
-            textList = textList.split('，')
+            textList = textList.split("，")
 
         textList = [word.strip() for word in textList]
         ngWords = [word.strip() for word in ngWords]
 
         self.logger.warning(f"\ntextList: {textList}\nngWords: {ngWords}")
         self.logger.warning(f"\ntextList: {len(textList)}\nngWords: {len(ngWords)}")
-        self.logger.warning(f"\ntextListType: {type(textList)}\nngWordsType: {type(ngWords)}")
+        self.logger.warning(
+            f"\ntextListType: {type(textList)}\nngWordsType: {type(ngWords)}"
+        )
 
         self.logger.warning(f"textList: {textList[0]}\n\nngWords: {ngWords[0]}")
 
@@ -47,21 +57,20 @@ class TextManager:
         self.logger.warning(f"filterWords: {filterWords}")
         return filterWords
 
+    # ----------------------------------------------------------------------------------
+    # テキストを複数結合させる(Noneは除外する)
 
-# ----------------------------------------------------------------------------------
-# テキストを複数結合させる(Noneは除外する)
-
-    def textJoin(self, joinWordsList: list, joint: str = ''):
+    def textJoin(self, joinWordsList: list, joint: str = ""):
         result = filter(None, joinWordsList)
         return joint.join(result)
 
-
-# ----------------------------------------------------------------------------------
-# リストの最初にテキストを追加
+    # ----------------------------------------------------------------------------------
+    # リストの最初にテキストを追加
 
     def addListFirstLast(self, lst: List, firstWord: str, lastWord: str):
         lst.insert(0, firstWord)
         lst.append(lastWord)
         return lst
+
 
 # ----------------------------------------------------------------------------------

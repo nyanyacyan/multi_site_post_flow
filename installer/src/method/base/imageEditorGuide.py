@@ -9,6 +9,9 @@ from PIL import Image, ImageDraw
 from utils import Logger
 from installer.src.method.constElementInfo import ImageInfo
 
+from const_str import FileName
+
+
 
 # **********************************************************************************
 
@@ -16,20 +19,22 @@ from installer.src.method.constElementInfo import ImageInfo
 class ImageGuideDrawer:
     def __init__(self, base_image_path, output_path, debugMode):
         # logger
-        self.getLogger = Logger(__name__, debugMode=debugMode)
+        self.getLogger = Logger(
+            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
+        )
         self.logger = self.getLogger.getLogger()
 
         self.base_image_path = base_image_path
         self.output_path = output_path
 
-
-# ----------------------------------------------------------------------------------
-
+    # ----------------------------------------------------------------------------------
 
     def draw_guides(self, guide_boxes):
         # ベース画像の読み込み
         base_image_size = ImageInfo.BASE_IMAGE_SIZE.value
-        base_image = Image.open(self.base_image_path).resize(base_image_size).convert("RGBA")
+        base_image = (
+            Image.open(self.base_image_path).resize(base_image_size).convert("RGBA")
+        )
 
         # Drawオブジェクトの作成
         draw = ImageDraw.Draw(base_image)
@@ -57,7 +62,7 @@ if __name__ == "__main__":
     # ガイド線の範囲を指定 (左上x, 左上y, 右下x, 右下y)
     # ここで指定した範囲を枠線確認
 
-# A
+    # A
     guide_boxes = [
         (0, 83, 1080, 998),
         (50, 93, 400, 183),
@@ -67,7 +72,7 @@ if __name__ == "__main__":
         (0, 850, 1200, 980),
     ]
 
-# B
+    # B
     # guide_boxes = [
     #     (0, 83, 1080, 998),
     #     (500, 93, 1000, 183),
@@ -81,5 +86,3 @@ if __name__ == "__main__":
     guide_drawer.draw_guides(guide_boxes)
 
 # ----------------------------------------------------------------------------------
-
-

@@ -5,8 +5,8 @@
 
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 # import
-import os, time, asyncio
-from typing import Dict, List
+import asyncio
+from typing import Dict
 
 
 # 自作モジュール
@@ -16,37 +16,39 @@ from base.loginWithId import SingleSiteIDLogin
 from base.seleniumBase import SeleniumBasicOperations
 
 # const
-from const_str import SiteName, GameClubInfo
+from const_str import FileName
 from const_element import LoginInfo
 
 # ----------------------------------------------------------------------------------
 # **********************************************************************************
 # 一連の流れ
 
+
 class FlowMACNewItem:
     def __init__(self, debugMode=True):
 
         # logger
-        self.getLogger = Logger(__name__, debugMode=debugMode)
+        self.getLogger = Logger(
+            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
+        )
         self.logger = self.getLogger.getLogger()
 
         # chrome
         self.chromeManager = ChromeManager(debugMode=debugMode)
         self.chrome = self.chromeManager.flowSetupChrome()
 
-
         # インスタンス
         self.login = SingleSiteIDLogin(chrome=self.chrome, debugMode=debugMode)
-        self.random_sleep = SeleniumBasicOperations(chrome=self.chrome, debugMode=debugMode)
+        self.random_sleep = SeleniumBasicOperations(
+            chrome=self.chrome, debugMode=debugMode
+        )
 
-
-####################################################################################
-# ----------------------------------------------------------------------------------
-#todo 各メソッドをまとめる
+    ####################################################################################
+    # ----------------------------------------------------------------------------------
+    # todo 各メソッドをまとめる
 
     async def process(self, login_info: Dict):
         # スプシの読み込み（辞書でoutput）
-
 
         # IDログイン
         self.login.flowLoginID(login_info=login_info, timeout=120)
@@ -69,18 +71,12 @@ class FlowMACNewItem:
         # 商品価格
 
 
-
-
-
-
-
-
 # ----------------------------------------------------------------------------------
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # テスト実施
 
-if __name__ == '__main__':
-    login_info = LoginInfo.SITE_PATTERNS.value['MA_CLUB']
+if __name__ == "__main__":
+    login_info = LoginInfo.SITE_PATTERNS.value["MA_CLUB"]
     print(f"login_info: {login_info}")
     test_flow = FlowMACNewItem()
     asyncio.run(test_flow.process(login_info))

@@ -19,7 +19,16 @@ from base.AiOrder import ChatGPTOrder
 from base.generatePrompt import GeneratePrompt
 from base.notify import LineNotify
 
-from const import KeyFile, GssSheetId, GssColumns, XPromptFormat, InstagramPromptFormat, ChatgptUtils, xUtils, SnsKinds
+from const import (
+    KeyFile,
+    GssSheetId,
+    GssColumns,
+    XPromptFormat,
+    InstagramPromptFormat,
+    ChatgptUtils,
+    xUtils,
+    SnsKinds,
+)
 
 load_dotenv()
 
@@ -27,11 +36,14 @@ load_dotenv()
 # **********************************************************************************
 # 一連の流れ
 
+
 class XFlow:
     def __init__(self, debugMode=True):
 
         # logger
-        self.getLogger = Logger(__name__, debugMode=debugMode)
+        self.getLogger = Logger(
+            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
+        )
         self.logger = self.getLogger.getLogger()
 
         # インスタンス
@@ -41,9 +53,8 @@ class XFlow:
         self.Weekday = GetContext(debugMode=debugMode)
         self.lineNotify = LineNotify(debugMode=debugMode)
 
-
-# ----------------------------------------------------------------------------------
-# XProcess
+    # ----------------------------------------------------------------------------------
+    # XProcess
 
     async def xProcess(self):
         WorkSheetName = self.Weekday.getWeekday()
@@ -52,7 +63,7 @@ class XFlow:
         df = self.GssApi.getDataFrameFromGss(
             KeyName=KeyFile.gssKeyFile.value,
             spreadsheetId=GssSheetId.XSheetId.value,
-            workSheetName=WorkSheetName
+            workSheetName=WorkSheetName,
         )
 
         # プロンプト別途作成（テストOK）
@@ -71,9 +82,8 @@ class XFlow:
             beforeCol=GssColumns.beforeCol.value,
             beforeFormat=XPromptFormat.beforeFormat.value,
             openingComment=XPromptFormat.openingComment.value,
-            endingComment=XPromptFormat.endingComment.value
+            endingComment=XPromptFormat.endingComment.value,
         )
-
 
         # ChatGPTへリクエストを投げる（４mini）（テストOK）
         await self.ChatGptOrder.resultSave(
@@ -81,17 +91,17 @@ class XFlow:
             fixedPrompt=XPromptFormat.fixedPrompt.value,
             endpointUrl=ChatgptUtils.endpointUrl.value,
             model=ChatgptUtils.model.value,
-            apiKey=os.getenv('CHATGPT_APIKEY'),
+            apiKey=os.getenv("CHATGPT_APIKEY"),
             maxTokens=ChatgptUtils.MaxToken.value,
             maxlen=xUtils.maxlen.value,
             snsKinds=SnsKinds.X.value,
             notifyMsg=XPromptFormat.notifyMsg.value,
             # lambda関数によって引数がある場合にはこうするよ！という書き方
             notifyFunc=lambda userToMsg, fileFullPath: self.lineNotify.lineDataFileNotify(
-                lineToken=os.getenv('LINE_TOKEN'),
+                lineToken=os.getenv("LINE_TOKEN"),
                 message=userToMsg,
-                filePath=fileFullPath
-            )
+                filePath=fileFullPath,
+            ),
         )
 
 
@@ -99,11 +109,14 @@ class XFlow:
 # **********************************************************************************
 # 一連の流れ
 
+
 class InstagramFlow:
     def __init__(self, debugMode=True):
 
         # logger
-        self.getLogger = Logger(__name__, debugMode=debugMode)
+        self.getLogger = Logger(
+            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
+        )
         self.logger = self.getLogger.getLogger()
 
         # インスタンス
@@ -113,9 +126,8 @@ class InstagramFlow:
         self.Weekday = GetContext(debugMode=debugMode)
         self.lineNotify = LineNotify(debugMode=debugMode)
 
-
-# ----------------------------------------------------------------------------------
-# instagramProcess
+    # ----------------------------------------------------------------------------------
+    # instagramProcess
 
     async def instagramProcess(self):
         WorkSheetName = self.Weekday.getWeekday()
@@ -124,7 +136,7 @@ class InstagramFlow:
         df = self.GssApi.getDataFrameFromGss(
             KeyName=KeyFile.gssKeyFile.value,
             spreadsheetId=GssSheetId.InstagramSheetId.value,
-            workSheetName=WorkSheetName
+            workSheetName=WorkSheetName,
         )
 
         # プロンプト別途作成（テストOK）
@@ -143,9 +155,8 @@ class InstagramFlow:
             beforeCol=GssColumns.beforeCol.value,
             beforeFormat=InstagramPromptFormat.beforeFormat.value,
             openingComment=InstagramPromptFormat.openingComment.value,
-            endingComment=InstagramPromptFormat.endingComment.value
+            endingComment=InstagramPromptFormat.endingComment.value,
         )
-
 
         # ChatGPTへリクエストを投げる（４mini）（テストOK）
         await self.ChatGptOrder.resultSave(
@@ -153,17 +164,17 @@ class InstagramFlow:
             fixedPrompt=InstagramPromptFormat.fixedPrompt.value,
             endpointUrl=ChatgptUtils.endpointUrl.value,
             model=ChatgptUtils.model.value,
-            apiKey=os.getenv('CHATGPT_APIKEY'),
+            apiKey=os.getenv("CHATGPT_APIKEY"),
             maxTokens=ChatgptUtils.MaxToken.value,
             maxlen=xUtils.maxlen.value,
             snsKinds=SnsKinds.Instagram.value,
             notifyMsg=InstagramPromptFormat.notifyMsg.value,
             # lambda関数によって引数がある場合にはこうするよ！という書き方
             notifyFunc=lambda userToMsg, fileFullPath: self.lineNotify.lineDataFileNotify(
-                lineToken=os.getenv('LINE_TOKEN'),
+                lineToken=os.getenv("LINE_TOKEN"),
                 message=userToMsg,
-                filePath=fileFullPath
-            )
+                filePath=fileFullPath,
+            ),
         )
 
 
@@ -172,15 +183,15 @@ class InstagramFlow:
 
 # 非同期処理に変換
 
+
 async def runXProcess():
     xFlowInstance = XFlow()
     await xFlowInstance.xProcess()
 
+
 async def runInstagramProcess():
     instagramFlowInstance = InstagramFlow()
     await instagramFlowInstance.instagramProcess()
-
-
 
 
 # ----------------------------------------------------------------------------------

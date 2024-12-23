@@ -10,6 +10,9 @@ from datetime import datetime
 from typing import Dict, Any, List, Tuple
 from selenium.common.exceptions import ElementClickInterceptedException
 
+from const_str import FileName
+
+
 # 自作モジュール
 from .utils import Logger
 
@@ -29,21 +32,20 @@ decoInstance = Decorators(debugMode=True)
 class ElementManager:
     def __init__(self, chrome: WebDriver, debugMode=True):
         # logger
-        self.getLogger = Logger(__name__, debugMode=debugMode)
+        self.getLogger = Logger(
+            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
+        )
         self.logger = self.getLogger.getLogger()
 
         self.chrome = chrome
-        self.currentDate = datetime.now().strftime('%y%m%d_%H%M%S')
+        self.currentDate = datetime.now().strftime("%y%m%d_%H%M%S")
         self.textManager = TextManager(debugMode=debugMode)
         self.clickWait = ClickDeco(debugMode=debugMode)
         self.wait = Wait(chrome=self.chrome, debugMode=debugMode)
 
+    # ----------------------------------------------------------------------------------
 
-
-# ----------------------------------------------------------------------------------
-
-
-    def getElement(self, value: str, by: str = 'xpath'):
+    def getElement(self, value: str, by: str = "xpath"):
         self.clickWait.jsPageChecker(chrome=self.chrome)
         if by == "id":
             return self.chrome.find_element_by_id(value)
@@ -62,11 +64,10 @@ class ElementManager:
         else:
             raise ValueError("定義してるもの以外のものを指定してます")
 
+    # ----------------------------------------------------------------------------------
+    # 複数
 
-# ----------------------------------------------------------------------------------
-# 複数
-
-    def getElements(self, value: str, by: str = 'xpath'):
+    def getElements(self, value: str, by: str = "xpath"):
         self.clickWait.jsPageChecker(chrome=self.chrome)
         if by == "id":
             return self.chrome.find_elements_by_id(value)
@@ -85,11 +86,10 @@ class ElementManager:
         else:
             raise ValueError("定義してるもの以外のものを指定してます")
 
+    # ----------------------------------------------------------------------------------
+    # 要素を絞り込み
 
-# ----------------------------------------------------------------------------------
-# 要素を絞り込み
-
-    def filterElement(self, parentElement: str, value: str, by: str = 'xpath'):
+    def filterElement(self, parentElement: str, value: str, by: str = "xpath"):
         self.clickWait.jsPageChecker(chrome=self.chrome)
 
         if by == "id":
@@ -109,36 +109,41 @@ class ElementManager:
         else:
             raise ValueError("定義しているもの以外のものを指定しています")
 
-
-# ----------------------------------------------------------------------------------
-# 親要素から絞り込んで要素を取得
+    # ----------------------------------------------------------------------------------
+    # 親要素から絞り込んで要素を取得
 
     def _get_sort_element(self, parent_path: str, child_path: str):
         scope_element = self.getElement(value=parent_path)
-        child_element = self.filterElement(parentElement=scope_element, value=child_path)
-        self.logger.debug(f"\nscope_element: {scope_element}\nchild_element: {child_element}")
+        child_element = self.filterElement(
+            parentElement=scope_element, value=child_path
+        )
+        self.logger.debug(
+            f"\nscope_element: {scope_element}\nchild_element: {child_element}"
+        )
         return child_element
 
-
-# ----------------------------------------------------------------------------------
-# 親要素から絞り込んだ要素からtextを取得
+    # ----------------------------------------------------------------------------------
+    # 親要素から絞り込んだ要素からtextを取得
 
     def _get_sort_element_text(self, parent_path: str, child_path: str):
-        scope_element = self._get_sort_element(parent_path=parent_path, child_path=child_path)
+        scope_element = self._get_sort_element(
+            parent_path=parent_path, child_path=child_path
+        )
         text = self._get_text(element=scope_element)
         self.logger.debug(f"\nscope_element: {scope_element}\ntext: {text}")
         return text
 
-
-# ----------------------------------------------------------------------------------
-# ファイルアップロード
+    # ----------------------------------------------------------------------------------
+    # ファイルアップロード
 
     @decoInstance.funcBase
-    def files_input(self, by: str, value: str, file_path_list: str, check_by: str, check_value: str):
+    def files_input(
+        self, by: str, value: str, file_path_list: str, check_by: str, check_value: str
+    ):
         # アップロード場所の特定
         element = self.getElement(value=value, by=by)
 
-        self.logger.debug(f'file_path_list: {file_path_list}')
+        self.logger.debug(f"file_path_list: {file_path_list}")
 
         # ファイルPathを記入
         element.send_keys("\n".join(file_path_list))
@@ -146,46 +151,43 @@ class ElementManager:
         # 対象の箇所の場所の変化を確認
         self.wait.canWaitDom(by=check_by, value=check_value)
 
-
-# ----------------------------------------------------------------------------------
-# クリックしてから入力
+    # ----------------------------------------------------------------------------------
+    # クリックしてから入力
 
     @decoInstance.funcBase
-    def clickClearInput(self, value: str, inputText: str, by: str = 'xpath'):
+    def clickClearInput(self, value: str, inputText: str, by: str = "xpath"):
         self.clickWait.canWaitClick(chrome=self.chrome, by=by, value=value, timeout=3)
         element = self.getElement(by=by, value=value)
         try:
             element.click()
         except ElementClickInterceptedException:
-            self.logger.debug(f'popupなどでClickができません: {element}')
+            self.logger.debug(f"popupなどでClickができません: {element}")
             self.chrome.execute_script("arguments[0].click();", element)
 
         element.clear()
         element.send_keys(inputText)
         self.clickWait.jsPageChecker(chrome=self.chrome)
 
+    # ----------------------------------------------------------------------------------
 
-# ----------------------------------------------------------------------------------
-
-
-    def clickElement(self, value: str, by: str = 'xpath'):
+    def clickElement(self, value: str, by: str = "xpath"):
         self.clickWait.canWaitClick(chrome=self.chrome, by=by, value=value, timeout=3)
         element = self.getElement(by=by, value=value)
         try:
             element.click()
-            self.logger.debug(f'クリック完了しました: {value}')
+            self.logger.debug(f"クリック完了しました: {value}")
         except ElementClickInterceptedException:
-            self.logger.debug(f'popupなどでClickができません: {element}')
+            self.logger.debug(f"popupなどでClickができません: {element}")
             self.chrome.execute_script("arguments[0].click();", element)
 
         self.clickWait.jsPageChecker(chrome=self.chrome)
         return
 
+    # ----------------------------------------------------------------------------------
 
-# ----------------------------------------------------------------------------------
-
-
-    def recaptcha_click_element(self, by: str, value: str, max_retry: int = 40, delay: int = 5):
+    def recaptcha_click_element(
+        self, by: str, value: str, max_retry: int = 40, delay: int = 5
+    ):
         self.clickWait.canWaitClick(chrome=self.chrome, by=by, value=value, timeout=3)
         element = self.getElement(by=by, value=value)
 
@@ -193,67 +195,62 @@ class ElementManager:
         while retry_count < max_retry:
             try:
                 element.click()
-                self.logger.debug(f'クリック完了しました: {value}')
+                self.logger.debug(f"クリック完了しました: {value}")
                 break
 
             except ElementClickInterceptedException:
                 retry_count += 1
-                self.logger.debug(f'画像選択する reCAPTCHA発生中（{retry_count}回目）{delay}秒ごとに継続監視中')
+                self.logger.debug(
+                    f"画像選択する reCAPTCHA発生中（{retry_count}回目）{delay}秒ごとに継続監視中"
+                )
                 time.sleep(delay)
                 continue
 
         return self.clickWait.jsPageChecker(chrome=self.chrome)
 
-
-
-# ----------------------------------------------------------------------------------
-# 絞り込んだ要素にあるテキストを取得
+    # ----------------------------------------------------------------------------------
+    # 絞り込んだ要素にあるテキストを取得
 
     @decoInstance.funcBase
     def _get_text(self, element: WebElement):
         return element.text.strip()  # 前後の余白を除去
 
-
-# ----------------------------------------------------------------------------------
-
+    # ----------------------------------------------------------------------------------
 
     @decoInstance.funcBase
     def getImageUrl(self, by: str, value: str):
         element = self.getElement(by=by, value=value)
         return element.get_attribute("src")
 
-
-# ----------------------------------------------------------------------------------
-
+    # ----------------------------------------------------------------------------------
 
     def _getItemsList(self, by: str, value: str):
         itemElements = self.getElement(by=by, value=value)
         itemsText = itemElements.text
-        itemsList = itemsText.split(', ')
+        itemsList = itemsText.split(", ")
         return itemsList
 
-
-# ----------------------------------------------------------------------------------
-# NGWordを除外リスト
+    # ----------------------------------------------------------------------------------
+    # NGWordを除外リスト
 
     def textCleaner(self, textList: List, minLen: int = 12):
         ngWords = NGWordList.ngWords.value
-        filterWordsList = self.textManager.filterWords(textList=textList, ngWords=ngWords)
+        filterWordsList = self.textManager.filterWords(
+            textList=textList, ngWords=ngWords
+        )
 
         self.logger.warning(f"filterWordsList: {filterWordsList}\ntextList: {textList}")
         filterWordsListNum = len(filterWordsList)
 
         print(f"filterWordsListNum: {filterWordsListNum}")
         if minLen >= filterWordsListNum:
-            newTextList = textList.split('，')
+            newTextList = textList.split("，")
             print(f"newTextList: {newTextList}")
             return newTextList
 
         return filterWordsList
 
-
-# ----------------------------------------------------------------------------------
-
+    # ----------------------------------------------------------------------------------
 
     def _getAddress(self, by: str, value: str):
         fullAddress = self.getElement(by=by, value=value)
@@ -263,24 +260,23 @@ class ElementManager:
             if fullAddress.startswith(address):
                 return address
 
+    # ----------------------------------------------------------------------------------
+    # 辞書dataの初期化
 
-# ----------------------------------------------------------------------------------
-# 辞書dataの初期化
-
-    def _initDict(self, name: str):# -> dict[str, dict]:
+    def _initDict(self, name: str):  # -> dict[str, dict]:
         return {name: {}}
 
+    # ----------------------------------------------------------------------------------
+    # サブ辞書の中身を入れ込む
 
-# ----------------------------------------------------------------------------------
-# サブ辞書の中身を入れ込む
-
-    def updateSubDict(self, dictBox: Dict[str, Dict[str, Any]], name: str, inputDict: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
+    def updateSubDict(
+        self, dictBox: Dict[str, Dict[str, Any]], name: str, inputDict: Dict[str, Any]
+    ) -> Dict[str, Dict[str, Any]]:
         dictBox[name].update(inputDict)
         return dictBox
 
-
-# ----------------------------------------------------------------------------------
-# 特定の値だった場合にNoneを返す
+    # ----------------------------------------------------------------------------------
+    # 特定の値だった場合にNoneを返す
 
     def _returnNoneIfValue(self, value: Any, ifValueList: List):
         for ifValue in ifValueList:
@@ -289,11 +285,9 @@ class ElementManager:
             else:
                 return value
 
-
-# ----------------------------------------------------------------------------------
-# 要素を繰り返し取得してリストにする
-# conditions=[(by, value), (otherBy, otherValue)]のようにtupleのリストを返す
-
+    # ----------------------------------------------------------------------------------
+    # 要素を繰り返し取得してリストにする
+    # conditions=[(by, value), (otherBy, otherValue)]のようにtupleのリストを返す
 
     def _getElementList(self, conditions: List[Tuple[str, str]], ifValueList: List):
         elementList = []
@@ -304,9 +298,8 @@ class ElementManager:
             elementList.append(element)
         return elementList
 
-
-# ----------------------------------------------------------------------------------
-# 広告、検索画面などを検知して消去する
+    # ----------------------------------------------------------------------------------
+    # 広告、検索画面などを検知して消去する
 
     def closePopup(self, by: str, value: str):
         element = self.clickWait.canWaitClick(chrome=self.chrome, by=by, value=value)
@@ -317,42 +310,42 @@ class ElementManager:
             self.logger.info(f"modalは出力されませんでした。")
             return
 
-
-# ----------------------------------------------------------------------------------
-# クリックした新しいページに切り替え
+    # ----------------------------------------------------------------------------------
+    # クリックした新しいページに切り替え
 
     def clickMove(self, by: str, value: str):
         self.clickElement(by=by, value=value)
         allHandles = self.chrome.window_handles  # すべてのWindowハンドルを取得
         self.chrome.switch_to.window(allHandles[-1])  # 元々のWindowはallHandles[0]
-        return self.logger.info(f"クリックした新しいページタイトル「{self.chrome.title}」")
+        return self.logger.info(
+            f"クリックした新しいページタイトル「{self.chrome.title}」"
+        )
 
-
-# ----------------------------------------------------------------------------------
-# display:noneを解除
+    # ----------------------------------------------------------------------------------
+    # display:noneを解除
 
     def unlockDisplayNone(self):
         elements = self._searchDisplayNone
         for element in elements:
             if "display: none" in element.get_attribute("style"):
-                self.chrome.execute_script("arguments[0].style.display='block';", element)
+                self.chrome.execute_script(
+                    "arguments[0].style.display='block';", element
+                )
                 self.logger.info(f"display: noneになってる部分を解除実施: {element}")
 
             else:
                 self.logger.debug(f"display: noneになっている部分はありません")
 
-
-# ----------------------------------------------------------------------------------
-
+    # ----------------------------------------------------------------------------------
 
     @property
     def _searchDisplayNone(self):
-        return self.getElements(by='xpath', value="//*[contains(@style, 'display: none')]")
+        return self.getElements(
+            by="xpath", value="//*[contains(@style, 'display: none')]"
+        )
 
 
 # ----------------------------------------------------------------------------------
-
-
 
 
 # ----------------------------------------------------------------------------------

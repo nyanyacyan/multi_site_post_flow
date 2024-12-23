@@ -31,6 +31,7 @@ class SubDir(Enum):
 #! 基本必須
 
 class FileName(Enum):
+    LOG_FILE_NAME='multi_site_post_flow_log_file'
     DB_FILE_NAME='multi_site_data'
     CHROME_OP_CAPTCHA='hlifkpholllijblknnmbfagnkjneagid.crx'
     CHROME_OP_IFRAME='uBlock-Origin.crx'

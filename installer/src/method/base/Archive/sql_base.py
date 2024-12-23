@@ -31,7 +31,9 @@ class SqliteBase:
     def __init__(self, debugMode=True):
 
         # logger
-        self.getLogger = Logger(__name__, debugMode=debugMode)
+        self.getLogger = Logger(
+            moduleName=FileName.LOG_FILE_NAME.value, debugMode=debugMode
+        )
         self.logger = self.getLogger.getLogger()
 
         # インスタンス化
@@ -40,9 +42,8 @@ class SqliteBase:
         self.currentDate = datetime.now().strftime("%y%m%d")
         self.tablePattern = TableSchemas.TABLE_PATTERN.value
 
-
-# ----------------------------------------------------------------------------------
-# 実行の基底Method→sql_promptを渡す＋fetchを選択する
+    # ----------------------------------------------------------------------------------
+    # 実行の基底Method→sql_promptを渡す＋fetchを選択する
 
     @decoInstance.sqliteErrorHandler
     def sql_process(
@@ -73,8 +74,8 @@ class SqliteBase:
             self.logger.debug("connを閉じました")
             conn.close()
 
-# ----------------------------------------------------------------------------------
-# DBファイルのPath
+    # ----------------------------------------------------------------------------------
+    # DBファイルのPath
 
     def _db_path(self, db_file_name: str, extension: str = Extension.DB.value):
         db_dir_path = self.path.getResultDBDirPath()
@@ -83,8 +84,8 @@ class SqliteBase:
         self.logger.debug(f"dbFilePath: {dbFilePath}")
         return dbFilePath
 
-# ----------------------------------------------------------------------------------
-# DBバックアップのPath
+    # ----------------------------------------------------------------------------------
+    # DBバックアップのPath
 
     def _db_buck_up_path(self, db_file_name: str, extension: str = Extension.DB.value):
         db_dir_path = self.path.getResultDBBuckUpDirPath()
@@ -93,8 +94,8 @@ class SqliteBase:
         self.logger.debug(f"dbFilePath: {dbFilePath}")
         return dbFilePath
 
-# ----------------------------------------------------------------------------------
-# dbファイルと接続を開始
+    # ----------------------------------------------------------------------------------
+    # dbファイルと接続を開始
 
     @decoInstance.sqliteErrorHandler
     def _db_connect(self, db_file_name: str) -> sqlite3.Connection:
@@ -103,8 +104,8 @@ class SqliteBase:
         conn.row_factory = sqlite3.Row  # 行を辞書形式で取得できるようにする
         return conn
 
-# ----------------------------------------------------------------------------------
-# 実行するSQL文にて定義して実行まで行う
+    # ----------------------------------------------------------------------------------
+    # 実行するSQL文にて定義して実行まで行う
 
     @decoInstance.sqliteErrorHandler
     def _execute_SQL(
@@ -116,25 +117,35 @@ class SqliteBase:
         cursor.execute(sql_prompt, values)  # 実行するSQL文にて定義して実行まで行う
         return cursor
 
-# ----------------------------------------------------------------------------------
+    # ----------------------------------------------------------------------------------
 
     @decoInstance.sqliteErrorHandler
     def _cursor(self, conn: sqlite3.Connection, db_file_name: str) -> sqlite3.Cursor:
-        cursor = (conn.cursor())  # DBとの接続オブジェクトを受け取って通信ができるようにする
+        cursor = (
+            conn.cursor()
+        )  # DBとの接続オブジェクトを受け取って通信ができるようにする
         return cursor
 
-# ----------------------------------------------------------------------------------
-# 実行するSQL文にて定義して実行まで行う
+    # ----------------------------------------------------------------------------------
+    # 実行するSQL文にて定義して実行まで行う
 
     @decoInstance.sqliteErrorHandler
-    def _execute_SQL(self, cursor: sqlite3.Cursor, sql_prompt: str, values: tuple = ()) -> sqlite3.Cursor:
-        return cursor.execute(sql_prompt, values)  # 実行するSQL文にて定義して実行まで行う
+    def _execute_SQL(
+        self, cursor: sqlite3.Cursor, sql_prompt: str, values: tuple = ()
+    ) -> sqlite3.Cursor:
+        return cursor.execute(
+            sql_prompt, values
+        )  # 実行するSQL文にて定義して実行まで行う
 
-# ----------------------------------------------------------------------------------
-# トランザクションの開始]
+    # ----------------------------------------------------------------------------------
+    # トランザクションの開始]
 
-    def _transaction_start(self, conn: sqlite3.Connection, db_file_name) -> sqlite3.Cursor:
-        return conn.execute(SqlitePrompt.TRANSACTION.value)  # 実行するSQL文にて定義して実行まで行う
+    def _transaction_start(
+        self, conn: sqlite3.Connection, db_file_name
+    ) -> sqlite3.Cursor:
+        return conn.execute(
+            SqlitePrompt.TRANSACTION.value
+        )  # 実行するSQL文にて定義して実行まで行う
 
 
 # ----------------------------------------------------------------------------------
