@@ -103,7 +103,7 @@ class FlowGCNewItem:
         self._sell_btn_click(sell_info)
 
         # 画像添付
-        self._files_input(sell_data, sell_info)
+        self._photo_files_input(sell_data, sell_info)
 
         # ゲームタイトルクリック
         self._game_title_click(sell_info=sell_info)
@@ -127,7 +127,10 @@ class FlowGCNewItem:
         self._input_first_msg(sell_data=sell_data, sell_info=sell_info)
 
         # 出品を通知
-        self._input_sell_notify(sell_data=sell_data, sell_info=sell_info)
+        # self._input_sell_notify(sell_data=sell_data, sell_info=sell_info)
+
+        # 出品方法
+        self._select_sell_method(sell_data=sell_data, sell_info=sell_info)
 
         # 商品価格
         self._input_price(sell_data=sell_data, sell_info=sell_info)
@@ -138,7 +141,11 @@ class FlowGCNewItem:
         # 出品するをクリック
         self._sell_btn_click(sell_info=sell_info)
 
+        # POPを消す
+        self._delete_popup_click(sell_info=sell_info)
 
+        # マイページへ戻る
+        self._my_page_click(sell_info=sell_info)
 
 
 # ----------------------------------------------------------------------------------
@@ -151,9 +158,9 @@ class FlowGCNewItem:
 # ----------------------------------------------------------------------------------
 # 画像添付
 
-    def _files_input(self, sell_data: Dict, sell_info: Dict):
-
-        self.element.files_input(by=sell_info['FILE_INPUT_BY'], value=sell_info['FILE_INPUT_VALUE'], check_by=sell_info['CHECK_BY'], check_value=sell_info['CHECK_VALUE'], file_path_list=sell_data['画像データ'])
+    def _photo_files_input(self, sell_data: Dict, sell_info: Dict):
+        file_path_list = self.element._get_all_files_path_list(subDirName=sell_info['INPUT_PHOTO_FOLDER_NAME'], subSubDirName=sell_data['画像フォルダ'])
+        self.element.files_input(by=sell_info['FILE_INPUT_BY'], value=sell_info['FILE_INPUT_VALUE'], check_by=sell_info['CHECK_BY'], check_value=sell_info['CHECK_VALUE'], file_path_list=file_path_list)
 
 
 # ----------------------------------------------------------------------------------
@@ -297,7 +304,7 @@ class FlowGCNewItem:
 # POPを消す
 
     def _delete_popup_click(self, sell_info: Dict):
-        self.element.clickElement(value=sell_info['SELL_BTN'])
+        self.element.clickElement(value=sell_info['POPUP_DELETE_BTN_VALUE'])
         self.random_sleep
 
 
@@ -305,7 +312,7 @@ class FlowGCNewItem:
 # マイページへ戻る
 
     def _my_page_click(self, sell_info: Dict):
-        self.element.clickElement(value=sell_info['SELL_BTN'])
+        self.element.clickElement(value=sell_info['MY_PAGE_VALUE'])
         self.random_sleep
 
 

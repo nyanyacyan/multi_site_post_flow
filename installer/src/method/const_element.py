@@ -108,6 +108,7 @@ class SellInfo(Enum):
 
     GAME_CLUB = {
         'SELL_BTN': "//a[@href='/mypage/products/add']",
+        'INPUT_PHOTO_FOLDER_NAME': '01_GAME_CLUB',
         'FILE_INPUT_BY': 'id',
         'FILE_INPUT_VALUE': 'item-images',
         'CHECK_BY': 'css',
@@ -130,8 +131,8 @@ class SellInfo(Enum):
         'PRICE_VALUE': '//input[@name="price"]',
         'CHECK_VALUE': '//button[@id="btn-confirm"]',
         'SELL_BTN': '//button[@id="btn-add"]',
-        'POPUP_DELETE_BTN_VALUE': '',
-        'MY_PAGE_VALUE': '',
+        'POPUP_DELETE_BTN_VALUE': '//div[@class="btn-modal-close"]',
+        'MY_PAGE_VALUE': '//div[@class="header-top-btns"]/a[@class="icon-user"]',
         '': '',
     }
 

@@ -12,7 +12,7 @@ from datetime import datetime
 # 自作モジュール
 # import const
 from .utils import Logger
-from const_str import Dir, SubDir, Extension, FileName
+from const_str import Dir, SubDir, Extension
 from .errorHandlers import AccessFileNotFoundError
 
 
@@ -147,6 +147,42 @@ class BaseToPath:
         FilePath = inputDataPath / fileName
         self.logger.debug(f"FilePath: {FilePath}")
         return FilePath
+
+
+    # ----------------------------------------------------------------------------------
+    # Input > SubDir > File
+
+    def getInputSubDirFilePath(self, subDirName: str, fileName: str, extension: str):
+        inputDataPath = self.getInputDataPath()
+        dirPath = inputDataPath / subDirName
+        file = fileName + extension
+        FilePath = dirPath / file
+        self.logger.warning(f"FilePath: {FilePath}")
+        self.logger.debug(f"FilePathの型: {type(FilePath)}")
+        self.isDirExists(path=dirPath)
+        self.logger.debug(f"FilePath: {FilePath}")
+        return FilePath
+
+
+    # ----------------------------------------------------------------------------------
+    # Input > input_photo > SubDir
+
+    def getInputPhotoDirPath(self, subDirName: str, subSubDirName: str, input_photo: str = SubDir.INPUT_PHOTO.value):
+        inputDataPath = self.getInputDataPath()
+        dirPath = inputDataPath / input_photo / subDirName / subSubDirName
+        self.logger.warning(f"dirPath: {dirPath}")
+        self.logger.debug(f"dirPathの型: {type(dirPath)}")
+        self.isDirExists(path=dirPath)
+        return dirPath
+
+    # ----------------------------------------------------------------------------------
+    # input_photo内にあるすべてのファイルのフルパスをリスト化する
+
+    def _get_photos_all_path_list(self, photo_dir: str):
+        dir_path = Path(photo_dir)
+        all_photos_all_path_list = [file for file in dir_path.rglob('*') if file.is_file()]
+        self.logger.debug(f'all_photos_all_path_list: {all_photos_all_path_list}')
+        return all_photos_all_path_list
 
     # ----------------------------------------------------------------------------------
     # Result > File

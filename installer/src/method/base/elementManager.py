@@ -9,12 +9,14 @@ from selenium.webdriver.remote.webelement import WebElement
 from datetime import datetime
 from typing import Dict, Any, List, Tuple
 from selenium.common.exceptions import ElementClickInterceptedException
-
-from const_str import FileName
+from pathlib import Path
+from const_str import ErrorComment
 
 
 # 自作モジュール
 from .utils import Logger
+from .path import BaseToPath
+from .popup import Popup
 
 from .decorators import Decorators
 from .textManager import TextManager
@@ -39,9 +41,9 @@ class ElementManager:
         self.currentDate = datetime.now().strftime("%y%m%d_%H%M%S")
         self.textManager = TextManager()
         self.clickWait = ClickDeco()
-        self.wait = Wait(
-            chrome=self.chrome,
-        )
+        self.wait = Wait(chrome=self.chrome)
+        self.path = BaseToPath()
+        self.popup = Popup()
 
     # ----------------------------------------------------------------------------------
 
@@ -140,6 +142,7 @@ class ElementManager:
     def files_input(
         self, by: str, value: str, file_path_list: str, check_by: str, check_value: str
     ):
+
         # アップロード場所の特定
         element = self.getElement(value=value, by=by)
 
@@ -150,6 +153,31 @@ class ElementManager:
 
         # 対象の箇所の場所の変化を確認
         self.wait.canWaitDom(by=check_by, value=check_value)
+
+
+    # ----------------------------------------------------------------------------------
+    # 特定のフォルダにあるファイルをすべて取得してリストにする
+
+    def _get_all_files_path_list(self, subDirName: str, subSubDirName):
+        # photoのあるディレクトリ
+        photo_dir = self.path.getInputPhotoDirPath(subDirName=subDirName, subSubDirName=subSubDirName)
+
+        # input_photo内にあるすべてのファイルのフルパスをリスト化する
+        all_photos_all_path_list = self._get_photos_all_path_list(photo_dir=photo_dir)
+        if not all_photos_all_path_list:
+            self.popup.popupCommentOnly(popupTitle=ErrorComment.POPUP_TITLE.value, comment=ErrorComment.POPUP_COMMENT.value.format(photo_dir))
+        return all_photos_all_path_list
+
+
+    # ----------------------------------------------------------------------------------
+    # input_photo内にあるすべてのファイルのフルパスをリスト化する
+
+    def _get_photos_all_path_list(self, photo_dir: str):
+        dir_path = Path(photo_dir)
+        all_photos_all_path_list = [str(file) for file in dir_path.rglob('*') if file.is_file()]
+        self.logger.debug(f'all_photos_all_path_list: {all_photos_all_path_list}')
+        return all_photos_all_path_list
+
 
     # ----------------------------------------------------------------------------------
     # クリックしてから入力
@@ -169,6 +197,7 @@ class ElementManager:
         self.clickWait.jsPageChecker(chrome=self.chrome)
 
     # ----------------------------------------------------------------------------------
+    # クリックのみ
 
     def clickElement(self, value: str, by: str = "xpath"):
         self.clickWait.canWaitClick(chrome=self.chrome, by=by, value=value, timeout=3)

@@ -25,6 +25,7 @@ class SubDir(Enum):
     DBSubDir='DB'
     BUCK_UP= 'buck_up'
     SCREEN_SHOT='screenshot'
+    INPUT_PHOTO='input_photo'
 
 
 # ----------------------------------------------------------------------------------
@@ -50,6 +51,14 @@ class Extension(Enum):
     cookie='cookie.pkl'
     DB='.db'
     PNG='.png'
+
+
+# ----------------------------------------------------------------------------------
+#! 基本必須 → popupで使ってる
+
+class ErrorComment(Enum):
+    POPUP_TITLE='画像がありません'
+    POPUP_COMMENT='指定のフォルダに画像がありません。\n指定のフォルダをご確認ください\n{}'
 
 
 # ----------------------------------------------------------------------------------
