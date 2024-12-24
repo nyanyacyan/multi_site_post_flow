@@ -126,6 +126,17 @@ class FlowGCNewItem:
         # 買い手への初回msg
         self._input_first_msg(sell_data=sell_data, sell_info=sell_info)
 
+        # 出品を通知
+        self._input_sell_notify(sell_data=sell_data, sell_info=sell_info)
+
+        # 商品価格
+        self._input_price(sell_data=sell_data, sell_info=sell_info)
+
+        # 確認するをクリック
+        self._check_click(sell_info=sell_info)
+
+        # 出品するをクリック
+        self._sell_btn_click(sell_info=sell_info)
 
 
 
@@ -267,10 +278,34 @@ class FlowGCNewItem:
 
 
 # ----------------------------------------------------------------------------------
-# 確認する
+# 確認するをクリック
 
     def _check_click(self, sell_info: Dict):
         self.element.clickElement(value=sell_info['CHECK_VALUE'])
+        self.random_sleep
+
+
+# ----------------------------------------------------------------------------------
+# 出品するをクリック
+
+    def _sell_btn_click(self, sell_info: Dict):
+        self.element.clickElement(value=sell_info['SELL_BTN'])
+        self.random_sleep
+
+
+# ----------------------------------------------------------------------------------
+# POPを消す
+
+    def _delete_popup_click(self, sell_info: Dict):
+        self.element.clickElement(value=sell_info['SELL_BTN'])
+        self.random_sleep
+
+
+# ----------------------------------------------------------------------------------
+# マイページへ戻る
+
+    def _my_page_click(self, sell_info: Dict):
+        self.element.clickElement(value=sell_info['SELL_BTN'])
         self.random_sleep
 
 

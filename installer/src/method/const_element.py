@@ -129,7 +129,9 @@ class SellInfo(Enum):
         'SELL_METHOD_TIME_SALE_VALUE': '//input[@id="productType3"]',
         'PRICE_VALUE': '//input[@name="price"]',
         'CHECK_VALUE': '//button[@id="btn-confirm"]',
-        '': '',
+        'SELL_BTN': '//button[@id="btn-add"]',
+        'POPUP_DELETE_BTN_VALUE': '',
+        'MY_PAGE_VALUE': '',
         '': '',
     }
 
