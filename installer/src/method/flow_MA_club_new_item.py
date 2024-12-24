@@ -5,9 +5,8 @@
 
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 # import
-import os, time, asyncio
-from typing import Dict, List
-import pandas as pd
+import asyncio
+from typing import Dict
 
 
 # 自作モジュール
@@ -17,16 +16,18 @@ from base.loginWithId import SingleSiteIDLogin
 from base.seleniumBase import SeleniumBasicOperations
 from base.spreadsheetRead import GetDataGSSAPI
 from base.elementManager import ElementManager
+from base.decorators import Decorators
 
 # const
-from const_str import FileName
 from const_element import LoginInfo, GssInfo, SellInfo
+
+deco = Decorators()
 
 # ----------------------------------------------------------------------------------
 # **********************************************************************************
 # 一連の流れ
 
-class FlowGCNewItem:
+class FlowMAClubNewItem:
     def __init__(self):
         # logger
         self.getLogger = Logger()
@@ -77,16 +78,19 @@ class FlowGCNewItem:
 
 
             # ログイン〜処理実施まで
+            self.logger.info(f'{i + 1}/{df_row_num} 目の処理 START')
+
             self.row_process(login_info=login_info, sell_data=sell_data, sell_info=sell_info)
 
-            self.logger.info(f'{i + 1}/{df_row_num} 目の処理 終了')
+            self.logger.info(f'{i + 1}/{df_row_num} 目の処理 END')
 
         self.logger.info(f"{login_info['site_name']}すべての処理完了: {sell_data['管理コード']}")
 
 
 # ----------------------------------------------------------------------------------
+# ログイン〜出品処理
 
-
+    @deco.funcBase
     def row_process(self, login_info: Dict, sell_data: Dict, sell_info: Dict):
         # IDログイン
         self.login.flowLoginID(login_info=login_info, timeout=120)
@@ -96,7 +100,7 @@ class FlowGCNewItem:
 
 
 # ----------------------------------------------------------------------------------
-# TODO ここを別クラスにしてそれぞれのクラスで使えるようにする
+# 出品処理
 
     def sell_process(self, sell_data: Dict, sell_info: Dict):
         # 出品ボタンをクリック
@@ -105,23 +109,23 @@ class FlowGCNewItem:
         # 画像添付
         self._photo_files_input(sell_data, sell_info)
 
-        # ゲームタイトルクリック
-        self._game_title_click(sell_info=sell_info)
+        # 案件カテゴリ欄をクリック
+        self._title_click(sell_info=sell_info)
 
         # POPUPタイトル入力
         self._popup_title_input(sell_info=sell_info)
 
-        # タイトルを選択
+        # 種別を選択
         self._category_select(sell_data=sell_data, sell_info=sell_info)
 
         # 出品タイトル
         self._input_sell_title(sell_data=sell_data, sell_info=sell_info)
 
-        # 商品説明
+        # 案件説明
         self._input_game_explanation(sell_data=sell_data, sell_info=sell_info)
 
         # 課金総額
-        self._input_charge(sell_data=sell_data, sell_info=sell_info)
+        # self._input_charge(sell_data=sell_data, sell_info=sell_info)
 
         # 買い手への初回msg
         self._input_first_msg(sell_data=sell_data, sell_info=sell_info)
@@ -129,16 +133,13 @@ class FlowGCNewItem:
         # 出品を通知
         # self._input_sell_notify(sell_data=sell_data, sell_info=sell_info)
 
-        # 出品方法
-        self._select_sell_method(sell_data=sell_data, sell_info=sell_info)
-
         # 商品価格
         self._input_price(sell_data=sell_data, sell_info=sell_info)
 
         # 確認するをクリック
         self._check_click(sell_info=sell_info)
 
-        # 出品するをクリック
+        # 売却登録するをクリック
         self._sell_btn_click(sell_info=sell_info)
 
         # POPを消す
@@ -166,7 +167,7 @@ class FlowGCNewItem:
 # ----------------------------------------------------------------------------------
 # ゲームタイトルクリック
 
-    def _game_title_click(self, sell_info: Dict):
+    def _title_click(self, sell_info: Dict):
 
         self.element.clickElement(value=sell_info['TITLE_CLICK_VALUE'])
         self.random_sleep
@@ -197,17 +198,14 @@ class FlowGCNewItem:
 # カテゴリ選択
 
     def _category_select(self, sell_data: Dict, sell_info: Dict):
-        if sell_data['カテゴリ'] == '引退垢':
-            element = self.element.clickElement(value=sell_info['CATEGORY_INTAI_SELECT_VALUE'])
-            self.logger.debug(f'引退垢を選択: {element}')
+        if sell_data['カテゴリ'] == 'その他':
+            element = self.element.clickElement(value=sell_info['CATEGORY_OTHER_SELECT_VALUE'])
+            self.logger.debug(f'「その他」を選択: {element}')
             self.random_sleep
-        elif sell_data['カテゴリ'] == 'アイテム・通貨':
-            element = self.element.clickElement(value=sell_info['CATEGORY_ITEM_SELECT_VALUE'])
-            self.logger.debug(f'アイテム・通貨を選択: {element}')
-            self.random_sleep
+
         else:
-            element = self.element.clickElement(value=sell_info['CATEGORY_DAIKO_SELECT_VALUE'])
-            self.logger.debug(f'代行を選択: {element}')
+            element = self.element.clickElement(value=sell_info['CATEGORY_JYOTO_SELECT_VALUE'])
+            self.logger.debug(f'「アカウント譲渡」を選択: {element}')
             self.random_sleep
 
 
@@ -233,6 +231,7 @@ class FlowGCNewItem:
 
 # ----------------------------------------------------------------------------------
 # 課金総額
+#! 使わない
 
     def _input_charge(self, sell_data: Dict, sell_info: Dict):
         input_charge = sell_data['課金総額']
@@ -252,7 +251,7 @@ class FlowGCNewItem:
 
 
 # ----------------------------------------------------------------------------------
-# 出品を通知
+# 案件の登録を通知
 
     def _input_sell_notify(self, sell_data: Dict, sell_info: Dict):
         input_sell_notify = sell_data['出品を通知']
@@ -263,6 +262,7 @@ class FlowGCNewItem:
 
 # ----------------------------------------------------------------------------------
 # 出品方法
+#! 使わない
 
     def _select_sell_method(self, sell_data: Dict, sell_info: Dict):
         select_sell_method = sell_data['出品方法']
@@ -321,9 +321,10 @@ class FlowGCNewItem:
 # テスト実施
 
 if __name__ == '__main__':
-    gss_info = GssInfo.GAME_CLUB.value
-    login_info = LoginInfo.SITE_PATTERNS.value['GAME_CLUB']
-    Sell_info = SellInfo.GAME_CLUB.value
+    gss_info = GssInfo.MA_CLUB.value
+    login_info = LoginInfo.SITE_PATTERNS.value['MA_CLUB']
+    sell_info = SellInfo.MA_CLUB.value
     print(f"login_info: {login_info}")
-    test_flow = FlowGCNewItem()
-    asyncio.run(test_flow.process(gss_info=gss_info, login_info=login_info, sell_info=Sell_info))
+
+    test_flow = FlowMAClubNewItem()
+    asyncio.run(test_flow.process(gss_info=gss_info, login_info=login_info, sell_info=sell_info))
