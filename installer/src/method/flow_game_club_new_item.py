@@ -179,7 +179,7 @@ class FlowGameClubNewItem:
 # ----------------------------------------------------------------------------------
 # POPUPタイトル入力
 
-    def _popup_title_input(self, , sell_data: Dict, sell_info: Dict):
+    def _popup_title_input(self, sell_data: Dict, sell_info: Dict):
         input_game_title = sell_data['ゲームタイトル']
         self.logger.debug(f'input_game_title: {input_game_title}')
         self.element.clickClearInput(value=sell_info['GAME_TITLE_INPUT_VALUE'], inputText=input_game_title)

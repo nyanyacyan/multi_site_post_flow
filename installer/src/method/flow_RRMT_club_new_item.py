@@ -16,6 +16,7 @@ from base.loginWithId import SingleSiteIDLogin
 from base.seleniumBase import SeleniumBasicOperations
 from base.spreadsheetRead import GetDataGSSAPI
 from base.elementManager import ElementManager
+from base.popup import Popup
 from base.decorators import Decorators
 
 # const
@@ -42,7 +43,8 @@ class FlowRRMTClubNewItem:
         self.login = SingleSiteIDLogin(chrome=self.chrome, )
         self.random_sleep = SeleniumBasicOperations(chrome=self.chrome, )
         self.gss_read = GetDataGSSAPI()
-        self.element = ElementManager(chrome=self.chrome, )
+        self.element = ElementManager(chrome=self.chrome)
+        self.popup = Popup()
 
         # ランダム待機
         self.random_sleep = self.random_sleep._random_sleep()
@@ -106,40 +108,36 @@ class FlowRRMTClubNewItem:
         # 出品ボタンをクリック
         self._sell_btn_click(sell_info)
 
-        # 画像添付
-        self._photo_files_input(sell_data, sell_info)
+        # 売りたいを選択
+        self._sell_select_btn_click(sell_info)
 
-        # ゲームタイトルクリック
-        self._game_title_click(sell_info=sell_info)
-
-        # POPUPタイトル入力
-        self._popup_title_input(sell_info=sell_info)
-
-        # タイトルを選択
-        self._category_select(sell_data=sell_data, sell_info=sell_info)
-
-        # 出品タイトル
+        # ゲームタイトル入力
         self._input_sell_title(sell_data=sell_data, sell_info=sell_info)
 
-        # 商品説明
-        self._input_game_explanation(sell_data=sell_data, sell_info=sell_info)
-
-        # 課金総額
-        self._input_charge(sell_data=sell_data, sell_info=sell_info)
-
-        # 買い手への初回msg
-        self._input_first_msg(sell_data=sell_data, sell_info=sell_info)
-
-        # 出品を通知
-        # self._input_sell_notify(sell_data=sell_data, sell_info=sell_info)
-
-        # 出品方法
+        # TODOアカウント種別の選択
         self._select_sell_method(sell_data=sell_data, sell_info=sell_info)
 
-        # 商品価格
+        # TODOタグ入力
+        self._input_sell_title(sell_data=sell_data, sell_info=sell_info)
+
+        # TODO掲載タイトル
+        self._input_comment_title(sell_data=sell_data, sell_info=sell_info)
+
+        # TODO商品説明
+        self._input_game_explanation(sell_data=sell_data, sell_info=sell_info)
+
+        # TODO画像添付
+        self._photo_files_input(sell_data, sell_info)
+
+        # TODOユーザーに出品を通知する
+        # self._input_sell_notify(sell_data=sell_data, sell_info=sell_info)
+
+        # TODO商品価格
         self._input_price(sell_data=sell_data, sell_info=sell_info)
 
-        # 確認するをクリック
+
+
+        # TODO確認するをクリック
         self._check_click(sell_info=sell_info)
 
         # 出品するをクリック
@@ -157,6 +155,13 @@ class FlowRRMTClubNewItem:
 
     def _sell_btn_click(self, sell_info: Dict):
         self.element.clickElement(value=sell_info['SELL_BTN'])
+
+
+# ----------------------------------------------------------------------------------
+# 売りたいをクリック
+
+    def _sell_select_btn_click(self, sell_info: Dict):
+        self.element.clickElement(value=sell_info['SELL_SELECT_BTN'])
 
 
 # ----------------------------------------------------------------------------------
@@ -199,9 +204,10 @@ class FlowRRMTClubNewItem:
 
 # ----------------------------------------------------------------------------------
 # カテゴリ選択
+# TODO EnterKeyが必要かも→アカウント種別などが変わる
 
     def _category_select(self, sell_data: Dict, sell_info: Dict):
-        if sell_data['カテゴリ'] == '引退垢':
+        if sell_data['カテゴリ'] == 'アカウント':
             element = self.element.clickElement(value=sell_info['CATEGORY_INTAI_SELECT_VALUE'])
             self.logger.debug(f'引退垢を選択: {element}')
             self.random_sleep
@@ -209,16 +215,28 @@ class FlowRRMTClubNewItem:
             element = self.element.clickElement(value=sell_info['CATEGORY_ITEM_SELECT_VALUE'])
             self.logger.debug(f'アイテム・通貨を選択: {element}')
             self.random_sleep
-        else:
+        elif sell_data['カテゴリ'] == '代行':
             element = self.element.clickElement(value=sell_info['CATEGORY_DAIKO_SELECT_VALUE'])
             self.logger.debug(f'代行を選択: {element}')
             self.random_sleep
+
+        # TODO ない場合の例外処理を作成する
 
 
 # ----------------------------------------------------------------------------------
 # 出品タイトル
 
     def _input_sell_title(self, sell_data: Dict, sell_info: Dict):
+        input_sell_title = sell_data['出品タイトル']
+        self.logger.debug(f'input_sell_title: {input_sell_title}')
+        self.element.clickClearInput(by=sell_info['SELL_TITLE_INPUT_BY'], value=sell_info['SELL_TITLE_INPUT_VALUE'], inputText=input_sell_title)
+        self.random_sleep
+
+
+# ----------------------------------------------------------------------------------
+# 出品タイトル
+
+    def _input_comment_title(self, sell_data: Dict, sell_info: Dict):
         input_sell_title = sell_data['出品タイトル']
         self.logger.debug(f'input_sell_title: {input_sell_title}')
         self.element.clickClearInput(by=sell_info['SELL_TITLE_INPUT_BY'], value=sell_info['SELL_TITLE_INPUT_VALUE'], inputText=input_sell_title)

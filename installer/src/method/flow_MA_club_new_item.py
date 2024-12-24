@@ -118,7 +118,7 @@ class FlowMAClubNewItem:
         # 種別を選択
         self._category_select(sell_data=sell_data, sell_info=sell_info)
 
-        # 出品タイトル
+        # 案件タイトル
         self._input_sell_title(sell_data=sell_data, sell_info=sell_info)
 
         # 案件説明
@@ -130,7 +130,7 @@ class FlowMAClubNewItem:
         # 買い手への初回msg
         self._input_first_msg(sell_data=sell_data, sell_info=sell_info)
 
-        # 出品を通知
+        # 案件の登録を通知
         # self._input_sell_notify(sell_data=sell_data, sell_info=sell_info)
 
         # 商品価格
@@ -174,20 +174,20 @@ class FlowMAClubNewItem:
 
 
 # ----------------------------------------------------------------------------------
-# POPUPタイトル入力
+# POPUPに案件タイトル入力
 
-    def _popup_title_input(self, , sell_data: Dict, sell_info: Dict):
-        input_game_title = sell_data['ゲームタイトル']
+    def _popup_title_input(self, sell_data: Dict, sell_info: Dict):
+        input_game_title = sell_data['案件タイトル']
         self.logger.debug(f'input_game_title: {input_game_title}')
         self.element.clickClearInput(value=sell_info['GAME_TITLE_INPUT_VALUE'], inputText=input_game_title)
         self.random_sleep
 
 
 # ----------------------------------------------------------------------------------
-# タイトルを選択
+# 案件タイトルを選択
 
     def _game_title_select(self, sell_data: Dict, sell_info: Dict):
-        game_title = sell_data['ゲームタイトル']
+        game_title = sell_data['案件タイトル']
         game_title_path = sell_info['GAME_TITLE_SELECT_VALUE'].format(game_title)
         self.logger.debug(f'game_title_path: {game_title_path}')
         self.element.clickElement(value=game_title_path)

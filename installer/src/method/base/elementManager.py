@@ -165,13 +165,13 @@ class ElementManager:
         # input_photo内にあるすべてのファイルのフルパスをリスト化する
         all_photos_all_path_list = self._get_photos_all_path_list(photo_dir=photo_dir)
         if not all_photos_all_path_list:
-            self.popup.popupCommentOnly(popupTitle=ErrorComment.POPUP_TITLE.value, comment=ErrorComment.POPUP_COMMENT.value.format(photo_dir))
+            self.popup.popupCommentOnly(popupTitle=ErrorComment.PHOTO_TITLE.value, comment=ErrorComment.PHOTO_COMMENT.value.format(photo_dir))
         return all_photos_all_path_list
 
 
     # ----------------------------------------------------------------------------------
     # input_photo内にあるすべてのファイルのフルパスをリスト化する
-
+    # TODO Sortするようにしてアップロードする順番を決める
     def _get_photos_all_path_list(self, photo_dir: str):
         dir_path = Path(photo_dir)
         all_photos_all_path_list = [str(file) for file in dir_path.rglob('*') if file.is_file()]
