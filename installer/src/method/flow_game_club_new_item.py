@@ -7,7 +7,7 @@
 # import
 import asyncio
 from typing import Dict
-
+from selenium.webdriver.common.keys import Keys
 
 # 自作モジュール
 from base.utils import Logger
@@ -42,9 +42,6 @@ class FlowGameClubNewItem:
         self.random_sleep = SeleniumBasicOperations(chrome=self.chrome, )
         self.gss_read = GetDataGSSAPI()
         self.element = ElementManager(chrome=self.chrome, )
-
-        # ランダム待機
-        self.random_sleep = self.random_sleep._random_sleep()
 
         # 必要info
         self.gss_info = GssInfo.GAME_CLUB.value
@@ -84,7 +81,7 @@ class FlowGameClubNewItem:
             # ログイン〜処理実施まで
             self.logger.info(f'{i + 1}/{df_row_num} 目の処理 START')
 
-            self.row_process(login_info=self.login_info, sell_data=sell_data, sell_info=self.sell_info)
+            self.row_process(sell_data=sell_data)
 
             self.logger.info(f'{i + 1}/{df_row_num} 目の処理 END')
 
@@ -107,8 +104,9 @@ class FlowGameClubNewItem:
 # 出品処理
 
     def sell_process(self, sell_data: Dict):
+        self.logger.debug(f'sell_processを開始:\n{sell_data}')
         # 出品ボタンをクリック
-        self._sell_btn_click()
+        self._click_first_sell_btn()
 
         # 画像添付
         self._photo_files_input(sell_data)
@@ -117,10 +115,10 @@ class FlowGameClubNewItem:
         self._game_title_click()
 
         # POPUPタイトル入力
-        self._popup_title_input()
+        self._popup_title_input(sell_data=sell_data)
 
         # タイトルを選択
-        self._game_title_select(sell_data=sell_data)
+        self._game_title_select()
 
         # 種別を選択
         self._category_select(sell_data=sell_data)
@@ -131,8 +129,8 @@ class FlowGameClubNewItem:
         # 商品説明
         self._input_game_explanation(sell_data=sell_data)
 
-        # 課金総額
-        self._input_charge(sell_data=sell_data)
+        # # 課金総額
+        # self._input_charge(sell_data=sell_data)
 
         # 買い手への初回msg
         self._input_first_msg(sell_data=sell_data)
@@ -150,7 +148,7 @@ class FlowGameClubNewItem:
         self._check_click()
 
         # 出品するをクリック
-        self._sell_btn_click()
+        self._click_end_sell_btn()
 
         # POPを消す
         self._delete_popup_click()
@@ -162,8 +160,12 @@ class FlowGameClubNewItem:
 # ----------------------------------------------------------------------------------
 # 出品ボタンをクリック
 
-    def _sell_btn_click(self):
-        self.element.clickElement(value=self.sell_info['SELL_BTN'])
+    def _click_first_sell_btn(self):
+        by = self.sell_info['FIRST_SELL_BTN_BY']
+        value = self.sell_info['FIRST_SELL_BTN_VALUE']
+        self.logger.debug(f'\nby: {by}\nvalue: {value}')
+        self.element.clickElement(by=by, value=value)
+        self._random_sleep()
 
 
 # ----------------------------------------------------------------------------------
@@ -172,14 +174,15 @@ class FlowGameClubNewItem:
     def _photo_files_input(self, sell_data: Dict):
         file_path_list = self.element._get_all_files_path_list(subDirName=self.sell_info['INPUT_PHOTO_FOLDER_NAME'], subSubDirName=sell_data['画像フォルダ'])
         self.element.files_input(by=self.sell_info['FILE_INPUT_BY'], value=self.sell_info['FILE_INPUT_VALUE'], check_by=self.sell_info['CHECK_BY'], check_value=self.sell_info['CHECK_VALUE'], file_path_list=file_path_list)
+        self._random_sleep()
 
 
 # ----------------------------------------------------------------------------------
 # ゲームタイトルクリック
 
     def _game_title_click(self):
-        self.element.clickElement(by=self.sell_info['TITLE_CLICK_BY'], value=self.sell_info['TITLE_CLICK_VALUE'])
-        self.random_sleep
+        self.element.clickElement(by=self.sell_info['GAME_TITLE_CLICK_BY'], value=self.sell_info['GAME_TITLE_CLICK_VALUE'])
+        self._random_sleep()
 
 
 # ----------------------------------------------------------------------------------
@@ -188,19 +191,17 @@ class FlowGameClubNewItem:
     def _popup_title_input(self, sell_data: Dict):
         input_game_title = sell_data['ゲームタイトル']
         self.logger.debug(f'input_game_title: {input_game_title}')
-        self.element.clickClearInput(by=self.sell_info['GAME_TITLE_INPUT_BY'], value=self.sell_info['GAME_TITLE_INPUT_VALUE'], inputText=input_game_title)
-        self.random_sleep
+        element = self.element.clickClearInput(by=self.sell_info['GAME_TITLE_INPUT_BY'], value=self.sell_info['GAME_TITLE_INPUT_VALUE'], inputText=input_game_title)
+        element.send_keys(Keys.RETURN)
+        self._random_sleep()
 
 
 # ----------------------------------------------------------------------------------
 # タイトルを選択
 
-    def _game_title_select(self, sell_data: Dict):
-        game_title = sell_data['ゲームタイトル']
-        game_title_path = self.sell_info['GAME_TITLE_SELECT_VALUE'].format(game_title)
-        self.logger.debug(f'game_title_path: {game_title_path}')
-        self.element.clickElement(value=game_title_path)
-        self.random_sleep
+    def _game_title_select(self):
+        self.element.clickElement(by=self.sell_info['GAME_TITLE_SELECT_BY'], value=self.sell_info['GAME_TITLE_SELECT_VALUE'])
+        self._random_sleep()
 
 
 # ----------------------------------------------------------------------------------
@@ -210,19 +211,19 @@ class FlowGameClubNewItem:
         if sell_data['カテゴリ'] == '代行':
             element = self.element.clickElement(value=self.sell_info['CATEGORY_DAIKO_SELECT_VALUE'])
             self.logger.debug(f'「代行」を選択: {element}')
-            self.random_sleep
+            self._random_sleep()
         elif sell_data['カテゴリ'] == 'リセマラ・初期垢':
             element = self.element.clickElement(value=self.sell_info['CATEGORY_RISEMARA_SELECT_VALUE'])
             self.logger.debug(f'「リセマラ・初期垢」を選択: {element}')
-            self.random_sleep
+            self._random_sleep()
         elif sell_data['カテゴリ'] == 'アイテム・通貨':
             element = self.element.clickElement(value=self.sell_info['CATEGORY_ITEM_SELECT_VALUE'])
             self.logger.debug(f'「アイテム・通貨」を選択: {element}')
-            self.random_sleep
+            self._random_sleep()
         else:
             element = self.element.clickElement(value=self.sell_info['CATEGORY_INTAI_SELECT_VALUE'])
             self.logger.debug(f'「引退垢」を選択: {element}')
-            self.random_sleep
+            self._random_sleep
 
 # ----------------------------------------------------------------------------------
 # 出品タイトル
@@ -231,17 +232,17 @@ class FlowGameClubNewItem:
         input_sell_title = sell_data['出品タイトル']
         self.logger.debug(f'input_sell_title: {input_sell_title}')
         self.element.clickClearInput(by=self.sell_info['SELL_TITLE_INPUT_BY'], value=self.sell_info['SELL_TITLE_INPUT_VALUE'], inputText=input_sell_title)
-        self.random_sleep
+        self._random_sleep()
 
 
 # ----------------------------------------------------------------------------------
 # 商品説明
-
+    @deco.funcBase
     def _input_game_explanation(self, sell_data: Dict):
         input_game_explanation = sell_data['商品説明']
         self.logger.debug(f'input_game_explanation: {input_game_explanation}')
-        self.element.clickClearInput(by=self.sell_info['SELL_EXPLANATION_INPUT_BY'], value=self.sell_info['SELL_EXPLANATION_INPUT_VALUE'], inputText=input_game_explanation)
-        self.random_sleep
+        self.element.clickClearJsInput(by=self.sell_info['SELL_EXPLANATION_INPUT_BY'], value=self.sell_info['SELL_EXPLANATION_INPUT_VALUE'], inputText=input_game_explanation)
+        self._random_sleep()
 
 
 # ----------------------------------------------------------------------------------
@@ -253,12 +254,12 @@ class FlowGameClubNewItem:
             self.logger.warning(f'「課金総額」入力なし: {input_charge}')
         self.logger.debug(f'input_game_explanation: {input_charge}')
         self.element.clickClearInput(value=self.sell_info['CHARGE_VALUE'], inputText=input_charge)
-        self.random_sleep
+        self._random_sleep()
 
 
 # ----------------------------------------------------------------------------------
 # 買い手へ初回自動表示するメッセージ
-
+    @deco.funcBase
     def _input_first_msg(self, sell_data: Dict):
         input_first_msg = sell_data['買い手へ初回自動表示するメッセージ']
         if not input_first_msg:
@@ -267,12 +268,12 @@ class FlowGameClubNewItem:
 
         self.logger.debug(f'input_first_msg: {input_first_msg}')
         self.element.clickClearInput(by=self.sell_info['FIRST_MSG_BY'], value=self.sell_info['FIRST_MSG_VALUE'], inputText=input_first_msg)
-        self.random_sleep
+        self._random_sleep()
 
 
 # ----------------------------------------------------------------------------------
 # 出品を通知
-
+    @deco.funcBase
     def _user_notify(self, sell_data: Dict):
         input_sell_notify = sell_data['出品を通知']
         if not input_sell_notify:
@@ -281,55 +282,55 @@ class FlowGameClubNewItem:
 
         self.logger.debug(f'input_sell_notify: {input_sell_notify}')
         self.element.clickClearInput(value=self.sell_info['USER_NOTIFY'], inputText=input_sell_notify)
-        self.random_sleep
+        self._random_sleep()
 
 
 # ----------------------------------------------------------------------------------
 # 出品方法
-
+    @deco.funcBase
     def _select_sell_method(self, sell_data: Dict):
         select_sell_method = sell_data['出品方法']
         if select_sell_method == 'タイムセール':
             self.logger.info(f'「タイムセール」選択: {select_sell_method}')
             self.element.clickElement(value=self.sell_info['SELL_METHOD_TIME_SALE_VALUE'])
         else:
-            self.logger.info(f'「フリマ販売」選択: {select_sell_method}')
-            self.element.clickElement(value=self.sell_info['SELL_METHOD_FURIMA_VALUE'])
-        self.random_sleep
+            self.logger.info(f'「フリマ販売」選択のためアクションなし: {select_sell_method}')
+            # self.element.clickElement(value=self.sell_info['SELL_METHOD_FURIMA_VALUE'])
+        self._random_sleep()
 
 
 # ----------------------------------------------------------------------------------
 # 商品価格
-
+    @deco.funcBase
     def _input_price(self, sell_data: Dict):
         input_price = sell_data['商品価格']
         self.logger.debug(f'input_price: {input_price}')
         self.element.clickClearInput(value=self.sell_info['PRICE_VALUE'], inputText=input_price)
-        self.random_sleep
+        self._random_sleep(min_num=3, max_num=5)
 
 
 # ----------------------------------------------------------------------------------
 # 確認するをクリック
-
+    @deco.funcBase
     def _check_click(self):
         self.element.clickElement(value=self.sell_info['CHECK_VALUE'])
-        self.random_sleep
+        self._random_sleep()
 
 
 # ----------------------------------------------------------------------------------
 # 出品するをクリック
-
-    def _sell_btn_click(self):
+    @deco.funcBase
+    def _click_end_sell_btn(self):
         self.element.clickElement(value=self.sell_info['SELL_BTN'])
-        self.random_sleep
+        self._random_sleep(min_num=5, max_num=15)
 
 
 # ----------------------------------------------------------------------------------
 # POPを消す
-
+    @deco.funcBase
     def _delete_popup_click(self):
         self.element.clickElement(value=self.sell_info['POPUP_DELETE_BTN_VALUE'])
-        self.random_sleep
+        self._random_sleep()
 
 
 # ----------------------------------------------------------------------------------
@@ -337,10 +338,14 @@ class FlowGameClubNewItem:
 
     def _my_page_click(self):
         self.element.clickElement(value=self.sell_info['MY_PAGE_VALUE'])
-        self.random_sleep
+        self._random_sleep()
 
 
 # ----------------------------------------------------------------------------------
+
+    def _random_sleep(self, min_num: int = 1, max_num: int = 3):
+        self.random_sleep._random_sleep(min_num=min_num, max_num=max_num)
+
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # テスト実施
 

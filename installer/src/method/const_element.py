@@ -110,7 +110,8 @@ class SellInfo(Enum):
         'INPUT_PHOTO_FOLDER_NAME': '01_GAME_CLUB',
 
         # 出品するをクリック
-        'SELL_BTN': "//a[@href='/mypage/products/add']",
+        'FIRST_SELL_BTN_BY': "xpath",
+        'FIRST_SELL_BTN_VALUE': '//a[contains(@class, "btm-add")]',
 
         # 画像を添付
         'FILE_INPUT_BY': 'id',
@@ -128,7 +129,8 @@ class SellInfo(Enum):
         'GAME_TITLE_INPUT_VALUE': "search-title-input",
 
         # POPUPにゲームタイトルをクリック
-        'GAME_TITLE_SELECT_VALUE': '//div[contains(@data-item, \'"name":"{}"\')]',
+        'GAME_TITLE_SELECT_BY': 'css',
+        'GAME_TITLE_SELECT_VALUE': 'div.syllabary-list > div.item',
 
         # カテゴリ選択
         'CATEGORY_INTAI_SELECT_VALUE': '//*[@id="account-type-id-10"]',
@@ -155,8 +157,8 @@ class SellInfo(Enum):
         'USER_NOTIFY': "//input[@type='text' and @name='notify_user_id']",
 
         # 出品方法
-        'SELL_METHOD_FURIMA_VALUE': '//input[@id="productType1"]',
-        'SELL_METHOD_TIME_SALE_VALUE': '//input[@id="productType3"]',
+        'SELL_METHOD_FURIMA_VALUE': "//label[contains(text(), 'フリマ販売')]",
+        'SELL_METHOD_TIME_SALE_VALUE': "//label[contains(text(), 'タイムセール')]",
 
         # 商品価格
         'PRICE_VALUE': '//input[@name="price"]',

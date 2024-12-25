@@ -8,9 +8,10 @@ from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.remote.webelement import WebElement
 from datetime import datetime
 from typing import Dict, Any, List, Tuple
-from selenium.common.exceptions import ElementClickInterceptedException
+from selenium.common.exceptions import ElementClickInterceptedException, ElementNotInteractableException
+
 from pathlib import Path
-from const_str import ErrorComment
+
 
 
 # 自作モジュール
@@ -23,6 +24,8 @@ from .textManager import TextManager
 from .driverDeco import ClickDeco
 from .driverWait import Wait
 
+# const
+from const_str import ErrorComment, SeleniumWait
 
 decoInstance = Decorators()
 
@@ -152,7 +155,7 @@ class ElementManager:
         element.send_keys("\n".join(file_path_list))
 
         # 対象の箇所の場所の変化を確認
-        self.wait.canWaitDom(by=check_by, value=check_value)
+        # self.wait.canWaitDom(by=check_by, value=check_value)
 
 
     # ----------------------------------------------------------------------------------
@@ -198,10 +201,28 @@ class ElementManager:
         return element
 
     # ----------------------------------------------------------------------------------
+    # クリックしてから入力
+
+    @decoInstance.funcBase
+    def clickClearJsInput(self, value: str, inputText: str, by: str = "xpath"):
+        self.clickWait.canWaitClick(chrome=self.chrome, by=by, value=value, timeout=3)
+        element = self.getElement(by=by, value=value)
+        try:
+            element.click()
+        except ElementClickInterceptedException:
+            self.logger.debug(f"popupなどでClickができません: {element}")
+            self.chrome.execute_script("arguments[0].click();", element)
+
+        element.clear()
+        self.chrome.execute_script("arguments[0].value = arguments[1];", element, inputText)
+        self.clickWait.jsPageChecker(chrome=self.chrome)
+        return element
+
+    # ----------------------------------------------------------------------------------
     # クリックのみ
 
     def clickElement(self, value: str, by: str = "xpath"):
-        self.clickWait.canWaitClick(chrome=self.chrome, by=by, value=value, timeout=3)
+        self.clickWait.jsPageChecker(chrome=self.chrome)
         element = self.getElement(by=by, value=value)
         try:
             element.click()
@@ -210,8 +231,13 @@ class ElementManager:
             self.logger.debug(f"popupなどでClickができません: {element}")
             self.chrome.execute_script("arguments[0].click();", element)
 
+        except ElementNotInteractableException:
+            self.logger.debug(f"要素があるんだけどクリックができません: {element}")
+            self.chrome.execute_script("arguments[0].click();", element)
+
+
         self.clickWait.jsPageChecker(chrome=self.chrome)
-        return
+        return element
 
     # ----------------------------------------------------------------------------------
 

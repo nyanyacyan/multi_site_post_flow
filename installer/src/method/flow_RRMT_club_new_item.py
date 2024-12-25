@@ -87,7 +87,7 @@ class FlowRRMTClubNewItem:
             # ログイン〜処理実施まで
             self.logger.info(f'{i + 1}/{df_row_num} 目の処理 START')
 
-            self.row_process(login_info=self.login_info, sell_data=sell_data)
+            self.row_process(sell_data=sell_data)
 
             self.logger.info(f'{i + 1}/{df_row_num} 目の処理 END')
 
@@ -157,7 +157,7 @@ class FlowRRMTClubNewItem:
 # 出品ボタンをクリック
 
     def _sell_btn_click(self):
-        self.element.clickElement(value=self.sell_info['SELL_BTN'])
+        self.element.clickElement(value=self.sell_info['SELL_BTN'], wait_by=)
 
 
 # ----------------------------------------------------------------------------------

@@ -118,5 +118,5 @@ class SeleniumBasicOperations:
     # ランダムな待機
 
     def _random_sleep(self, min_num: int = 1, max_num: int = 3):
-
         time.sleep(random.uniform(min_num, max_num))
+

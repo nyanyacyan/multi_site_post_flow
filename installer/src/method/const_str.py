@@ -63,6 +63,19 @@ class ErrorComment(Enum):
 
 # ----------------------------------------------------------------------------------
 
+class SeleniumWait(Enum):
+    BY = {
+        'xpath': 'By.XPATH',
+        'id': 'By.ID',
+        'css': 'By.CSS_SELECTOR',
+        'class': 'By.CLASS_NAME',
+        'name': 'By.NAME',
+        'tag': 'By.TAG_NAME',
+        'link_text': 'By.LINK_TEXT',
+    }
+
+# ----------------------------------------------------------------------------------
+
 
 class StatusName(Enum):
     RECAPTCHA_CHECKBOX='aria-checked'

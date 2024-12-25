@@ -228,6 +228,8 @@ class ClickDeco:
     def canWaitClick(
         self, chrome: WebDriver, value: str, by: str = "xpath", timeout: int = 10
     ):
+        self.logger.debug(f'by: {by}')
+        self.logger.debug(f'value: {value}')
         if WebDriverWait(chrome, timeout).until(
             EC.element_to_be_clickable((by, value))
         ):
