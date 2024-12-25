@@ -237,7 +237,7 @@ class FlowRRMTClubNewItem:
 # TODO「ユーザーに出品を通知」に入力
 
     def _user_notify(self, sell_data: Dict, sell_info: Dict):
-        user_notify = sell_data['詳細内容']
+        user_notify = sell_data['ユーザーに出品を通知する']
         self.logger.debug(f'user_notify: {user_notify}')
         self.element.clickClearInput(by=sell_info['USER_NOTIFY_BY'], value=sell_info['USER_NOTIFY_VALUE'], inputText=user_notify)
         self.random_sleep

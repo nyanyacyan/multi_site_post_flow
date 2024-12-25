@@ -127,10 +127,10 @@ class FlowMAClubNewItem:
         # 案件説明
         self._input_game_explanation(sell_data=sell_data, sell_info=sell_info)
 
-        # TODO 買い主へ初回自動表示するメッセージ
+        # 買い主へ初回自動表示するメッセージ
         self._input_first_msg(sell_data=sell_data, sell_info=sell_info)
 
-        # TODO案件の登録を通知
+        # 案件の登録を通知
         self._user_notify(sell_data=sell_data, sell_info=sell_info)
 
         # 商品価格
@@ -240,6 +240,8 @@ class FlowMAClubNewItem:
 
     def _input_first_msg(self, sell_data: Dict, sell_info: Dict):
         input_first_msg = sell_data['初回メッセージ']
+        if not input_first_msg:
+            self.logger.warning(f'「買い手への初回msg」入力なし: {input_first_msg}')
         self.logger.debug(f'input_first_msg: {input_first_msg}')
         self.element.clickClearInput(by=sell_info['FIRST_MSG_BY'], value=sell_info['FIRST_MSG_VALUE'], inputText=input_first_msg)
         self.random_sleep
@@ -249,7 +251,9 @@ class FlowMAClubNewItem:
 # 案件の登録を通知
 
     def _user_notify(self, sell_data: Dict, sell_info: Dict):
-        input_sell_notify = sell_data['出品を通知']
+        input_sell_notify = sell_data['案件の登録を通知']
+        if not input_sell_notify:
+            self.logger.warning(f'「案件の登録を通知」入力なし: {input_sell_notify}')
         self.logger.debug(f'input_sell_notify: {input_sell_notify}')
         self.element.clickClearInput(value=sell_info['USER_NOTIFY'], inputText=input_sell_notify)
         self.random_sleep

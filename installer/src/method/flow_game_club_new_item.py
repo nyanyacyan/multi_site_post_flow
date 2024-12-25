@@ -241,30 +241,36 @@ class FlowGameClubNewItem:
 
 
 # ----------------------------------------------------------------------------------
-# TODO課金総額
+# 課金総額
 
     def _input_charge(self, sell_data: Dict, sell_info: Dict):
         input_charge = sell_data['課金総額']
+        if not input_charge:
+            self.logger.warning(f'「課金総額」入力なし: {input_charge}')
         self.logger.debug(f'input_game_explanation: {input_charge}')
         self.element.clickClearInput(value=sell_info['CHARGE_VALUE'], inputText=input_charge)
         self.random_sleep
 
 
 # ----------------------------------------------------------------------------------
-# TODO買い手への初回msg
+# 買い手へ初回自動表示するメッセージ
 
     def _input_first_msg(self, sell_data: Dict, sell_info: Dict):
-        input_first_msg = sell_data['初回メッセージ']
+        input_first_msg = sell_data['買い手へ初回自動表示するメッセージ']
+        if not input_first_msg:
+            self.logger.warning(f'「買い手へ初回自動表示するメッセージ」入力なし: {input_first_msg}')
         self.logger.debug(f'input_first_msg: {input_first_msg}')
         self.element.clickClearInput(by=sell_info['FIRST_MSG_BY'], value=sell_info['FIRST_MSG_VALUE'], inputText=input_first_msg)
         self.random_sleep
 
 
 # ----------------------------------------------------------------------------------
-# TODO出品を通知
+# 出品を通知
 
     def _user_notify(self, sell_data: Dict, sell_info: Dict):
         input_sell_notify = sell_data['出品を通知']
+        if not input_sell_notify:
+            self.logger.warning(f'「出品を通知」入力なし: {input_sell_notify}')
         self.logger.debug(f'input_sell_notify: {input_sell_notify}')
         self.element.clickClearInput(value=sell_info['USER_NOTIFY'], inputText=input_sell_notify)
         self.random_sleep
