@@ -195,6 +195,7 @@ class ElementManager:
         element.clear()
         element.send_keys(inputText)
         self.clickWait.jsPageChecker(chrome=self.chrome)
+        return element
 
     # ----------------------------------------------------------------------------------
     # クリックのみ
@@ -375,6 +376,10 @@ class ElementManager:
 
 
 # ----------------------------------------------------------------------------------
+
+
+    def _push_enter_key(self):
+        self.getElement()
 
 
 # ----------------------------------------------------------------------------------

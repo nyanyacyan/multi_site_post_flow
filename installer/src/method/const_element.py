@@ -168,35 +168,58 @@ class SellInfo(Enum):
 
     RRMT_CLUB = {
         'INPUT_PHOTO_FOLDER_NAME': '03_RRMT_CLUB',
+
+        # 売りたいをクリック
         'SELL_BTN': "//a[@href='/deals/add']",
         'SELL_SELECT_BTN': "//label[text()='売りたい']",
+
+        # タイトル入力
         'SELL_TITLE_INPUT_BY': 'id',
         'SELL_TITLE_INPUT_VALUE': 'suggest_title',
 
+        # 代行
+        'CATEGORY_ACCOUNT_SELECT_VALUE': "//div[@id='deal_account_list']/input[@value='1']",
+        'CATEGORY_ITEM_SELECT_VALUE': "//div[@id='deal_account_list']/input[@value='2']",
+        'CATEGORY_DAIKO_SELECT_VALUE': "//div[@id='deal_account_list']/input[@value='4']",
+
+        # 掲載タイトル
+        'COMMENT_TITLE_BY': 'id',
+        'COMMENT_TITLE_VALUE': 'DealDealTitle',
+
+        # タグ
+        'TAG_BY': 'id',
+        'TAG_VALUE': 'DealTag',
+
+        # 詳細内容
+        'SELL_EXPLANATION_INPUT_BY': 'id',
+        'SELL_EXPLANATION_INPUT_VALUE': 'DealInfo',
+
+        # 画像取り込み
         'FILE_INPUT_BY': 'id',
-        'FILE_INPUT_VALUE': 'item-images',
-        
+        'FILE_INPUT_VALUE': 'upload_file_input_section0',
+        # DOMで確認する箇所
         'CHECK_BY': 'css',
         'CHECK_VALUE': '#sortableArea .upimages-item',
-        'GAME_TITLE_CLICK_VALUE': '//*[@id="btn-search-title"]',
-        'GAME_TITLE_INPUT_VALUE': '//*[@id="search-title-input"]',
-        'GAME_TITLE_SELECT_VALUE': '//div[contains(@data-item, \'"name":"{}"\')]',
-        'CATEGORY_JYOTO_SELECT_VALUE': '//*[@id="account-type-id-10"]',
-        'CATEGORY_OTHER_SELECT_VALUE': '//*[@id="account-type-id-30"]',
-        # 'CATEGORY_DAIKO_SELECT_VALUE': '//*[@id="account-type-id-40"]',
 
-        'SELL_EXPLANATION_INPUT_BY': 'id',
-        'SELL_EXPLANATION_INPUT_VALUE': 'input-body-text',
-        # 'CHARGE_VALUE': '//input[@name="subcategory_unique_property_1_value"]',
-        'FIRST_MSG_BY': 'id',
-        'FIRST_MSG_VALUE': 'firstchat',
-        'SELL_METHOD_FURIMA_VALUE': '//input[@id="productType1"]',
-        'SELL_METHOD_TIME_SALE_VALUE': '//input[@id="productType3"]',
+        # ユーザーに出品を通知
+        'USER_NOTIFY_BY': 'id',
+        'USER_NOTIFY_VALUE': 'DealUserName',
+
+        # 取引価格
+        'PRICE_BY': 'id',
         'PRICE_VALUE': '//input[@name="price"]',
-        'CHECK_VALUE': '//button[@id="btn-confirm"]',
-        'SELL_BTN': '//button[@id="btn-add"]',
-        'POPUP_DELETE_BTN_VALUE': '//div[@class="btn-modal-close"]',
-        'MY_PAGE_VALUE': '//div[@class="header-top-btns"]/a[@class="icon-user"]',
+
+        # 確認ボタン
+        'CHECK_VALUE': "//input[@type='submit' and @value='確認']",
+
+        # 同意するにクリック
+        'AGREE_VALUE': "//input[@type='checkbox' and @name='data[Deal][agreement]']",
+
+        # 出品する
+        'SELL_BTN': "//button[@type='submit' and contains(text(), '出品する')]",
+
+        # マイページに戻る
+        'MY_PAGE_VALUE': "//a[@class='btn_mypage fade' and text()='マイページ']",
         '': '',
     }
 
