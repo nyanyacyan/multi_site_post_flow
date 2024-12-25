@@ -107,64 +107,137 @@ class LoginInfo(Enum):
 class SellInfo(Enum):
 
     GAME_CLUB = {
-        'SELL_BTN': "//a[@href='/mypage/products/add']",
         'INPUT_PHOTO_FOLDER_NAME': '01_GAME_CLUB',
+
+        # 出品するをクリック
+        'SELL_BTN': "//a[@href='/mypage/products/add']",
+
+        # 画像を添付
         'FILE_INPUT_BY': 'id',
         'FILE_INPUT_VALUE': 'item-images',
+        # DOMの確認
         'CHECK_BY': 'css',
         'CHECK_VALUE': '#sortableArea .upimages-item',
-        'GAME_TITLE_CLICK_VALUE': '//*[@id="btn-search-title"]',
-        'GAME_TITLE_INPUT_VALUE': '//*[@id="search-title-input"]',
+
+        # ゲームタイトル入力
+        'GAME_TITLE_CLICK_BY': 'id',
+        'GAME_TITLE_CLICK_VALUE': "btn-search-title",
+
+        # POPUPにゲームタイトルを入力
+        'GAME_TITLE_INPUT_BY': 'id',
+        'GAME_TITLE_INPUT_VALUE': "search-title-input",
+
+        # POPUPにゲームタイトルをクリック
         'GAME_TITLE_SELECT_VALUE': '//div[contains(@data-item, \'"name":"{}"\')]',
+
+        # カテゴリ選択
         'CATEGORY_INTAI_SELECT_VALUE': '//*[@id="account-type-id-10"]',
+        'CATEGORY_RISEMARA_SELECT_VALUE': '//*[@id="account-type-id-20"]',
         'CATEGORY_ITEM_SELECT_VALUE': '//*[@id="account-type-id-30"]',
         'CATEGORY_DAIKO_SELECT_VALUE': '//*[@id="account-type-id-40"]',
+
+        # 出品タイトル
         'SELL_TITLE_INPUT_BY': 'id',
         'SELL_TITLE_INPUT_VALUE': 'name',
+
+        # 商品説明
         'SELL_EXPLANATION_INPUT_BY': 'id',
         'SELL_EXPLANATION_INPUT_VALUE': 'input-body-text',
+
+        # 課金総額
         'CHARGE_VALUE': '//input[@name="subcategory_unique_property_1_value"]',
+
+        # 買い手への初回msg
         'FIRST_MSG_BY': 'id',
         'FIRST_MSG_VALUE': 'firstchat',
+
+        # 出品を通知
+        'USER_NOTIFY': "//input[@type='text' and @name='notify_user_id']",
+
+        # 出品方法
         'SELL_METHOD_FURIMA_VALUE': '//input[@id="productType1"]',
         'SELL_METHOD_TIME_SALE_VALUE': '//input[@id="productType3"]',
+
+        # 商品価格
         'PRICE_VALUE': '//input[@name="price"]',
+
+        # 確認する
         'CHECK_VALUE': '//button[@id="btn-confirm"]',
+
+        # 出品する
         'SELL_BTN': '//button[@id="btn-add"]',
+
+        # POPUPを消去
         'POPUP_DELETE_BTN_VALUE': '//div[@class="btn-modal-close"]',
+
+        # マイページに戻る
         'MY_PAGE_VALUE': '//div[@class="header-top-btns"]/a[@class="icon-user"]',
-        '': '',
     }
 
+##########
+
     MA_CLUB = {
-        'SELL_BTN': "//a[@href='/mypage/products/add']",
         'INPUT_PHOTO_FOLDER_NAME': '02_MA_CLUB',
+
+        # 出品する
+        'SELL_BTN': "//a[@href='/mypage/products/add']",
+
+        # 画像添付
         'FILE_INPUT_BY': 'id',
         'FILE_INPUT_VALUE': 'item-images',
+        # DOM確認
         'CHECK_BY': 'css',
         'CHECK_VALUE': '#sortableArea .upimages-item',
-        'GAME_TITLE_CLICK_VALUE': '//*[@id="btn-search-title"]',
-        'GAME_TITLE_INPUT_VALUE': '//*[@id="search-title-input"]',
-        'GAME_TITLE_SELECT_VALUE': '//div[contains(@data-item, \'"name":"{}"\')]',
+
+        # 案件カテゴリーをクリック
+        'CASE_TITLE_CLICK_BY': 'id',
+        'CASE_TITLE_CLICK_VALUE': 'btn-search-title',
+
+        # POPUPに入力
+        'CASE_TITLE_INPUT_BY': 'id',
+        'CASE_TITLE_INPUT_VALUE': 'search-title-input',
+
+        # POPUPから選択
+        'CASE_TITLE_SELECT_VALUE': '//div[contains(@data-item, \'"name":"{}"\')]',
+
+        # 種別を選択
         'CATEGORY_JYOTO_SELECT_VALUE': '//*[@id="account-type-id-10"]',
+        'CATEGORY_SELL_SELECT_VALUE': '//*[@id="account-type-id-20"]',
         'CATEGORY_OTHER_SELECT_VALUE': '//*[@id="account-type-id-30"]',
-        # 'CATEGORY_DAIKO_SELECT_VALUE': '//*[@id="account-type-id-40"]',
+        'CATEGORY_UNYODAIKO_SELECT_VALUE': '//*[@id="account-type-id-40"]',
+
+        # 案件タイトル
         'SELL_TITLE_INPUT_BY': 'id',
         'SELL_TITLE_INPUT_VALUE': 'name',
+
+        # 案件説明
         'SELL_EXPLANATION_INPUT_BY': 'id',
         'SELL_EXPLANATION_INPUT_VALUE': 'input-body-text',
-        # 'CHARGE_VALUE': '//input[@name="subcategory_unique_property_1_value"]',
+
+        # 買い手への初回msg
         'FIRST_MSG_BY': 'id',
         'FIRST_MSG_VALUE': 'firstchat',
-        'SELL_METHOD_FURIMA_VALUE': '//input[@id="productType1"]',
-        'SELL_METHOD_TIME_SALE_VALUE': '//input[@id="productType3"]',
+
+        # 案件の登録を通知
+        'USER_NOTIFY': "//input[@type='text' and @name='notify_user_id']",
+
+        # 売却価格
         'PRICE_VALUE': '//input[@name="price"]',
+
+        # 確認する
         'CHECK_VALUE': '//button[@id="btn-confirm"]',
+
+        # 出品する
         'SELL_BTN': '//button[@id="btn-add"]',
+
+        # POPUPを削除
         'POPUP_DELETE_BTN_VALUE': '//div[@class="btn-modal-close"]',
+
+        # マイページに戻る
         'MY_PAGE_VALUE': '//div[@class="header-top-btns"]/a[@class="icon-user"]',
-        '': '',
     }
+
+##########
 
     RRMT_CLUB = {
         'INPUT_PHOTO_FOLDER_NAME': '03_RRMT_CLUB',
@@ -180,6 +253,7 @@ class SellInfo(Enum):
         # 代行
         'CATEGORY_ACCOUNT_SELECT_VALUE': "//div[@id='deal_account_list']/input[@value='1']",
         'CATEGORY_ITEM_SELECT_VALUE': "//div[@id='deal_account_list']/input[@value='2']",
+        'CATEGORY_RISEMARA_SELECT_VALUE': "//div[@id='deal_account_list']/input[@value='3']",
         'CATEGORY_DAIKO_SELECT_VALUE': "//div[@id='deal_account_list']/input[@value='4']",
 
         # 掲載タイトル

@@ -129,17 +129,17 @@ class FlowRRMTClubNewItem:
         # 画像添付
         self._photo_files_input(sell_data, sell_info)
 
-        # TODOユーザーに出品を通知する →条件分岐させる
+        # ユーザーに出品を通知する →条件分岐させる
         self._user_notify(sell_data=sell_data, sell_info=sell_info)
 
         # 商品価格
         self._input_price(sell_data=sell_data, sell_info=sell_info)
 
-        # 同意するにレ点
-        self._click_agree(sell_info=sell_info)
-
         # 確認するをクリック
         self._click_check(sell_info=sell_info)
+
+        # 同意するにレ点
+        self._click_agree(sell_info=sell_info)
 
         # 出品するをクリック
         self._sell_btn_click(sell_info=sell_info)
@@ -164,7 +164,7 @@ class FlowRRMTClubNewItem:
 
 # ----------------------------------------------------------------------------------
 # ゲームタイトル入力
-# TODO EnterKeyが必要かも→アカウント種別などが変わる
+# EnterKeyが必要かも→アカウント種別などが変わる
 
     def _input_game_title(self, sell_data: Dict, sell_info: Dict):
         input_game_title = sell_data['ゲームタイトル']
@@ -177,21 +177,22 @@ class FlowRRMTClubNewItem:
 # カテゴリ選択
 
     def _category_select(self, sell_data: Dict, sell_info: Dict):
-        if sell_data['カテゴリ'] == 'アカウント':
-            element = self.element.clickElement(value=sell_info['CATEGORY_ACCOUNT_SELECT_VALUE'])
-            self.logger.debug(f'「アカウント」を選択: {element}')
-            self.random_sleep
-        elif sell_data['カテゴリ'] == 'アイテム・通貨':
+        if sell_data['カテゴリ'] == 'アイテム・通貨':
             element = self.element.clickElement(value=sell_info['CATEGORY_ITEM_SELECT_VALUE'])
             self.logger.debug(f'「アイテム・通貨」を選択: {element}')
+            self.random_sleep
+        elif sell_data['カテゴリ'] == 'リセマラ':
+            element = self.element.clickElement(value=sell_info['CATEGORY_ITEM_SELECT_VALUE'])
+            self.logger.debug(f'「リセマラ」を選択: {element}')
             self.random_sleep
         elif sell_data['カテゴリ'] == '代行':
             element = self.element.clickElement(value=sell_info['CATEGORY_DAIKO_SELECT_VALUE'])
             self.logger.debug(f'「代行」を選択: {element}')
             self.random_sleep
-
-
-        # TODO ない場合の例外処理を作成する
+        else:
+            element = self.element.clickElement(value=sell_info['CATEGORY_ACCOUNT_SELECT_VALUE'])
+            self.logger.debug(f'「アカウント」を選択: {element}')
+            self.random_sleep
 
 
 # ----------------------------------------------------------------------------------
@@ -205,7 +206,7 @@ class FlowRRMTClubNewItem:
 
 
 # ----------------------------------------------------------------------------------
-# タグ欄への入力
+# TODOタグ欄への入力
 
     def _input_tag(self, sell_data: Dict, sell_info: Dict):
         input_tag = sell_data['タグ']
@@ -233,7 +234,7 @@ class FlowRRMTClubNewItem:
 
 
 # ----------------------------------------------------------------------------------
-# 「ユーザーに出品を通知」に入力
+# TODO「ユーザーに出品を通知」に入力
 
     def _user_notify(self, sell_data: Dict, sell_info: Dict):
         user_notify = sell_data['詳細内容']
@@ -253,18 +254,18 @@ class FlowRRMTClubNewItem:
 
 
 # ----------------------------------------------------------------------------------
-# 「同意する」にレ点
-
-    def _click_agree(self, sell_info: Dict):
-        self.element.clickElement(value=sell_info['AGREE_VALUE'])
-        self.random_sleep
-
-
-# ----------------------------------------------------------------------------------
 # 確認するをクリック
 
     def _click_check(self, sell_info: Dict):
         self.element.clickElement(value=sell_info['CHECK_VALUE'])
+        self.random_sleep
+
+
+# ----------------------------------------------------------------------------------
+# 「同意する」にレ点
+
+    def _click_agree(self, sell_info: Dict):
+        self.element.clickElement(value=sell_info['AGREE_VALUE'])
         self.random_sleep
 
 

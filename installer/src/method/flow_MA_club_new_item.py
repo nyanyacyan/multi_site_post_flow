@@ -115,6 +115,9 @@ class FlowMAClubNewItem:
         # POPUPタイトル入力
         self._popup_title_input(sell_info=sell_info)
 
+        # タイトルを選択
+        self._game_title_select(sell_data=sell_data, sell_info=sell_info)
+
         # 種別を選択
         self._category_select(sell_data=sell_data, sell_info=sell_info)
 
@@ -124,14 +127,11 @@ class FlowMAClubNewItem:
         # 案件説明
         self._input_game_explanation(sell_data=sell_data, sell_info=sell_info)
 
-        # 課金総額
-        # self._input_charge(sell_data=sell_data, sell_info=sell_info)
-
-        # 買い手への初回msg
+        # TODO 買い主へ初回自動表示するメッセージ
         self._input_first_msg(sell_data=sell_data, sell_info=sell_info)
 
-        # 案件の登録を通知
-        # self._input_sell_notify(sell_data=sell_data, sell_info=sell_info)
+        # TODO案件の登録を通知
+        self._user_notify(sell_data=sell_data, sell_info=sell_info)
 
         # 商品価格
         self._input_price(sell_data=sell_data, sell_info=sell_info)
@@ -165,11 +165,10 @@ class FlowMAClubNewItem:
 
 
 # ----------------------------------------------------------------------------------
-# ゲームタイトルクリック
+# 案件カテゴリーをクリック
 
     def _title_click(self, sell_info: Dict):
-
-        self.element.clickElement(value=sell_info['TITLE_CLICK_VALUE'])
+        self.element.clickElement(by=sell_info['CASE_TITLE_CLICK_BY'], value=sell_info['CASE_TITLE_CLICK_VALUE'])
         self.random_sleep
 
 
@@ -177,20 +176,20 @@ class FlowMAClubNewItem:
 # POPUPに案件タイトル入力
 
     def _popup_title_input(self, sell_data: Dict, sell_info: Dict):
-        input_game_title = sell_data['案件タイトル']
-        self.logger.debug(f'input_game_title: {input_game_title}')
-        self.element.clickClearInput(value=sell_info['GAME_TITLE_INPUT_VALUE'], inputText=input_game_title)
+        input_case_title = sell_data['案件タイトル']
+        self.logger.debug(f'input_case_title: {input_case_title}')
+        self.element.clickClearInput(by=sell_info['CASE_TITLE_INPUT_BY'], value=sell_info['CASE_TITLE_INPUT_VALUE'], inputText=input_case_title)
         self.random_sleep
 
 
 # ----------------------------------------------------------------------------------
 # 案件タイトルを選択
 
-    def _game_title_select(self, sell_data: Dict, sell_info: Dict):
-        game_title = sell_data['案件タイトル']
-        game_title_path = sell_info['GAME_TITLE_SELECT_VALUE'].format(game_title)
-        self.logger.debug(f'game_title_path: {game_title_path}')
-        self.element.clickElement(value=game_title_path)
+    def _case_title_select(self, sell_data: Dict, sell_info: Dict):
+        case_title = sell_data['案件タイトル']
+        case_title_path = sell_info['CASE_TITLE_SELECT_VALUE'].format(case_title)
+        self.logger.debug(f'case_title_path: {case_title_path}')
+        self.element.clickElement(value=case_title_path)
         self.random_sleep
 
 
@@ -198,11 +197,18 @@ class FlowMAClubNewItem:
 # カテゴリ選択
 
     def _category_select(self, sell_data: Dict, sell_info: Dict):
-        if sell_data['カテゴリ'] == 'その他':
+        if sell_data['カテゴリ'] == 'サイト売買・サービス譲渡':
+            element = self.element.clickElement(value=sell_info['CATEGORY_SELL_SELECT_VALUE'])
+            self.logger.debug(f'「サイト売買・サービス譲渡」を選択: {element}')
+            self.random_sleep
+        elif sell_data['カテゴリ'] == 'その他':
             element = self.element.clickElement(value=sell_info['CATEGORY_OTHER_SELECT_VALUE'])
             self.logger.debug(f'「その他」を選択: {element}')
             self.random_sleep
-
+        elif sell_data['カテゴリ'] == '運用代行':
+            element = self.element.clickElement(value=sell_info['CATEGORY_ITEM_SELECT_VALUE'])
+            self.logger.debug(f'「運用代行」を選択: {element}')
+            self.random_sleep
         else:
             element = self.element.clickElement(value=sell_info['CATEGORY_JYOTO_SELECT_VALUE'])
             self.logger.debug(f'「アカウント譲渡」を選択: {element}')
@@ -210,7 +216,7 @@ class FlowMAClubNewItem:
 
 
 # ----------------------------------------------------------------------------------
-# 出品タイトル
+# 案件タイトル
 
     def _input_sell_title(self, sell_data: Dict, sell_info: Dict):
         input_sell_title = sell_data['出品タイトル']
@@ -220,23 +226,12 @@ class FlowMAClubNewItem:
 
 
 # ----------------------------------------------------------------------------------
-# 商品説明
+# 案件説明
 
     def _input_game_explanation(self, sell_data: Dict, sell_info: Dict):
         input_game_explanation = sell_data['商品説明']
         self.logger.debug(f'input_game_explanation: {input_game_explanation}')
         self.element.clickClearInput(by=sell_info['SELL_EXPLANATION_INPUT_BY'], value=sell_info['SELL_EXPLANATION_INPUT_VALUE'], inputText=input_game_explanation)
-        self.random_sleep
-
-
-# ----------------------------------------------------------------------------------
-# 課金総額
-#! 使わない
-
-    def _input_charge(self, sell_data: Dict, sell_info: Dict):
-        input_charge = sell_data['課金総額']
-        self.logger.debug(f'input_game_explanation: {input_charge}')
-        self.element.clickClearInput(value=sell_info['CHARGE_VALUE'], inputText=input_charge)
         self.random_sleep
 
 
@@ -253,24 +248,10 @@ class FlowMAClubNewItem:
 # ----------------------------------------------------------------------------------
 # 案件の登録を通知
 
-    def _input_sell_notify(self, sell_data: Dict, sell_info: Dict):
+    def _user_notify(self, sell_data: Dict, sell_info: Dict):
         input_sell_notify = sell_data['出品を通知']
         self.logger.debug(f'input_sell_notify: {input_sell_notify}')
-        self.element.clickClearInput(value=sell_info['CHARGE_VALUE'], inputText=input_sell_notify)
-        self.random_sleep
-
-
-# ----------------------------------------------------------------------------------
-# 出品方法
-#! 使わない
-
-    def _select_sell_method(self, sell_data: Dict, sell_info: Dict):
-        select_sell_method = sell_data['出品方法']
-        # TODO 出品方法から得た値を受け取って選択する
-        if select_sell_method == 'タイムセール':
-            self.element.clickElement(value=sell_info['SELL_METHOD_TIME_SALE_VALUE'])
-        else:
-            self.element.clickElement(value=sell_info['SELL_METHOD_FURIMA_VALUE'])
+        self.element.clickClearInput(value=sell_info['USER_NOTIFY'], inputText=input_sell_notify)
         self.random_sleep
 
 
