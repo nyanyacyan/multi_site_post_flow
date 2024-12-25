@@ -46,6 +46,7 @@ class FlowGameClubNewItem:
         # ランダム待機
         self.random_sleep = self.random_sleep._random_sleep()
 
+        # 必要info
         self.gss_info = GssInfo.GAME_CLUB.value
         self.login_info = LoginInfo.SITE_PATTERNS.value['GAME_CLUB']
         self.sell_info = SellInfo.GAME_CLUB.value
