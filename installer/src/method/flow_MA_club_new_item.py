@@ -242,6 +242,8 @@ class FlowMAClubNewItem:
         input_first_msg = sell_data['初回メッセージ']
         if not input_first_msg:
             self.logger.warning(f'「買い手への初回msg」入力なし: {input_first_msg}')
+            return
+
         self.logger.debug(f'input_first_msg: {input_first_msg}')
         self.element.clickClearInput(by=sell_info['FIRST_MSG_BY'], value=sell_info['FIRST_MSG_VALUE'], inputText=input_first_msg)
         self.random_sleep
@@ -254,6 +256,8 @@ class FlowMAClubNewItem:
         input_sell_notify = sell_data['案件の登録を通知']
         if not input_sell_notify:
             self.logger.warning(f'「案件の登録を通知」入力なし: {input_sell_notify}')
+            return
+
         self.logger.debug(f'input_sell_notify: {input_sell_notify}')
         self.element.clickClearInput(value=sell_info['USER_NOTIFY'], inputText=input_sell_notify)
         self.random_sleep

@@ -259,6 +259,8 @@ class FlowGameClubNewItem:
         input_first_msg = sell_data['買い手へ初回自動表示するメッセージ']
         if not input_first_msg:
             self.logger.warning(f'「買い手へ初回自動表示するメッセージ」入力なし: {input_first_msg}')
+            return
+
         self.logger.debug(f'input_first_msg: {input_first_msg}')
         self.element.clickClearInput(by=sell_info['FIRST_MSG_BY'], value=sell_info['FIRST_MSG_VALUE'], inputText=input_first_msg)
         self.random_sleep
@@ -271,6 +273,8 @@ class FlowGameClubNewItem:
         input_sell_notify = sell_data['出品を通知']
         if not input_sell_notify:
             self.logger.warning(f'「出品を通知」入力なし: {input_sell_notify}')
+            return
+
         self.logger.debug(f'input_sell_notify: {input_sell_notify}')
         self.element.clickClearInput(value=sell_info['USER_NOTIFY'], inputText=input_sell_notify)
         self.random_sleep
@@ -281,10 +285,11 @@ class FlowGameClubNewItem:
 
     def _select_sell_method(self, sell_data: Dict, sell_info: Dict):
         select_sell_method = sell_data['出品方法']
-        # TODO 出品方法から得た値を受け取って選択する
         if select_sell_method == 'タイムセール':
+            self.logger.info(f'「タイムセール」選択: {select_sell_method}')
             self.element.clickElement(value=sell_info['SELL_METHOD_TIME_SALE_VALUE'])
         else:
+            self.logger.info(f'「フリマ販売」選択: {select_sell_method}')
             self.element.clickElement(value=sell_info['SELL_METHOD_FURIMA_VALUE'])
         self.random_sleep
 

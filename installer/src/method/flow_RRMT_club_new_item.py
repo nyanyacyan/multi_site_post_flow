@@ -206,10 +206,14 @@ class FlowRRMTClubNewItem:
 
 
 # ----------------------------------------------------------------------------------
-# TODOタグ欄への入力
+# タグ欄への入力
 
     def _input_tag(self, sell_data: Dict, sell_info: Dict):
         input_tag = sell_data['タグ']
+        if not input_tag:
+            self.logger.warning(f'「タグ」入力なし: {input_tag}')
+            return
+
         self.logger.debug(f'input_tag: {input_tag}')
         self.element.clickClearInput(by=sell_info['TAG_BY'], value=sell_info['TAG_VALUE'], inputText=input_tag)
         self.random_sleep
@@ -234,10 +238,14 @@ class FlowRRMTClubNewItem:
 
 
 # ----------------------------------------------------------------------------------
-# TODO「ユーザーに出品を通知」に入力
+# 「ユーザーに出品を通知」に入力
 
     def _user_notify(self, sell_data: Dict, sell_info: Dict):
         user_notify = sell_data['ユーザーに出品を通知する']
+        if not user_notify:
+            self.logger.warning(f'「ユーザーに出品を通知する」入力なし: {user_notify}')
+            return
+
         self.logger.debug(f'user_notify: {user_notify}')
         self.element.clickClearInput(by=sell_info['USER_NOTIFY_BY'], value=sell_info['USER_NOTIFY_VALUE'], inputText=user_notify)
         self.random_sleep
