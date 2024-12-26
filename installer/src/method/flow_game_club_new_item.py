@@ -68,24 +68,18 @@ class FlowGameClubNewItem:
 
         # 各行に対して処理を行う
         for i, row in process_df.iterrows():
-            self.logger.info(f'{i + 1}/{df_row_num} 目の処理 開始')
-
             # rowの情報を辞書化
             sell_data = row.to_dict()
             self.logger.debug(f'sell_data: {sell_data}')
-
             self.logger.info(f"{i + 1}/{df_row_num} タイトル: {sell_data['ゲームタイトル']}")
             self.logger.info(f"{i + 1}/{df_row_num} タイトル: {sell_data['出品タイトル']}")
             self.logger.info(f"{i + 1}/{df_row_num} タイトル: {sell_data['商品説明']}")
             self.logger.info(f"{i + 1}/{df_row_num} タイトル: {sell_data['商品価格']}")
-
+            self.logger.info(f'{i + 1}/{df_row_num} 処理開始')
 
             # ログイン〜処理実施まで
-            self.logger.info(f'{i + 1}/{df_row_num} 目の処理 START')
-
             self.row_process(index=i, sell_data=sell_data)
-
-            self.logger.info(f'{i + 1}/{df_row_num} 目の処理 END')
+            self.logger.info(f'{i + 1}/{df_row_num} 処理完了')
 
         self.logger.info(f"{self.login_info['SITE_NAME']}すべての処理完了")
 
@@ -100,9 +94,8 @@ class FlowGameClubNewItem:
             # IDログイン
             self.login.flowLoginID(login_info=self.login_info, timeout=120)
         else:
-            self.jump_target_page.flowJumpTargetPage(
-                targetUrl=self.login_info['HOME_URL']
-            )
+            # Sessionを維持したままログインの手順を端折る
+            self.jump_target_page.flowJumpTargetPage(targetUrl=self.login_info['HOME_URL'])
 
         # 出品処理
         self.sell_process(sell_data=sell_data)
@@ -157,12 +150,6 @@ class FlowGameClubNewItem:
 
         # 出品するをクリック
         self._click_end_sell_btn()
-
-        # POPを消す
-        # self._delete_popup_click()
-
-        # マイページへ戻る
-        # self._my_page_click()
 
 
 # ----------------------------------------------------------------------------------
@@ -245,6 +232,7 @@ class FlowGameClubNewItem:
 
 # ----------------------------------------------------------------------------------
 # 商品説明
+
     @deco.funcBase
     def _input_game_explanation(self, sell_data: Dict):
         input_game_explanation = sell_data['商品説明']
@@ -267,6 +255,7 @@ class FlowGameClubNewItem:
 
 # ----------------------------------------------------------------------------------
 # 買い手へ初回自動表示するメッセージ
+
     @deco.funcBase
     def _input_first_msg(self, sell_data: Dict):
         input_first_msg = sell_data['買い手へ初回自動表示するメッセージ']
@@ -281,6 +270,7 @@ class FlowGameClubNewItem:
 
 # ----------------------------------------------------------------------------------
 # 出品を通知
+
     @deco.funcBase
     def _user_notify(self, sell_data: Dict):
         input_sell_notify = sell_data['出品を通知']
@@ -295,6 +285,7 @@ class FlowGameClubNewItem:
 
 # ----------------------------------------------------------------------------------
 # 出品方法
+
     @deco.funcBase
     def _select_sell_method(self, sell_data: Dict):
         select_sell_method = sell_data['出品方法']
@@ -309,6 +300,7 @@ class FlowGameClubNewItem:
 
 # ----------------------------------------------------------------------------------
 # 商品価格
+
     @deco.funcBase
     def _input_price(self, sell_data: Dict):
         input_price = sell_data['商品価格']
@@ -319,6 +311,7 @@ class FlowGameClubNewItem:
 
 # ----------------------------------------------------------------------------------
 # 確認するをクリック
+
     @deco.funcBase
     def _check_click(self):
         self.element.clickElement(value=self.sell_info['CHECK_VALUE'])
@@ -334,32 +327,10 @@ class FlowGameClubNewItem:
 
 
 # ----------------------------------------------------------------------------------
-# POPを消す
-    @deco.funcBase
-    def _delete_popup_click(self):
-        self.element.clickElement(value=self.sell_info['POPUP_DELETE_BTN_VALUE'])
-        self._random_sleep()
-
-
-# ----------------------------------------------------------------------------------
-# マイページへ戻る
-
-    def _my_page_click(self):
-        self.element.clickElement(value=self.sell_info['MY_PAGE_VALUE'])
-        self._random_sleep()
-
-
-# ----------------------------------------------------------------------------------
 # ランダムSleep
 
     def _random_sleep(self, min_num: int = 1, max_num: int = 3):
         self.random_sleep._random_sleep(min_num=min_num, max_num=max_num)
-
-
-# ----------------------------------------------------------------------------------
-# 別ページでサイトを開く→Cookieを維持したままログイン
-
-
 
 
 # ----------------------------------------------------------------------------------

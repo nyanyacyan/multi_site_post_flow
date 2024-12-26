@@ -200,7 +200,8 @@ class SellInfo(Enum):
         'CASE_TITLE_INPUT_VALUE': 'search-title-input',
 
         # POPUPから選択
-        'CASE_TITLE_SELECT_VALUE': '//div[contains(@data-item, \'"name":"{}"\')]',
+        'CASE_TITLE_SELECT_BY': 'css',
+        'CASE_TITLE_SELECT_VALUE': 'div.syllabary-list > div.item',
 
         # 種別を選択
         'CATEGORY_JYOTO_SELECT_VALUE': '//*[@id="account-type-id-10"]',
