@@ -182,7 +182,8 @@ class SellInfo(Enum):
         'INPUT_PHOTO_FOLDER_NAME': '02_MA_CLUB',
 
         # 出品する
-        'SELL_BTN': "//a[@href='/mypage/products/add']",
+        'FIRST_SELL_BTN_BY': "xpath",
+        'FIRST_SELL_BTN_VALUE': '//a[contains(@class, "btm-add")]',
 
         # 画像添付
         'FILE_INPUT_BY': 'id',

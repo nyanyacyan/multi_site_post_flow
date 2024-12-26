@@ -7,7 +7,7 @@
 # import
 import asyncio
 from typing import Dict
-
+from selenium.webdriver.common.keys import Keys
 
 # 自作モジュール
 from base.utils import Logger
@@ -18,6 +18,7 @@ from base.spreadsheetRead import GetDataGSSAPI
 from base.elementManager import ElementManager
 from base.decorators import Decorators
 from base.jumpTargetPage import JumpTargetPage
+from selenium.common.exceptions import NoSuchElementException
 
 # const
 from const_element import LoginInfo, GssInfo, SellInfo
@@ -38,16 +39,12 @@ class FlowMAClubNewItem:
         self.chromeManager = ChromeManager()
         self.chrome = self.chromeManager.flowSetupChrome()
 
-
         # インスタンス
         self.login = SingleSiteIDLogin(chrome=self.chrome, )
         self.random_sleep = SeleniumBasicOperations(chrome=self.chrome, )
         self.gss_read = GetDataGSSAPI()
         self.element = ElementManager(chrome=self.chrome, )
         self.jump_target_page = JumpTargetPage(chrome=self.chrome)
-
-        # ランダム待機
-        self.random_sleep = self.random_sleep._random_sleep()
 
         # 必要info
         self.gss_info = GssInfo.MA_CLUB.value
@@ -64,7 +61,7 @@ class FlowMAClubNewItem:
         df = self.gss_read.getDataFrameFromGss(gss_info=self.gss_info)
 
         # dfの中からチェックがあるものだけ抽出
-        process_df = df[df['チェック'] == 'TRUE']
+        process_df = df[df['チェック'] == 'TRUE'].reset_index(drop=True)
         df_row_num = len(process_df)
         df_columns = process_df.shape[1]
         self.logger.debug(process_df.head)
@@ -75,10 +72,10 @@ class FlowMAClubNewItem:
             # rowの情報を辞書化
             sell_data = row.to_dict()
             self.logger.debug(f'sell_data: {sell_data}')
-            self.logger.info(f"{i + 1}/{df_row_num} タイトル: {sell_data['ゲームタイトル']}")
+            self.logger.info(f"{i + 1}/{df_row_num} タイトル: {sell_data['案件タイトル']}")
             self.logger.info(f"{i + 1}/{df_row_num} タイトル: {sell_data['出品タイトル']}")
-            self.logger.info(f"{i + 1}/{df_row_num} タイトル: {sell_data['商品説明']}")
-            self.logger.info(f"{i + 1}/{df_row_num} タイトル: {sell_data['商品価格']}")
+            self.logger.info(f"{i + 1}/{df_row_num} タイトル: {sell_data['案件説明']}")
+            self.logger.info(f"{i + 1}/{df_row_num} タイトル: {sell_data['売却価格']}")
             self.logger.info(f'{i + 1}/{df_row_num} 処理開始')
 
             # ログイン〜処理実施まで
@@ -154,7 +151,10 @@ class FlowMAClubNewItem:
 # 出品ボタンをクリック
 
     def _click_first_sell_btn(self):
-        self.element.clickElement(value=self.sell_info['SELL_BTN'])
+        by = self.sell_info['FIRST_SELL_BTN_BY']
+        value = self.sell_info['FIRST_SELL_BTN_VALUE']
+        self.logger.debug(f'\nby: {by}\nvalue: {value}')
+        self.element.clickElement(by=by, value=value)
         self._random_sleep()
 
 
@@ -181,13 +181,15 @@ class FlowMAClubNewItem:
     def _popup_title_input(self, sell_data: Dict):
         input_case_title = sell_data['案件タイトル']
         self.logger.debug(f'input_case_title: {input_case_title}')
-        self.element.clickClearInput(by=self.sell_info['CASE_TITLE_INPUT_BY'], value=self.sell_info['CASE_TITLE_INPUT_VALUE'], inputText=input_case_title)
+        element = self.element.clickClearJsInput(by=self.sell_info['CASE_TITLE_INPUT_BY'], value=self.sell_info['CASE_TITLE_INPUT_VALUE'], inputText=input_case_title)
+        element.send_keys(Keys.RETURN)
         self._random_sleep()
 
 
 # ----------------------------------------------------------------------------------
 # 案件タイトルを選択
 
+    @deco.funcBase
     def _case_title_select(self):
         self.element.clickElement(by=self.sell_info['CASE_TITLE_SELECT_BY'], value=self.sell_info['CASE_TITLE_SELECT_VALUE'])
         self._random_sleep()
@@ -195,33 +197,42 @@ class FlowMAClubNewItem:
 
 # ----------------------------------------------------------------------------------
 # カテゴリ選択
+# TODO スプシが選ばれているものがアンマッチしている場合の例外処理→スプシにないことをPOP出してエラーを出す→
 
+    @deco.funcBase
     def _category_select(self, sell_data: Dict):
-        if sell_data['カテゴリ'] == 'サイト売買・サービス譲渡':
-            element = self.element.clickElement(value=self.sell_info['CATEGORY_SELL_SELECT_VALUE'])
-            self.logger.debug(f'「サイト売買・サービス譲渡」を選択: {element}')
-            self._random_sleep()
-        elif sell_data['カテゴリ'] == 'その他':
-            element = self.element.clickElement(value=self.sell_info['CATEGORY_OTHER_SELECT_VALUE'])
-            self.logger.debug(f'「その他」を選択: {element}')
-            self._random_sleep()
-        elif sell_data['カテゴリ'] == '運用代行':
-            element = self.element.clickElement(value=self.sell_info['CATEGORY_ITEM_SELECT_VALUE'])
-            self.logger.debug(f'「運用代行」を選択: {element}')
-            self._random_sleep()
-        else:
-            element = self.element.clickElement(value=self.sell_info['CATEGORY_JYOTO_SELECT_VALUE'])
-            self.logger.debug(f'「アカウント譲渡」を選択: {element}')
-            self._random_sleep()
+        try:
+            if sell_data['カテゴリ'] == 'サイト売買・サービス譲渡':
+                element = self.element.clickElement(value=self.sell_info['CATEGORY_SELL_SELECT_VALUE'])
+                self.logger.debug(f'「サイト売買・サービス譲渡」を選択: {element}')
+                self._random_sleep()
+            elif sell_data['カテゴリ'] == 'その他':
+                element = self.element.clickElement(value=self.sell_info['CATEGORY_OTHER_SELECT_VALUE'])
+                self.logger.debug(f'「その他」を選択: {element}')
+                self._random_sleep()
+            elif sell_data['カテゴリ'] == '運用代行':
+                element = self.element.clickElement(value=self.sell_info['CATEGORY_UNYODAIKO_SELECT_VALUE'])
+                self.logger.debug(f'「運用代行」を選択: {element}')
+                self._random_sleep()
+            else:
+                element = self.element.clickElement(value=self.sell_info['CATEGORY_JYOTO_SELECT_VALUE'])
+                self.logger.debug(f'「アカウント譲渡」を選択: {element}')
+                self._random_sleep()
+        # スプシ誤選択
+        except NoSuchElementException:
+            error_msg = f"スプシ項目に誤り\n【案件タイトル】{sell_data['案件タイトル']} 選択項目: {sell_data['カテゴリ']}"
+            self.logger.warning(error_msg)
+
 
 
 # ----------------------------------------------------------------------------------
 # 案件タイトル
 
+    @deco.funcBase
     def _input_sell_title(self, sell_data: Dict):
         input_sell_title = sell_data['出品タイトル']
         self.logger.debug(f'input_sell_title: {input_sell_title}')
-        self.element.clickClearInput(by=self.sell_info['SELL_TITLE_INPUT_BY'], value=self.sell_info['SELL_TITLE_INPUT_VALUE'], inputText=input_sell_title)
+        self.element.clickClearJsInput(by=self.sell_info['SELL_TITLE_INPUT_BY'], value=self.sell_info['SELL_TITLE_INPUT_VALUE'], inputText=input_sell_title)
         self._random_sleep()
 
 
@@ -232,7 +243,7 @@ class FlowMAClubNewItem:
     def _input_game_explanation(self, sell_data: Dict):
         input_game_explanation = sell_data['案件説明']
         self.logger.debug(f'input_game_explanation: {input_game_explanation}')
-        self.element.clickClearInput(by=self.sell_info['SELL_EXPLANATION_INPUT_BY'], value=self.sell_info['SELL_EXPLANATION_INPUT_VALUE'], inputText=input_game_explanation)
+        self.element.clickClearJsInput(by=self.sell_info['SELL_EXPLANATION_INPUT_BY'], value=self.sell_info['SELL_EXPLANATION_INPUT_VALUE'], inputText=input_game_explanation)
         self._random_sleep()
 
 
@@ -241,14 +252,14 @@ class FlowMAClubNewItem:
 
     @deco.funcBase
     def _input_first_msg(self, sell_data: Dict):
-        input_first_msg = sell_data['初回メッセージ']
+        input_first_msg = sell_data['買い主へ初回自動表示するメッセージ']
         if not input_first_msg:
             self.logger.warning(f'「買い主へ初回自動表示するメッセージ」入力なし: {input_first_msg}')
             self._random_sleep()
             return
 
         self.logger.debug(f'input_first_msg: {input_first_msg}')
-        self.element.clickClearInput(by=self.sell_info['FIRST_MSG_BY'], value=self.sell_info['FIRST_MSG_VALUE'], inputText=input_first_msg)
+        self.element.clickClearJsInput(by=self.sell_info['FIRST_MSG_BY'], value=self.sell_info['FIRST_MSG_VALUE'], inputText=input_first_msg)
         self._random_sleep()
 
 
@@ -263,7 +274,7 @@ class FlowMAClubNewItem:
             return
 
         self.logger.debug(f'input_sell_notify: {input_sell_notify}')
-        self.element.clickClearInput(value=self.sell_info['USER_NOTIFY'], inputText=input_sell_notify)
+        self.element.clickClearJsInput(value=self.sell_info['USER_NOTIFY'], inputText=input_sell_notify)
         self._random_sleep()
 
 
@@ -272,9 +283,9 @@ class FlowMAClubNewItem:
 
     @deco.funcBase
     def _input_price(self, sell_data: Dict):
-        input_price = sell_data['商品価格']
+        input_price = sell_data['売却価格']
         self.logger.debug(f'input_price: {input_price}')
-        self.element.clickClearInput(value=self.sell_info['PRICE_VALUE'], inputText=input_price)
+        self.element.clickClearJsInput(value=self.sell_info['PRICE_VALUE'], inputText=input_price)
         self._random_sleep(min_num=3, max_num=5)
 
 

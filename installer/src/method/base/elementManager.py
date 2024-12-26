@@ -201,7 +201,7 @@ class ElementManager:
         return element
 
     # ----------------------------------------------------------------------------------
-    # クリックしてから入力
+    # 特殊な文字にも対応、クリックしてから入力
 
     @decoInstance.funcBase
     def clickClearJsInput(self, value: str, inputText: str, by: str = "xpath"):

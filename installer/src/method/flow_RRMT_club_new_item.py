@@ -38,7 +38,6 @@ class FlowRRMTClubNewItem:
         self.chromeManager = ChromeManager()
         self.chrome = self.chromeManager.flowSetupChrome()
 
-
         # インスタンス
         self.login = SingleSiteIDLogin(chrome=self.chrome, )
         self.random_sleep = SeleniumBasicOperations(chrome=self.chrome, )
@@ -64,7 +63,7 @@ class FlowRRMTClubNewItem:
         df = self.gss_read.getDataFrameFromGss(gss_info=self.gss_info)
 
         # dfの中からチェックがあるものだけ抽出
-        process_df = df[df['チェック'] == 'TRUE']
+        process_df = df[df['チェック'] == 'TRUE'].reset_index(drop=True)
         df_row_num = len(process_df)
         df_columns = process_df.shape[1]
         self.logger.debug(process_df.head)

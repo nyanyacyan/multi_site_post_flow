@@ -60,7 +60,7 @@ class FlowGameClubNewItem:
         df = self.gss_read.getDataFrameFromGss(gss_info=self.gss_info)
 
         # dfの中からチェックがあるものだけ抽出
-        process_df = df[df['チェック'] == 'TRUE']
+        process_df = df[df['チェック'] == 'TRUE'].reset_index(drop=True)
         df_row_num = len(process_df)
         df_columns = process_df.shape[1]
         self.logger.debug(process_df.head)
@@ -323,7 +323,7 @@ class FlowGameClubNewItem:
     @deco.funcBase
     def _click_end_sell_btn(self):
         self.element.clickElement(value=self.sell_info['SELL_BTN'])
-        self._random_sleep(min_num=5, max_num=15)
+        self._random_sleep(min_num=2, max_num=5)
 
 
 # ----------------------------------------------------------------------------------
