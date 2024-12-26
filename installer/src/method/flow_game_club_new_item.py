@@ -17,6 +17,7 @@ from base.seleniumBase import SeleniumBasicOperations
 from base.spreadsheetRead import GetDataGSSAPI
 from base.elementManager import ElementManager
 from base.decorators import Decorators
+from base.jumpTargetPage import JumpTargetPage
 
 # const
 from const_element import LoginInfo, GssInfo, SellInfo
@@ -38,10 +39,11 @@ class FlowGameClubNewItem:
         self.chrome = self.chromeManager.flowSetupChrome()
 
         # インスタンス
-        self.login = SingleSiteIDLogin(chrome=self.chrome, )
+        self.login = SingleSiteIDLogin(chrome=self.chrome)
         self.random_sleep = SeleniumBasicOperations(chrome=self.chrome, )
         self.gss_read = GetDataGSSAPI()
-        self.element = ElementManager(chrome=self.chrome, )
+        self.element = ElementManager(chrome=self.chrome)
+        self.jump_target_page = JumpTargetPage(chrome=self.chrome)
 
         # 必要info
         self.gss_info = GssInfo.GAME_CLUB.value
@@ -81,20 +83,26 @@ class FlowGameClubNewItem:
             # ログイン〜処理実施まで
             self.logger.info(f'{i + 1}/{df_row_num} 目の処理 START')
 
-            self.row_process(sell_data=sell_data)
+            self.row_process(index=i, sell_data=sell_data)
 
             self.logger.info(f'{i + 1}/{df_row_num} 目の処理 END')
 
-        self.logger.info(f"{self.login_info['site_name']}すべての処理完了: {sell_data['管理コード']}")
+        self.logger.info(f"{self.login_info['SITE_NAME']}すべての処理完了")
 
 
 # ----------------------------------------------------------------------------------
 # ログイン〜出品処理
 
     @deco.funcBase
-    def row_process(self, sell_data: Dict):
-        # IDログイン
-        self.login.flowLoginID(login_info=self.login_info, timeout=120)
+    def row_process(self, index: int, sell_data: Dict):
+        self.logger.debug(f'index: {index}')
+        if index == 0:
+            # IDログイン
+            self.login.flowLoginID(login_info=self.login_info, timeout=120)
+        else:
+            self.jump_target_page.flowJumpTargetPage(
+                targetUrl=self.login_info['HOME_URL']
+            )
 
         # 出品処理
         self.sell_process(sell_data=sell_data)
@@ -151,10 +159,10 @@ class FlowGameClubNewItem:
         self._click_end_sell_btn()
 
         # POPを消す
-        self._delete_popup_click()
+        # self._delete_popup_click()
 
         # マイページへ戻る
-        self._my_page_click()
+        # self._my_page_click()
 
 
 # ----------------------------------------------------------------------------------
@@ -342,10 +350,19 @@ class FlowGameClubNewItem:
 
 
 # ----------------------------------------------------------------------------------
+# ランダムSleep
 
     def _random_sleep(self, min_num: int = 1, max_num: int = 3):
         self.random_sleep._random_sleep(min_num=min_num, max_num=max_num)
 
+
+# ----------------------------------------------------------------------------------
+# 別ページでサイトを開く→Cookieを維持したままログイン
+
+
+
+
+# ----------------------------------------------------------------------------------
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # テスト実施
 

@@ -10,6 +10,7 @@ from selenium.webdriver.chrome.webdriver import WebDriver
 # 自作モジュール
 from .utils import Logger
 from .driverDeco import jsCompleteWaitDeco
+from .seleniumBase import SeleniumBasicOperations
 
 from const_str import FileName
 
@@ -28,22 +29,19 @@ class JumpTargetPage:
         self.logger = self.getLogger.getLogger()
 
         self.chrome = chrome
+        self.random_sleep = SeleniumBasicOperations(chrome=self.chrome)
 
     # ----------------------------------------------------------------------------------
 
     @decoInstance.jsCompleteWaitRetry()
-    def flowJumpTargetPage(self, targetUrl: str, delay: int = 2):
+    def flowJumpTargetPage(self, targetUrl: str):
         self.openNewWindow()
-        time.sleep(delay)
 
         self.changeNewPage()
-        time.sleep(delay)
 
         self.getTargetPage(targetUrl=targetUrl)
-        time.sleep(delay)
 
         self.urlCheck()
-        time.sleep(delay)
         return
 
     # ----------------------------------------------------------------------------------
@@ -52,6 +50,7 @@ class JumpTargetPage:
     def openNewWindow(self):
         self.chrome.execute_script("window.open('')")
         self.logger.debug(f"{__name__} 新しいページを開きました")
+        self._random_sleep()
         return
 
     # ----------------------------------------------------------------------------------
@@ -61,6 +60,7 @@ class JumpTargetPage:
     def changeNewPage(self):
         self.chrome.switch_to.window(self.chrome.window_handles[-1])
         self.logger.debug(f"{__name__} 新しいページに切替を実行")
+        self._random_sleep()
         return
 
     # ----------------------------------------------------------------------------------
@@ -81,6 +81,13 @@ class JumpTargetPage:
             self.logger.debug(f"新しいページに移行成功")
         else:
             self.logger.error(f"新しいページに移行できてません。")
+
+
+# ----------------------------------------------------------------------------------
+# ランダムSleep
+
+    def _random_sleep(self, min_num: int = 1, max_num: int = 3):
+        self.random_sleep._random_sleep(min_num=min_num, max_num=max_num)
 
 
 # ----------------------------------------------------------------------------------
