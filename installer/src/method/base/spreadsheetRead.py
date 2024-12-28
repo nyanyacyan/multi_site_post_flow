@@ -174,7 +174,7 @@ class GetDataGSSAPI:
     # スプシにあるWorksheetのリストを返す
     # GUIに返す
 
-    def _get_all_worksheet(self, gss_info: Dict):
+    def _get_all_worksheet(self, gss_info: Dict, sort_word_list: List):
         client = self.client(jsonKeyName=gss_info["jsonKeyName"])
 
         # 対象のスプシを開く
@@ -185,7 +185,11 @@ class GetDataGSSAPI:
         self.logger.debug(f'all_worksheet: {all_worksheet}')
 
         # すべてのワークシートのリスト
-        worksheet_title_list = [ws.title for ws in all_worksheet]
+        worksheet_title_list = [
+            ws.title
+            for ws in all_worksheet
+            if any (sort_word in ws.title for sort_word in sort_word_list)
+        ]
         self.logger.debug(f"ワークシート全データ: {worksheet_title_list}")
 
         return worksheet_title_list

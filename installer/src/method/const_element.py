@@ -60,6 +60,7 @@ class LoginInfo(Enum):
             'RECAPTCHA_CHECKBOX_BY': "id",
             'RECAPTCHA_CHECKBOX_VALUE': "recaptcha-anchor",
             'SELL_BTN': "//a[@href='/mypage/products/add']",
+            'SORT_WORD_LIST': ["GAME_CLUB", "GC", "ゲームクラブ", "GAME"],
 
         },
         'MA_CLUB':{
@@ -79,6 +80,8 @@ class LoginInfo(Enum):
             'LOGIN_AFTER_ELEMENT_VALUE': "//a[@href='/mypage' and contains(text(), 'マイページ')]",
             'RECAPTCHA_CHECKBOX_BY': "id",
             'RECAPTCHA_CHECKBOX_VALUE': "recaptcha-anchor",
+            'SORT_WORD_LIST': ["M&A", "MA", "エムアンドエー"],
+
         },
         'RMT_CLUB':{
             'SITE_NAME': 'RMT_CLUB',
@@ -97,6 +100,7 @@ class LoginInfo(Enum):
             'LOGIN_AFTER_ELEMENT_VALUE': "//div[@class='top-link-btns']/a[@href='/mypage' and contains(@class, 'btn_mypage')]",
             'RECAPTCHA_CHECKBOX_BY': "id",
             'RECAPTCHA_CHECKBOX_VALUE': "recaptcha-anchor",
+            'SORT_WORD_LIST': ["RMT", "rmt", "アールエムティ"],
         },
     }
 
