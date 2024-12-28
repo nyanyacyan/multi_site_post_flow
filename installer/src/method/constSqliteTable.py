@@ -54,7 +54,7 @@ class TableSchemas(Enum):
 # ----------------------------------------------------------------------------------
 # サブ辞書
 
-    RRMT_CLUB = {
+    RMT_CLUB = {
         "id": "INTEGER PRIMARY KEY AUTOINCREMENT",
         "name": "TEXT NOT NULL",
         "value": "TEXT NOT NULL",
@@ -76,7 +76,7 @@ class TableSchemas(Enum):
     TABLE_PATTERN = {
         "GAME_CLUB": GAME_CLUB,
         "MA_CLUB": MA_CLUB,
-        "RRMT_CLUB": RRMT_CLUB
+        "RMT_CLUB": RMT_CLUB
     }
 
 

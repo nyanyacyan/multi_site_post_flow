@@ -29,10 +29,10 @@ class GssInfo(Enum):
         'workSheetName': 'MA_CLUB',
     }
 
-    RRMT_CLUB = {
+    RMT_CLUB = {
         'jsonKeyName': 'sns-auto-430920-08274ad68b41.json',
         'spreadsheetId': '11hUzuGZaXmM070E8Gl5YA5ydUcWGDcjV0MkGQEpzLx8',
-        'workSheetName': 'RRMT_CLUB',
+        'workSheetName': 'RMT_CLUB',
     }
 
 
@@ -80,17 +80,17 @@ class LoginInfo(Enum):
             'RECAPTCHA_CHECKBOX_BY': "id",
             'RECAPTCHA_CHECKBOX_VALUE': "recaptcha-anchor",
         },
-        'RRMT_CLUB':{
-            'SITE_NAME': 'RRMT_CLUB',
+        'RMT_CLUB':{
+            'SITE_NAME': 'RMT_CLUB',
             'LOGIN_URL': 'https://rmt.club/user-login',
             'HOME_URL': 'https://www.xdomain.ne.jp/',
-            'TABLE_NAME': 'RRMT_CLUB',
+            'TABLE_NAME': 'RMT_CLUB',
             'ID_BY': 'xpath',
             'ID_VALUE' : "//input[@id='UserMail']",
-            'ID_TEXT': os.getenv('RRMT_CLUB_ID'),
+            'ID_TEXT': os.getenv('RMT_CLUB_ID'),
             'PASS_BY': 'xpath',
             'PASS_VALUE': "//input[@id='UserPassword' and @name='data[User][password]']",
-            'PASS_TEXT': os.getenv('RRMT_CLUB_PASS'),
+            'PASS_TEXT': os.getenv('RMT_CLUB_PASS'),
             'BTN_BY': 'xpath',
             'BTN_VALUE': "//input[@class='btn_type1 fade' and @type='submit' and @value='ログイン']",
             'LOGIN_AFTER_ELEMENT_BY': 'xpath',
@@ -163,6 +163,14 @@ class SellInfo(Enum):
         # 商品価格
         'PRICE_VALUE': '//input[@name="price"]',
 
+        # 暗証番号にレ点
+        'PIN_CHECK_CLICK_VALUE': "//input[@type='checkbox' and @name='pin_checkbox']",
+
+        # 暗証番号を入力
+        'PIN_INPUT_AREA_BY': 'id',
+        'PIN_INPUT_AREA_VALUE': 'pin',
+        'PIN_INPUT_VALUE': os.getenv('PIN_VALUE'),
+
         # 確認する
         'CHECK_VALUE': '//button[@id="btn-confirm"]',
 
@@ -228,6 +236,14 @@ class SellInfo(Enum):
         # 売却価格
         'PRICE_VALUE': '//input[@name="price"]',
 
+        # 暗証番号にレ点
+        'PIN_CHECK_CLICK_VALUE': "//input[@type='checkbox' and @name='pin_checkbox']",
+
+        # 暗証番号を入力
+        'PIN_INPUT_AREA_BY': 'id',
+        'PIN_INPUT_AREA_VALUE': 'pin',
+        'PIN_INPUT_VALUE': os.getenv('PIN_VALUE'),
+
         # 確認する
         'CHECK_VALUE': '//button[@id="btn-confirm"]',
 
@@ -243,8 +259,8 @@ class SellInfo(Enum):
 
 ##########
 
-    RRMT_CLUB = {
-        'INPUT_PHOTO_FOLDER_NAME': '03_RRMT_CLUB',
+    RMT_CLUB = {
+        'INPUT_PHOTO_FOLDER_NAME': '03_RMT_CLUB',
 
         # 売りたいをクリック
         'SELL_BTN': "//a[@href='/deals/add']",

@@ -28,7 +28,7 @@ deco = Decorators()
 # **********************************************************************************
 # 一連の流れ
 
-class FlowRRMTClubNewItem:
+class FlowRMTClubNewItem:
     def __init__(self):
         # logger
         self.getLogger = Logger()
@@ -49,9 +49,9 @@ class FlowRRMTClubNewItem:
         self.random_sleep = self.random_sleep._random_sleep()
 
         # 必要info
-        self.gss_info = GssInfo.RRMT_CLUB.value
-        self.login_info = LoginInfo.SITE_PATTERNS.value['RRMT_CLUB']
-        self.sell_info = SellInfo.RRMT_CLUB.value
+        self.gss_info = GssInfo.RMT_CLUB.value
+        self.login_info = LoginInfo.SITE_PATTERNS.value['RMT_CLUB']
+        self.sell_info = SellInfo.RMT_CLUB.value
 
 
 ####################################################################################
@@ -302,5 +302,5 @@ class FlowRRMTClubNewItem:
 # テスト実施
 
 if __name__ == '__main__':
-    test_flow = FlowRRMTClubNewItem()
+    test_flow = FlowRMTClubNewItem()
     asyncio.run(test_flow.process())

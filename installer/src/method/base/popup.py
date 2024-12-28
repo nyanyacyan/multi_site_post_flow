@@ -51,7 +51,6 @@ class Popup:
 # ----------------------------------------------------------------------------------
 
 
-    def timer_popup(self):
+    def timer_popup(self, ):
         pass
-        root = tk.Tk()
-        root.geometry()
+

@@ -139,6 +139,9 @@ class FlowMAClubNewItem:
         # 商品価格
         self._input_price(sell_data=sell_data)
 
+        # 暗証番号を設定
+        self._click_input_pin()
+
         # 確認するをクリック
         self._check_click()
 
@@ -288,6 +291,19 @@ class FlowMAClubNewItem:
         self.element.clickClearJsInput(value=self.sell_info['PRICE_VALUE'], inputText=input_price)
         self._random_sleep(min_num=3, max_num=5)
 
+
+# ----------------------------------------------------------------------------------
+# 暗証番号をクリックして入力
+
+    def _click_input_pin(self):
+        self.element.clickElement(value=self.sell_info['PIN_CHECK_CLICK_VALUE'])
+        self._random_sleep()
+
+        # 暗証番号を入力
+        input_pin= self.sell_info['PIN_INPUT_VALUE']
+        self.logger.debug(f'input_pin: {input_pin}')
+        self.element.clickClearJsInput(by=self.sell_info['PIN_INPUT_AREA_BY'], value=self.sell_info['PIN_INPUT_AREA_VALUE'], inputText=input_pin)
+        self._random_sleep()
 
 # ----------------------------------------------------------------------------------
 # 確認するをクリック

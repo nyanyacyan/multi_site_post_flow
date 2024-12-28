@@ -87,7 +87,7 @@ class StatusName(Enum):
 class SiteName(Enum):
     GAME_CLUB='GAME_CLUB'
     MA_CLUB='MA_CLUB'
-    RRMT_CLUB='RRMT_CLUB'
+    RMT_CLUB='RMT_CLUB'
 
 
 # ----------------------------------------------------------------------------------

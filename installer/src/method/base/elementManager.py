@@ -212,6 +212,7 @@ class ElementManager:
         except ElementClickInterceptedException:
             self.logger.debug(f"popupなどでClickができません: {element}")
             self.chrome.execute_script("arguments[0].click();", element)
+            self.logger.info(f"jsにてクリック実施: {element}")
 
         element.clear()
         self.chrome.execute_script("arguments[0].value = arguments[1];", element, inputText)
@@ -234,6 +235,7 @@ class ElementManager:
         except ElementNotInteractableException:
             self.logger.debug(f"要素があるんだけどクリックができません: {element}")
             self.chrome.execute_script("arguments[0].click();", element)
+            self.logger.info(f"jsにてクリック実施: {element}")
 
 
         self.clickWait.jsPageChecker(chrome=self.chrome)
