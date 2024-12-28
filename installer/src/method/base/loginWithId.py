@@ -89,7 +89,46 @@ class SingleSiteIDLogin:
         )
 
     # ----------------------------------------------------------------------------------
+    # IDログイン
+    # reCAPTCHA OK
 
+    def flow_login_id_input_gui(
+        self, login_info: dict, id_text: str, pass_text: str, timeout: int = 120
+    ):
+        self.logger.debug(f"login_info: {login_info}")
+
+        # サイトを開いてCookieを追加
+        self.openSite(login_url=login_info["LOGIN_URL"])
+
+        self.inputId(
+            by=login_info["ID_BY"],
+            value=login_info["ID_VALUE"],
+            inputText=id_text,
+        )
+
+        self.inputPass(
+            by=login_info["PASS_BY"],
+            value=login_info["PASS_VALUE"],
+            inputText=pass_text,
+        )
+
+        # クリックを繰り返しPOPUPがなくなるまで繰り返す
+        self.click_login_btn_in_recaptcha(
+            by=login_info["BTN_BY"], value=login_info["BTN_VALUE"]
+        )
+
+        # 検索ページなどが出てくる対策
+        # PCのスペックに合わせて設定
+        self.wait.jsPageChecker(chrome=self.chrome, timeout=10)
+
+        # reCAPTCHA対策を完了確認
+        return self.login_element_check(
+            by=login_info["LOGIN_AFTER_ELEMENT_BY"],
+            value=login_info["LOGIN_AFTER_ELEMENT_VALUE"],
+            timeout=timeout,
+        )
+
+    # ----------------------------------------------------------------------------------
     @decoJsInstance.jsCompleteWait
     def openSite(self, login_url: str):
         return self.chrome.get(url=login_url)

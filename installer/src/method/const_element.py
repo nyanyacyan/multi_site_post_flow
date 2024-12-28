@@ -9,98 +9,99 @@
 import os
 from enum import Enum
 from dotenv import load_dotenv
+
 load_dotenv()
 
 
 # ----------------------------------------------------------------------------------
 # GSS情報
 
+
 class GssInfo(Enum):
 
     GAME_CLUB = {
-        'jsonKeyName': 'sns-auto-430920-08274ad68b41.json',
-        'spreadsheetId': '11hUzuGZaXmM070E8Gl5YA5ydUcWGDcjV0MkGQEpzLx8',
-        'workSheetName': 'GAME_CLUB',
+        "jsonKeyName": "sns-auto-430920-08274ad68b41.json",
+        "spreadsheetId": "11hUzuGZaXmM070E8Gl5YA5ydUcWGDcjV0MkGQEpzLx8",
+        "workSheetName": "GAME_CLUB",
     }
 
     MA_CLUB = {
-        'jsonKeyName': 'sns-auto-430920-08274ad68b41.json',
-        'spreadsheetId': '11hUzuGZaXmM070E8Gl5YA5ydUcWGDcjV0MkGQEpzLx8',
-        'workSheetName': 'MA_CLUB',
+        "jsonKeyName": "sns-auto-430920-08274ad68b41.json",
+        "spreadsheetId": "11hUzuGZaXmM070E8Gl5YA5ydUcWGDcjV0MkGQEpzLx8",
+        "workSheetName": "MA_CLUB",
     }
 
     RMT_CLUB = {
-        'jsonKeyName': 'sns-auto-430920-08274ad68b41.json',
-        'spreadsheetId': '11hUzuGZaXmM070E8Gl5YA5ydUcWGDcjV0MkGQEpzLx8',
-        'workSheetName': 'RMT_CLUB',
+        "jsonKeyName": "sns-auto-430920-08274ad68b41.json",
+        "spreadsheetId": "11hUzuGZaXmM070E8Gl5YA5ydUcWGDcjV0MkGQEpzLx8",
+        "workSheetName": "RMT_CLUB",
     }
 
 
 # ----------------------------------------------------------------------------------
 # ログイン情報
 
+
 class LoginInfo(Enum):
 
     SITE_PATTERNS = {
-        'GAME_CLUB':{
-            'SITE_NAME': 'GAME_CLUB',
-            'LOGIN_URL': 'https://gameclub.jp/signin',
-            'HOME_URL': 'https://gameclub.jp/mypage',
-            'TABLE_NAME': 'GAME_CLUB',
-            'ID_BY': 'xpath',
-            'ID_VALUE' : "//input[@name='email']",
-            'ID_TEXT': os.getenv('GAME_CLUB_ID'),
-            'PASS_BY': 'xpath',
-            'PASS_VALUE': "//input[@name='password']",
-            'PASS_TEXT': os.getenv('GAME_CLUB_PASS'),
-            'BTN_BY': 'xpath',
-            'BTN_VALUE': "//button[contains(@class, 'btn-registration') and contains(text(), 'ログイン')]",
-            'LOGIN_AFTER_ELEMENT_BY': 'xpath',
-            'LOGIN_AFTER_ELEMENT_VALUE': "//a[@href='/mypage' and contains(text(),'マイページ')]",
-            'RECAPTCHA_CHECKBOX_BY': "id",
-            'RECAPTCHA_CHECKBOX_VALUE': "recaptcha-anchor",
-            'SELL_BTN': "//a[@href='/mypage/products/add']",
-            'SORT_WORD_LIST': ["GAME_CLUB", "GC", "ゲームクラブ", "GAME"],
-
+        "GAME_CLUB": {
+            "SITE_NAME": "GAME_CLUB",
+            "LOGIN_URL": "https://gameclub.jp/signin",
+            "HOME_URL": "https://gameclub.jp/mypage",
+            "TABLE_NAME": "GAME_CLUB",
+            "ID_BY": "xpath",
+            "ID_VALUE": "//input[@name='email']",
+            "ID_TEXT": os.getenv("GAME_CLUB_ID"),
+            "PASS_BY": "xpath",
+            "PASS_VALUE": "//input[@name='password']",
+            "PASS_TEXT": os.getenv("GAME_CLUB_PASS"),
+            "BTN_BY": "xpath",
+            "BTN_VALUE": "//button[contains(@class, 'btn-registration') and contains(text(), 'ログイン')]",
+            "LOGIN_AFTER_ELEMENT_BY": "xpath",
+            "LOGIN_AFTER_ELEMENT_VALUE": "//a[@href='/mypage' and contains(text(),'マイページ')]",
+            "RECAPTCHA_CHECKBOX_BY": "id",
+            "RECAPTCHA_CHECKBOX_VALUE": "recaptcha-anchor",
+            "SELL_BTN": "//a[@href='/mypage/products/add']",
+            "SORT_WORD_LIST": ["GAME_CLUB", "GC", "ゲームクラブ", "GAME"],
         },
-        'MA_CLUB':{
-            'SITE_NAME': 'MA_CLUB',
-            'LOGIN_URL': 'https://maclub.jp/signin',
-            'HOME_URL': 'https://maclub.jp/mypage',
-            'TABLE_NAME': 'MA_CLUB',
-            'ID_BY': 'xpath',
-            'ID_VALUE' : "//input[@name='email']",
-            'ID_TEXT': os.getenv('MA_CLUB_ID'),
-            'PASS_BY': 'xpath',
-            'PASS_VALUE': "//input[@name='password']",
-            'PASS_TEXT': os.getenv('MA_CLUB_PASS'),
-            'BTN_BY': 'xpath',
-            'BTN_VALUE': "//button[contains(@class, 'btn-registration') and normalize-space(text())='ログイン']",
-            'LOGIN_AFTER_ELEMENT_BY': 'xpath',
-            'LOGIN_AFTER_ELEMENT_VALUE': "//a[@href='/mypage' and contains(text(), 'マイページ')]",
-            'RECAPTCHA_CHECKBOX_BY': "id",
-            'RECAPTCHA_CHECKBOX_VALUE': "recaptcha-anchor",
-            'SORT_WORD_LIST': ["M&A", "MA", "エムアンドエー"],
-
+        "MA_CLUB": {
+            "SITE_NAME": "MA_CLUB",
+            "LOGIN_URL": "https://maclub.jp/signin",
+            "HOME_URL": "https://maclub.jp/mypage",
+            "TABLE_NAME": "MA_CLUB",
+            "ID_BY": "xpath",
+            "ID_VALUE": "//input[@name='email']",
+            "ID_TEXT": os.getenv("MA_CLUB_ID"),
+            "PASS_BY": "xpath",
+            "PASS_VALUE": "//input[@name='password']",
+            "PASS_TEXT": os.getenv("MA_CLUB_PASS"),
+            "BTN_BY": "xpath",
+            "BTN_VALUE": "//button[contains(@class, 'btn-registration') and normalize-space(text())='ログイン']",
+            "LOGIN_AFTER_ELEMENT_BY": "xpath",
+            "LOGIN_AFTER_ELEMENT_VALUE": "//a[@href='/mypage' and contains(text(), 'マイページ')]",
+            "RECAPTCHA_CHECKBOX_BY": "id",
+            "RECAPTCHA_CHECKBOX_VALUE": "recaptcha-anchor",
+            "SORT_WORD_LIST": ["M&A", "MA", "エムアンドエー"],
         },
-        'RMT_CLUB':{
-            'SITE_NAME': 'RMT_CLUB',
-            'LOGIN_URL': 'https://rmt.club/user-login',
-            'HOME_URL': 'https://www.xdomain.ne.jp/',
-            'TABLE_NAME': 'RMT_CLUB',
-            'ID_BY': 'xpath',
-            'ID_VALUE' : "//input[@id='UserMail']",
-            'ID_TEXT': os.getenv('RMT_CLUB_ID'),
-            'PASS_BY': 'xpath',
-            'PASS_VALUE': "//input[@id='UserPassword' and @name='data[User][password]']",
-            'PASS_TEXT': os.getenv('RMT_CLUB_PASS'),
-            'BTN_BY': 'xpath',
-            'BTN_VALUE': "//input[@class='btn_type1 fade' and @type='submit' and @value='ログイン']",
-            'LOGIN_AFTER_ELEMENT_BY': 'xpath',
-            'LOGIN_AFTER_ELEMENT_VALUE': "//div[@class='top-link-btns']/a[@href='/mypage' and contains(@class, 'btn_mypage')]",
-            'RECAPTCHA_CHECKBOX_BY': "id",
-            'RECAPTCHA_CHECKBOX_VALUE': "recaptcha-anchor",
-            'SORT_WORD_LIST': ["RMT", "rmt", "アールエムティ"],
+        "RMT_CLUB": {
+            "SITE_NAME": "RMT_CLUB",
+            "LOGIN_URL": "https://rmt.club/user-login",
+            "HOME_URL": "https://www.xdomain.ne.jp/",
+            "TABLE_NAME": "RMT_CLUB",
+            "ID_BY": "xpath",
+            "ID_VALUE": "//input[@id='UserMail']",
+            "ID_TEXT": os.getenv("RMT_CLUB_ID"),
+            "PASS_BY": "xpath",
+            "PASS_VALUE": "//input[@id='UserPassword' and @name='data[User][password]']",
+            "PASS_TEXT": os.getenv("RMT_CLUB_PASS"),
+            "BTN_BY": "xpath",
+            "BTN_VALUE": "//input[@class='btn_type1 fade' and @type='submit' and @value='ログイン']",
+            "LOGIN_AFTER_ELEMENT_BY": "xpath",
+            "LOGIN_AFTER_ELEMENT_VALUE": "//div[@class='top-link-btns']/a[@href='/mypage' and contains(@class, 'btn_mypage')]",
+            "RECAPTCHA_CHECKBOX_BY": "id",
+            "RECAPTCHA_CHECKBOX_VALUE": "recaptcha-anchor",
+            "SORT_WORD_LIST": ["RMT", "rmt", "アールエムティ"],
         },
     }
 
@@ -108,217 +109,169 @@ class LoginInfo(Enum):
 # ----------------------------------------------------------------------------------
 # 出品要素
 
+
 class SellInfo(Enum):
 
     GAME_CLUB = {
-        'INPUT_PHOTO_FOLDER_NAME': '01_GAME_CLUB',
-
+        "INPUT_PHOTO_FOLDER_NAME": "01_GAME_CLUB",
         # 出品するをクリック
-        'FIRST_SELL_BTN_BY': "xpath",
-        'FIRST_SELL_BTN_VALUE': '//a[contains(@class, "btm-add")]',
-
+        "FIRST_SELL_BTN_BY": "xpath",
+        "FIRST_SELL_BTN_VALUE": '//a[contains(@class, "btm-add")]',
         # 画像を添付
-        'FILE_INPUT_BY': 'id',
-        'FILE_INPUT_VALUE': 'item-images',
+        "FILE_INPUT_BY": "id",
+        "FILE_INPUT_VALUE": "item-images",
         # DOMの確認
-        'CHECK_BY': 'css',
-        'CHECK_VALUE': '#sortableArea .upimages-item',
-
+        "CHECK_BY": "css",
+        "CHECK_VALUE": "#sortableArea .upimages-item",
         # ゲームタイトル入力
-        'GAME_TITLE_CLICK_BY': 'id',
-        'GAME_TITLE_CLICK_VALUE': "btn-search-title",
-
+        "GAME_TITLE_CLICK_BY": "id",
+        "GAME_TITLE_CLICK_VALUE": "btn-search-title",
         # POPUPにゲームタイトルを入力
-        'GAME_TITLE_INPUT_BY': 'id',
-        'GAME_TITLE_INPUT_VALUE': "search-title-input",
-
+        "GAME_TITLE_INPUT_BY": "id",
+        "GAME_TITLE_INPUT_VALUE": "search-title-input",
         # POPUPにゲームタイトルをクリック
-        'GAME_TITLE_SELECT_BY': 'css',
-        'GAME_TITLE_SELECT_VALUE': 'div.syllabary-list > div.item',
-
+        "GAME_TITLE_SELECT_BY": "css",
+        "GAME_TITLE_SELECT_VALUE": "div.syllabary-list > div.item",
         # カテゴリ選択
-        'CATEGORY_INTAI_SELECT_VALUE': '//*[@id="account-type-id-10"]',
-        'CATEGORY_RISEMARA_SELECT_VALUE': '//*[@id="account-type-id-20"]',
-        'CATEGORY_ITEM_SELECT_VALUE': '//*[@id="account-type-id-30"]',
-        'CATEGORY_DAIKO_SELECT_VALUE': '//*[@id="account-type-id-40"]',
-
+        "CATEGORY_INTAI_SELECT_VALUE": '//*[@id="account-type-id-10"]',
+        "CATEGORY_RISEMARA_SELECT_VALUE": '//*[@id="account-type-id-20"]',
+        "CATEGORY_ITEM_SELECT_VALUE": '//*[@id="account-type-id-30"]',
+        "CATEGORY_DAIKO_SELECT_VALUE": '//*[@id="account-type-id-40"]',
         # 出品タイトル
-        'SELL_TITLE_INPUT_BY': 'id',
-        'SELL_TITLE_INPUT_VALUE': 'name',
-
+        "SELL_TITLE_INPUT_BY": "id",
+        "SELL_TITLE_INPUT_VALUE": "name",
         # 商品説明
-        'SELL_EXPLANATION_INPUT_BY': 'id',
-        'SELL_EXPLANATION_INPUT_VALUE': 'input-body-text',
-
+        "SELL_EXPLANATION_INPUT_BY": "id",
+        "SELL_EXPLANATION_INPUT_VALUE": "input-body-text",
         # 課金総額
-        'CHARGE_VALUE': '//input[@name="subcategory_unique_property_1_value"]',
-
+        "CHARGE_VALUE": '//input[@name="subcategory_unique_property_1_value"]',
         # 買い手への初回msg
-        'FIRST_MSG_BY': 'id',
-        'FIRST_MSG_VALUE': 'firstchat',
-
+        "FIRST_MSG_BY": "id",
+        "FIRST_MSG_VALUE": "firstchat",
         # 出品を通知
-        'USER_NOTIFY': "//input[@type='text' and @name='notify_user_id']",
-
+        "USER_NOTIFY": "//input[@type='text' and @name='notify_user_id']",
         # 出品方法
-        'SELL_METHOD_FURIMA_VALUE': "//label[contains(text(), 'フリマ販売')]",
-        'SELL_METHOD_TIME_SALE_VALUE': "//label[contains(text(), 'タイムセール')]",
-
+        "SELL_METHOD_FURIMA_VALUE": "//label[contains(text(), 'フリマ販売')]",
+        "SELL_METHOD_TIME_SALE_VALUE": "//label[contains(text(), 'タイムセール')]",
         # 商品価格
-        'PRICE_VALUE': '//input[@name="price"]',
-
+        "PRICE_VALUE": '//input[@name="price"]',
         # 暗証番号にレ点
-        'PIN_CHECK_CLICK_VALUE': "//input[@type='checkbox' and @name='pin_checkbox']",
-
+        "PIN_CHECK_CLICK_VALUE": "//input[@type='checkbox' and @name='pin_checkbox']",
         # 暗証番号を入力
-        'PIN_INPUT_AREA_BY': 'id',
-        'PIN_INPUT_AREA_VALUE': 'pin',
-        'PIN_INPUT_VALUE': os.getenv('PIN_VALUE'),
-
+        "PIN_INPUT_AREA_BY": "id",
+        "PIN_INPUT_AREA_VALUE": "pin",
+        "PIN_INPUT_VALUE": os.getenv("PIN_VALUE"),
         # 確認する
-        'CHECK_VALUE': '//button[@id="btn-confirm"]',
-
+        "CHECK_VALUE": '//button[@id="btn-confirm"]',
         # 出品する
-        'SELL_BTN': '//button[@id="btn-add"]',
-
+        "SELL_BTN": '//button[@id="btn-add"]',
         # POPUPを消去
-        'POPUP_DELETE_BTN_VALUE': '//div[@class="btn-modal-close"]',
-
+        "POPUP_DELETE_BTN_VALUE": '//div[@class="btn-modal-close"]',
         # マイページに戻る
-        'MY_PAGE_VALUE': '//div[@class="header-top-btns"]/a[@class="icon-user"]',
+        "MY_PAGE_VALUE": '//div[@class="header-top-btns"]/a[@class="icon-user"]',
     }
 
-##########
+    ##########
 
     MA_CLUB = {
-        'INPUT_PHOTO_FOLDER_NAME': '02_MA_CLUB',
-
+        "INPUT_PHOTO_FOLDER_NAME": "02_MA_CLUB",
         # 出品する
-        'FIRST_SELL_BTN_BY': "xpath",
-        'FIRST_SELL_BTN_VALUE': '//a[contains(@class, "btm-add")]',
-
+        "FIRST_SELL_BTN_BY": "xpath",
+        "FIRST_SELL_BTN_VALUE": '//a[contains(@class, "btm-add")]',
         # 画像添付
-        'FILE_INPUT_BY': 'id',
-        'FILE_INPUT_VALUE': 'item-images',
+        "FILE_INPUT_BY": "id",
+        "FILE_INPUT_VALUE": "item-images",
         # DOM確認
-        'CHECK_BY': 'css',
-        'CHECK_VALUE': '#sortableArea .upimages-item',
-
+        "CHECK_BY": "css",
+        "CHECK_VALUE": "#sortableArea .upimages-item",
         # 案件カテゴリーをクリック
-        'CASE_TITLE_CLICK_BY': 'id',
-        'CASE_TITLE_CLICK_VALUE': 'btn-search-title',
-
+        "CASE_TITLE_CLICK_BY": "id",
+        "CASE_TITLE_CLICK_VALUE": "btn-search-title",
         # POPUPに入力
-        'CASE_TITLE_INPUT_BY': 'id',
-        'CASE_TITLE_INPUT_VALUE': 'search-title-input',
-
+        "CASE_TITLE_INPUT_BY": "id",
+        "CASE_TITLE_INPUT_VALUE": "search-title-input",
         # POPUPから選択
-        'CASE_TITLE_SELECT_BY': 'css',
-        'CASE_TITLE_SELECT_VALUE': 'div.syllabary-list > div.item',
-
+        "CASE_TITLE_SELECT_BY": "css",
+        "CASE_TITLE_SELECT_VALUE": "div.syllabary-list > div.item",
         # 種別を選択
-        'CATEGORY_JYOTO_SELECT_VALUE': '//*[@id="account-type-id-10"]',
-        'CATEGORY_SELL_SELECT_VALUE': '//*[@id="account-type-id-20"]',
-        'CATEGORY_OTHER_SELECT_VALUE': '//*[@id="account-type-id-30"]',
-        'CATEGORY_UNYODAIKO_SELECT_VALUE': '//*[@id="account-type-id-40"]',
-
+        "CATEGORY_JYOTO_SELECT_VALUE": '//*[@id="account-type-id-10"]',
+        "CATEGORY_SELL_SELECT_VALUE": '//*[@id="account-type-id-20"]',
+        "CATEGORY_OTHER_SELECT_VALUE": '//*[@id="account-type-id-30"]',
+        "CATEGORY_UNYODAIKO_SELECT_VALUE": '//*[@id="account-type-id-40"]',
         # 案件タイトル
-        'SELL_TITLE_INPUT_BY': 'id',
-        'SELL_TITLE_INPUT_VALUE': 'name',
-
+        "SELL_TITLE_INPUT_BY": "id",
+        "SELL_TITLE_INPUT_VALUE": "name",
         # 案件説明
-        'SELL_EXPLANATION_INPUT_BY': 'id',
-        'SELL_EXPLANATION_INPUT_VALUE': 'input-body-text',
-
+        "SELL_EXPLANATION_INPUT_BY": "id",
+        "SELL_EXPLANATION_INPUT_VALUE": "input-body-text",
         # 買い手への初回msg
-        'FIRST_MSG_BY': 'id',
-        'FIRST_MSG_VALUE': 'firstchat',
-
+        "FIRST_MSG_BY": "id",
+        "FIRST_MSG_VALUE": "firstchat",
         # 案件の登録を通知
-        'USER_NOTIFY': "//input[@type='text' and @name='notify_user_id']",
-
+        "USER_NOTIFY": "//input[@type='text' and @name='notify_user_id']",
         # 売却価格
-        'PRICE_VALUE': '//input[@name="price"]',
-
+        "PRICE_VALUE": '//input[@name="price"]',
         # 暗証番号にレ点
-        'PIN_CHECK_CLICK_VALUE': "//input[@type='checkbox' and @name='pin_checkbox']",
-
+        "PIN_CHECK_CLICK_VALUE": "//input[@type='checkbox' and @name='pin_checkbox']",
         # 暗証番号を入力
-        'PIN_INPUT_AREA_BY': 'id',
-        'PIN_INPUT_AREA_VALUE': 'pin',
-        'PIN_INPUT_VALUE': os.getenv('PIN_VALUE'),
-
+        "PIN_INPUT_AREA_BY": "id",
+        "PIN_INPUT_AREA_VALUE": "pin",
+        "PIN_INPUT_VALUE": os.getenv("PIN_VALUE"),
         # 確認する
-        'CHECK_VALUE': '//button[@id="btn-confirm"]',
-
+        "CHECK_VALUE": '//button[@id="btn-confirm"]',
         # 出品する
-        'SELL_BTN': '//button[@id="btn-add"]',
-
+        "SELL_BTN": '//button[@id="btn-add"]',
         # POPUPを削除
-        'POPUP_DELETE_BTN_VALUE': '//div[@class="btn-modal-close"]',
-
+        "POPUP_DELETE_BTN_VALUE": '//div[@class="btn-modal-close"]',
         # マイページに戻る
-        'MY_PAGE_VALUE': '//div[@class="header-top-btns"]/a[@class="icon-user"]',
+        "MY_PAGE_VALUE": '//div[@class="header-top-btns"]/a[@class="icon-user"]',
     }
 
-##########
+    ##########
 
     RMT_CLUB = {
-        'INPUT_PHOTO_FOLDER_NAME': '03_RMT_CLUB',
-
+        "INPUT_PHOTO_FOLDER_NAME": "03_RMT_CLUB",
         # 売りたいをクリック
-        'SELL_BTN': "//a[@href='/deals/add']",
-        'SELL_SELECT_BTN': "//label[text()='売りたい']",
-
+        "SELL_BTN": "//a[@href='/deals/add']",
+        "SELL_SELECT_BTN": "//label[text()='売りたい']",
         # タイトル入力
-        'SELL_TITLE_INPUT_BY': 'id',
-        'SELL_TITLE_INPUT_VALUE': 'suggest_title',
-
+        "SELL_TITLE_INPUT_BY": "id",
+        "SELL_TITLE_INPUT_VALUE": "suggest_title",
         # 代行
-        'CATEGORY_ACCOUNT_SELECT_VALUE': "//div[@id='deal_account_list']/input[@value='1']",
-        'CATEGORY_ITEM_SELECT_VALUE': "//div[@id='deal_account_list']/input[@value='2']",
-        'CATEGORY_RISEMARA_SELECT_VALUE': "//div[@id='deal_account_list']/input[@value='3']",
-        'CATEGORY_DAIKO_SELECT_VALUE': "//div[@id='deal_account_list']/input[@value='4']",
-
+        "CATEGORY_ACCOUNT_SELECT_VALUE": "//div[@id='deal_account_list']/input[@value='1']",
+        "CATEGORY_ITEM_SELECT_VALUE": "//div[@id='deal_account_list']/input[@value='2']",
+        "CATEGORY_RISEMARA_SELECT_VALUE": "//div[@id='deal_account_list']/input[@value='3']",
+        "CATEGORY_DAIKO_SELECT_VALUE": "//div[@id='deal_account_list']/input[@value='4']",
         # 掲載タイトル
-        'COMMENT_TITLE_BY': 'id',
-        'COMMENT_TITLE_VALUE': 'DealDealTitle',
-
+        "COMMENT_TITLE_BY": "id",
+        "COMMENT_TITLE_VALUE": "DealDealTitle",
         # タグ
-        'TAG_BY': 'id',
-        'TAG_VALUE': 'DealTag',
-
+        "TAG_BY": "id",
+        "TAG_VALUE": "DealTag",
         # 詳細内容
-        'SELL_EXPLANATION_INPUT_BY': 'id',
-        'SELL_EXPLANATION_INPUT_VALUE': 'DealInfo',
-
+        "SELL_EXPLANATION_INPUT_BY": "id",
+        "SELL_EXPLANATION_INPUT_VALUE": "DealInfo",
         # 画像取り込み
-        'FILE_INPUT_BY': 'id',
-        'FILE_INPUT_VALUE': 'upload_file_input_section0',
+        "FILE_INPUT_BY": "id",
+        "FILE_INPUT_VALUE": "upload_file_input_section0",
         # DOMで確認する箇所
-        'CHECK_BY': 'css',
-        'CHECK_VALUE': '#sortableArea .upimages-item',
-
+        "CHECK_BY": "css",
+        "CHECK_VALUE": "#sortableArea .upimages-item",
         # ユーザーに出品を通知
-        'USER_NOTIFY_BY': 'id',
-        'USER_NOTIFY_VALUE': 'DealUserName',
-
+        "USER_NOTIFY_BY": "id",
+        "USER_NOTIFY_VALUE": "DealUserName",
         # 取引価格
-        'PRICE_BY': 'id',
-        'PRICE_VALUE': '//input[@name="price"]',
-
+        "PRICE_BY": "id",
+        "PRICE_VALUE": '//input[@name="price"]',
         # 確認ボタン
-        'CHECK_VALUE': "//input[@type='submit' and @value='確認']",
-
+        "CHECK_VALUE": "//input[@type='submit' and @value='確認']",
         # 同意するにクリック
-        'AGREE_VALUE': "//input[@type='checkbox' and @name='data[Deal][agreement]']",
-
+        "AGREE_VALUE": "//input[@type='checkbox' and @name='data[Deal][agreement]']",
         # 出品する
-        'SELL_BTN': "//button[@type='submit' and contains(text(), '出品する')]",
-
+        "SELL_BTN": "//button[@type='submit' and contains(text(), '出品する')]",
         # マイページに戻る
-        'MY_PAGE_VALUE': "//a[@class='btn_mypage fade' and text()='マイページ']",
-        '': '',
+        "MY_PAGE_VALUE": "//a[@class='btn_mypage fade' and text()='マイページ']",
+        "": "",
     }
 
 

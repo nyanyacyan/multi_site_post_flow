@@ -170,6 +170,35 @@ class GetDataGSSAPI:
         return df
 
 
+    # ----------------------------------------------------------------------------------    # APIを使ってGSSからデータを取得してDataFrameに変換
+    # GUIからWorksheetを指定してdfを返す
+
+    @decoInstance.retryAction(maxRetry=3, delay=30)
+    def _get_df_in_gui(self, gss_info: Dict, worksheet_name: str):
+        client = self.client(jsonKeyName=gss_info["jsonKeyName"])
+
+        self.logger.debug(
+            f"利用可能なワークシート: {client.open_by_key(gss_info['spreadsheetId']).worksheets()}"
+        )
+
+        # 対象のスプシを開く
+        worksheet = client.open_by_key(gss_info["spreadsheetId"]).worksheet(worksheet_name)
+
+        # デバッグ用
+        all_values = worksheet.get_all_values()
+        self.logger.debug(f"ワークシート全データ: {all_values}")
+
+        # シートのデータを取得→ここでのデータは辞書型
+        # columnの行に空白があると読込ができない→入力されてる部分以外を選択して消去
+        dictData = worksheet.get_all_records()
+
+        # DataFrameに変換
+        df = pd.DataFrame(dictData)
+        self.logger.info(f"スプシ読み込み完了 :\n{df.head()}")
+
+        return df
+
+
     # ----------------------------------------------------------------------------------
     # スプシにあるWorksheetのリストを返す
     # GUIに返す

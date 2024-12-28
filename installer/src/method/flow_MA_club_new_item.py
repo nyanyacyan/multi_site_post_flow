@@ -56,51 +56,66 @@ class FlowMAClubNewItem:
 # ----------------------------------------------------------------------------------
 #todo 各メソッドをまとめる
 
-    async def process(self):
+    async def process(self, worksheet_name: str, id_text: str, pass_text: str):
         # スプシの読み込み（辞書でoutput）
-        df = self.gss_read.getDataFrameFromGss(gss_info=self.gss_info)
+        df = self.gss_read._get_df_in_gui(
+            gss_info=self.gss_info, worksheet_name=worksheet_name
+        )
 
         # dfの中からチェックがあるものだけ抽出
-        process_df = df[df['チェック'] == 'TRUE'].reset_index(drop=True)
+        process_df = df[df["チェック"] == "TRUE"].reset_index(drop=True)
         df_row_num = len(process_df)
         df_columns = process_df.shape[1]
         self.logger.debug(process_df.head)
-        self.logger.debug(f"スプシの全行数: {df_row_num}行\nスプシの全column数: {df_columns}")
+        self.logger.debug(
+            f"スプシの全行数: {df_row_num}行\nスプシの全column数: {df_columns}"
+        )
 
         # 各行に対して処理を行う
         for i, row in process_df.iterrows():
             # rowの情報を辞書化
             sell_data = row.to_dict()
-            self.logger.debug(f'sell_data: {sell_data}')
-            self.logger.info(f"{i + 1}/{df_row_num} タイトル: {sell_data['案件タイトル']}")
-            self.logger.info(f"{i + 1}/{df_row_num} タイトル: {sell_data['出品タイトル']}")
+            self.logger.debug(f"sell_data: {sell_data}")
+            self.logger.info(
+                f"{i + 1}/{df_row_num} タイトル: {sell_data['案件タイトル']}"
+            )
+            self.logger.info(
+                f"{i + 1}/{df_row_num} タイトル: {sell_data['出品タイトル']}"
+            )
             self.logger.info(f"{i + 1}/{df_row_num} タイトル: {sell_data['案件説明']}")
             self.logger.info(f"{i + 1}/{df_row_num} タイトル: {sell_data['売却価格']}")
-            self.logger.info(f'{i + 1}/{df_row_num} 処理開始')
+            self.logger.info(f"{i + 1}/{df_row_num} 処理開始")
 
             # ログイン〜処理実施まで
-            self.row_process(index=i, sell_data=sell_data)
-            self.logger.info(f'{i + 1}/{df_row_num} 処理完了')
+            self.row_process(
+                index=i, id_text=id_text, pass_text=pass_text, sell_data=sell_data
+            )
+            self.logger.info(f"{i + 1}/{df_row_num} 処理完了")
 
         self.logger.info(f"{self.login_info['SITE_NAME']}すべての処理完了")
-
 
 # ----------------------------------------------------------------------------------
 # ログイン〜出品処理
 
     @deco.funcBase
-    def row_process(self, index: int, sell_data: Dict):
-        self.logger.debug(f'index: {index}')
+    def row_process(self, index: int, id_text: str, pass_text: str, sell_data: Dict):
+        self.logger.debug(f"index: {index}")
         if index == 0:
             # IDログイン
-            self.login.flowLoginID(login_info=self.login_info, timeout=120)
+            self.login.flow_login_id_input_gui(
+                login_info=self.login_info,
+                id_text=id_text,
+                pass_text=pass_text,
+                timeout=120,
+            )
         else:
             # Sessionを維持したままログインの手順を端折る
-            self.jump_target_page.flowJumpTargetPage(targetUrl=self.login_info['HOME_URL'])
+            self.jump_target_page.flowJumpTargetPage(
+                targetUrl=self.login_info["HOME_URL"]
+            )
 
         # 出品処理
         self.sell_process(sell_data=sell_data)
-
 
 # ----------------------------------------------------------------------------------
 # 出品処理
@@ -341,6 +356,17 @@ class FlowMAClubNewItem:
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # テスト実施
 
-if __name__ == '__main__':
+if __name__ == "__main__":
+    worksheet_name = LoginInfo.SITE_PATTERNS.value["MA_CLUB"]["SITE_NAME"]
+    id_text = LoginInfo.SITE_PATTERNS.value["MA_CLUB"]["ID_TEXT"]
+    pass_text = LoginInfo.SITE_PATTERNS.value["MA_CLUB"]["PASS_TEXT"]
+    print(
+        f"worksheet_name: {worksheet_name}\nid_text: {id_text}\npass_text: {pass_text}"
+    )
+
     test_flow = FlowMAClubNewItem()
-    asyncio.run(test_flow.process())
+    asyncio.run(
+        test_flow.process(
+            worksheet_name=worksheet_name, id_text=id_text, pass_text=pass_text
+        )
+    )
