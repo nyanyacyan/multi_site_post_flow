@@ -5,7 +5,7 @@
 
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 # import
-import asyncio
+import asyncio, threading, time
 from typing import Dict
 from selenium.webdriver.common.keys import Keys
 
@@ -19,6 +19,7 @@ from base.elementManager import ElementManager
 from base.decorators import Decorators
 from base.jumpTargetPage import JumpTargetPage
 from selenium.common.exceptions import NoSuchElementException
+from base.time_manager import TimeManager
 
 # const
 from const_element import LoginInfo, GssInfo, SellInfo
@@ -45,6 +46,7 @@ class FlowMAClubNewItem:
         self.gss_read = GetDataGSSAPI()
         self.element = ElementManager(chrome=self.chrome, )
         self.jump_target_page = JumpTargetPage(chrome=self.chrome)
+        self.time_manager = TimeManager()
 
         # 必要info
         self.gss_info = GssInfo.MA_CLUB.value
@@ -53,8 +55,27 @@ class FlowMAClubNewItem:
 
 
 ####################################################################################
-# ----------------------------------------------------------------------------------
-#todo 各メソッドをまとめる
+    # ----------------------------------------------------------------------------------
+    # ループ処理を行う
+
+    async def loop_process(self, start_wait_time_info: Dict, stop_event: threading.Event, worksheet_name: str, id_text: str, pass_text: str, random_info: Dict):
+        # 開始時間
+        self.time_manager._start_wait_for_time(start_wait_time_info)
+
+        # stop_eventのフラグが立つまでは実行し続ける
+        while not stop_event.is_set():
+            await self.process(
+                worksheet_name=worksheet_name,
+                id_text=id_text,
+                pass_text=pass_text
+            )
+
+            # 設定した待機をランダムで実行
+            self.time_manager._random_sleep(random_info=random_info)
+
+
+    # ----------------------------------------------------------------------------------
+    # 各メソッドをまとめる
 
     async def process(self, worksheet_name: str, id_text: str, pass_text: str):
         # スプシの読み込み（辞書でoutput）
@@ -214,7 +235,7 @@ class FlowMAClubNewItem:
 
 # ----------------------------------------------------------------------------------
 # カテゴリ選択
-# TODO スプシが選ばれているものがアンマッチしている場合の例外処理→スプシにないことをPOP出してエラーを出す→
+# スプシが選ばれているものがアンマッチしている場合の例外処理→スプシにないことをPOP出してエラーを出す→
 
     @deco.funcBase
     def _category_select(self, sell_data: Dict):

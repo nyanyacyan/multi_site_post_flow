@@ -3,7 +3,7 @@
 
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 # import
-import time
+import time, re, os
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.remote.webelement import WebElement
 from datetime import datetime
@@ -174,12 +174,32 @@ class ElementManager:
 
     # ----------------------------------------------------------------------------------
     # input_photo内にあるすべてのファイルのフルパスをリスト化する
-    # TODO Sortするようにしてアップロードする順番を決める
+
     def _get_photos_all_path_list(self, photo_dir: str):
         dir_path = Path(photo_dir)
         all_photos_all_path_list = [str(file) for file in dir_path.rglob('*') if file.is_file()]
         self.logger.debug(f'all_photos_all_path_list: {all_photos_all_path_list}')
         return all_photos_all_path_list
+
+
+    # ----------------------------------------------------------------------------------
+    # Sortするようにしてアップロードする順番を決める
+    # 最後の数字を拾ってSortする
+
+    def _list_sort_photo_data(self, all_photos_all_path_list: List[str]):
+        sorted_list = sorted(all_photos_all_path_list, key=self._extract_num)  # オブジェクトとして渡してSort
+        self.logger.debug(f'Sorted list: {sorted_list}')
+        return sorted_list
+
+
+    # ----------------------------------------------------------------------------------
+    # 文字列から数値を抽出する→A_Folder1→１
+
+    def _extract_num(self, text: str):
+        match = re.search(r'\d+$', text)  # 名前の末尾にある数値を探す
+        extract_num = int(match.group()) if match else float('inf')  # 数値がない場合は優先度低めに設定
+        self.logger.debug(f'extract_num: {extract_num}')
+        return extract_num
 
 
     # ----------------------------------------------------------------------------------

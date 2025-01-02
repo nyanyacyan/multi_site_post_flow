@@ -5,7 +5,7 @@
 
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 # import
-import asyncio
+import asyncio, threading, time
 from typing import Dict
 from selenium.webdriver.common.keys import Keys
 
@@ -18,6 +18,7 @@ from base.spreadsheetRead import GetDataGSSAPI
 from base.elementManager import ElementManager
 from base.decorators import Decorators
 from base.jumpTargetPage import JumpTargetPage
+from base.time_manager import TimeManager
 
 # const
 from const_element import LoginInfo, GssInfo, SellInfo
@@ -47,15 +48,37 @@ class FlowGameClubNewItem:
         self.gss_read = GetDataGSSAPI()
         self.element = ElementManager(chrome=self.chrome)
         self.jump_target_page = JumpTargetPage(chrome=self.chrome)
+        self.time_manager = TimeManager()
+
 
         # 必要info
         self.gss_info = GssInfo.GAME_CLUB.value
         self.login_info = LoginInfo.SITE_PATTERNS.value["GAME_CLUB"]
         self.sell_info = SellInfo.GAME_CLUB.value
 
+
     ####################################################################################
     # ----------------------------------------------------------------------------------
-    # todo 各メソッドをまとめる
+    # ループ処理を行う
+
+    async def loop_process(self, start_wait_time_info: Dict, stop_event: threading.Event, worksheet_name: str, id_text: str, pass_text: str, random_info: Dict):
+        # 開始時間
+        self.time_manager._start_wait_for_time(start_wait_time_info)
+
+        # stop_eventのフラグが立つまでは実行し続ける
+        while not stop_event.is_set():
+            await self.process(
+                worksheet_name=worksheet_name,
+                id_text=id_text,
+                pass_text=pass_text
+            )
+
+            # 設定した待機をランダムで実行
+            self.time_manager._random_sleep(random_info=random_info)
+
+
+    # ----------------------------------------------------------------------------------
+    # 各メソッドをまとめる
 
     async def process(self, worksheet_name: str, id_text: str, pass_text: str):
         # スプシの読み込み（辞書でoutput）
@@ -186,12 +209,15 @@ class FlowGameClubNewItem:
             subDirName=self.sell_info["INPUT_PHOTO_FOLDER_NAME"],
             subSubDirName=sell_data["画像フォルダ"],
         )
+
+        file_path_sort_list = self.element._list_sort_photo_data(all_photos_all_path_list=file_path_list)
+
         self.element.files_input(
             by=self.sell_info["FILE_INPUT_BY"],
             value=self.sell_info["FILE_INPUT_VALUE"],
             check_by=self.sell_info["CHECK_BY"],
             check_value=self.sell_info["CHECK_VALUE"],
-            file_path_list=file_path_list,
+            file_path_list=file_path_sort_list,
         )
         self._random_sleep()
 

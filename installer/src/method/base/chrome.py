@@ -111,9 +111,9 @@ class ChromeManager:
 
         # ヘッドレスでの場合に「user-agent」を設定することでエラーを返すものを通すことができる
         # chromeOptions.add_argument('user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.63 Safari/537.36')
-        chromeOptions.add_extension(
-            self.path.getInputDataFilePath(fileName=FileName.CHROME_OP_IFRAME.value)
-        )  # iframe対策の広告ブロッカー
+        # chromeOptions.add_extension(
+        #     self.path.getInputDataFilePath(fileName=FileName.CHROME_OP_IFRAME.value)
+        # )  # iframe対策の広告ブロッカー
         chromeOptions.add_extension(
             self.path.getInputDataFilePath(fileName=FileName.CHROME_OP_CAPTCHA.value)
         )  # CAPTCHA
