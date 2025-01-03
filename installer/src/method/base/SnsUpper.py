@@ -55,7 +55,6 @@ class XPoster:
         xConsumerSecret: str,
         xAccessToken: str,
         xAccessTokenSecret: str,
-        ,
     ):
 
         # logger

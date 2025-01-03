@@ -276,3 +276,36 @@ class SellInfo(Enum):
 
 
 # ----------------------------------------------------------------------------------
+
+
+class GuiInfo(Enum):
+    GAME_CLUB = {
+        "main_window_title": "GAME_CLUB Automation Tool",
+        "USER_INPUT_TITLE": "",
+        "INPUT_EXAMPLE_ID": "アカウントIDを入力",
+        "INPUT_EXAMPLE_PASS": "アカウントPassを入力",
+        "ID_LABEL": "USER ID",
+        "PASS_LABEL": "PASSWORD",
+        "DROPDOWN_LABEL": "Worksheet選択",
+        "": "",
+        "": "",
+        "": "",
+        "": "",
+        "": "",
+        "": "",
+        "": "",
+        "": "",
+        "": "",
+
+    }
+
+    MA_CLUB = {
+        "main_window_title": "",
+    }
+
+    RMT_CLUB = {
+        "main_window_title": "",
+    }
+
+
+# ----------------------------------------------------------------------------------
