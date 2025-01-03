@@ -60,6 +60,7 @@ class FlowGameClubNewItem:
     ####################################################################################
     # ----------------------------------------------------------------------------------
     # ループ処理を行う
+    # TODO エラーが起きてもループが続くように設計
 
     async def loop_process(self, start_wait_time_info: Dict, stop_event: threading.Event, worksheet_name: str, id_text: str, pass_text: str, random_info: Dict):
         # 開始時間
