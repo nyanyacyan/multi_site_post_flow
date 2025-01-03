@@ -258,7 +258,53 @@ class IntervalTimeForm(QGroupBox):
 
 
     # ----------------------------------------------------------------------------------
+# **********************************************************************************
 
+
+class SetUptime(QGroupBox):
+    def __init__(self, gui_info: Dict):
+        super().__init__(gui_info['INTERVAL_TIME_GROUP_TITLE'])
+
+        # レイアウトを設定
+        self.setLayout(self._input_interval_time_group(gui_info=gui_info))
+
+
+####################################################################################
+# 値を取得
+
+    def get_uptime_info(self):
+        try:
+            start_datetime_value = self.interval_min_text.text().strip()
+            end_datetime_value = self.interval_max_text.text().strip()
+
+            if not start_datetime_value:
+                self.error_label.setText("下限が入力されてません")
+                raise ValueError("下限が入力されてません")
+
+            if not end_datetime_value:
+                self.error_label.setText("上限が入力されてません")
+                raise ValueError("上限が入力されてません")
+
+            if int(start_datetime_value) > int(end_datetime_value):
+                self.error_label.setText("最小時間は最大時間以下である必要があります")
+                raise ValueError("最小時間は最大時間以下である必要があります")
+
+            # エラーがない場合はメッセージをクリア
+            self.error_label.setText("")
+
+            return {
+                "min": start_datetime_value,
+                "max": end_datetime_value,
+            }
+
+        except ValueError as e:
+            self.error_label.setText(str(e))
+            raise
+
+
+####################################################################################
+
+####################################################################################
 
 
 
