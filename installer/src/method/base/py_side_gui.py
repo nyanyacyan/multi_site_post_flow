@@ -203,8 +203,7 @@ class IntervalTimeForm(QGroupBox):
 # 実施間隔を入力
 
     def _input_interval_time_group(self, gui_info: Dict):
-        interval_time_group_box = QGroupBox(gui_info['INTERVAL_TIME_GROUP_TITLE'])
-        interval_time_group_layout = QVBoxLayout()  # 縦レイアウト
+        interval_time_group_layout = QVBoxLayout()
 
         # interval_minを入力
         self.interval_min_text = self._create_input_int_field(gui_info['INPUT_EXAMPLE_INTERVAL_MIN'])
@@ -227,10 +226,7 @@ class IntervalTimeForm(QGroupBox):
         self.error_label = self._error_label()
         interval_time_group_layout.addWidget(self.error_label)
 
-        # 定義したレイアウトをセット
-        interval_time_group_box.setLayout(interval_time_group_layout)
-
-        return interval_time_group_box
+        return interval_time_group_layout
 
 
 ####################################################################################
@@ -274,27 +270,27 @@ class SetUptime(QGroupBox):
 
     def get_uptime_info(self):
         try:
-            start_datetime_value = self.interval_min_text.text().strip()
-            end_datetime_value = self.interval_max_text.text().strip()
+            uptime_start_time_value = self.uptime_start_time.text().strip()
+            uptime_end_time_value = self.uptime_end_time.text().strip()
 
-            if not start_datetime_value:
-                self.error_label.setText("下限が入力されてません")
-                raise ValueError("下限が入力されてません")
+            if not uptime_start_time_value:
+                self.error_label.setText("開始日時の設定がされてません")
+                raise ValueError("開始日時の設定がされてません")
 
-            if not end_datetime_value:
-                self.error_label.setText("上限が入力されてません")
-                raise ValueError("上限が入力されてません")
+            if not uptime_end_time_value:
+                self.error_label.setText("終了日時の設定がされてません")
+                raise ValueError("終了日時の設定がされてません")
 
-            if int(start_datetime_value) > int(end_datetime_value):
-                self.error_label.setText("最小時間は最大時間以下である必要があります")
-                raise ValueError("最小時間は最大時間以下である必要があります")
+            if self.uptime_start_time.dateTime() >= self.uptime_end_time.dateTime():
+                self.error_label.setText("開始日時は終了日時より前に設定する必要があります")
+                raise ValueError("開始日時は終了日時より前に設定する必要があります")
 
             # エラーがない場合はメッセージをクリア
             self.error_label.setText("")
 
             return {
-                "min": start_datetime_value,
-                "max": end_datetime_value,
+                "uptime_start_time": uptime_start_time_value,
+                "uptime_end_time": uptime_end_time_value,
             }
 
         except ValueError as e:
@@ -303,27 +299,63 @@ class SetUptime(QGroupBox):
 
 
 ####################################################################################
+# 開始と終了の時刻入力
+
+    def _input_uptime_group(self, gui_info: Dict):
+        uptime_layout = QVBoxLayout()
+
+        # start_uptimeを入力
+        input_start_uptime_label = QLabel(gui_info['INPUT_START_UPTIME_TITLE'])
+        self.uptime_start_time = self._set_datetime()
+
+        # end_uptimeを入力
+        input_last_label = QLabel(gui_info['INPUT_END_UPTIME_TITLE'])
+        self.uptime_end_time = self._set_datetime()
+
+        # start_uptimeのレイアウト作成
+        start_uptime_layout = QHBoxLayout()  # 横レイアウト
+        start_uptime_layout.addWidget(input_start_uptime_label)
+        start_uptime_layout.addWidget(self.uptime_start_time)
+
+        # start_uptimeグループに追加
+        uptime_layout.addLayout(start_uptime_layout)
+
+        # end_uptimeのレイアウト作成
+        end_uptime_layout = QHBoxLayout()  # 横レイアウト
+        end_uptime_layout.addWidget(input_last_label)
+        end_uptime_layout.addWidget(self.uptime_end_time)
+
+        # end_uptimeをグループに追加
+        uptime_layout.addLayout(end_uptime_layout)
+
+        # errorラベルを追加
+        self.error_label = self._error_label()
+        uptime_layout.addWidget(self.error_label)
+
+        return uptime_layout
+
 
 ####################################################################################
-
-
-
 
 
     # カレンダーから日時を選択
     # 実行されて初めて入力内容が確認できる→デバッグはこの関数が実行された後に
     # 値は見えるやすように処理する必要がある→ .dateTime().toString("yyyy-MM-dd HH:mm:ss")
 
-    def _set_datetime(self, input_example: str):
-        # 入力する部分のラベル
-        label = QLabel(input_example, self)
-        self.main_layout.addWidget(label)  # 入力する部分をメインフレームと結合
-
+    def _set_datetime(self):
         edit_datetime = QDateTimeEdit(self)
         edit_datetime.setDateTime(QDateTime.currentDateTime())  # 現時刻をデフォルトにする
         edit_datetime.setCalendarPopup(True)  # カレンダー表示を有効化
-        self.main_layout.addWidget(edit_datetime)  # レイアウトに追加
         return edit_datetime
+
+
+    # ----------------------------------------------------------------------------------
+    # スプシからのデータを受けたドロップダウンメニュー
+
+    def _error_label(self):
+        error_label = QLabel("")
+        error_label.setStyleSheet("color: red;")
+        return error_label
 
 
     # ----------------------------------------------------------------------------------

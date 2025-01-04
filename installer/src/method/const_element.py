@@ -292,11 +292,14 @@ class GuiInfo(Enum):
         "INPUT_BETWEEN_LABEL": "分 から",
         "INPUT_EXAMPLE_INTERVAL_MAX": "上限",
         "INPUT_LAST_LABEL": "分 まで",
+        "INTERVAL_TIME_GROUP_TITLE": "Automation Tool 稼働時間設定",
+        "INPUT_START_UPTIME_TITLE": "開始時間",
+        "INPUT_EXAMPLE_START_UPTIME": "カレンダーから選択",
+        "INPUT_END_UPTIME_TITLE": "終了時間",
+        "INPUT_EXAMPLE_END_UPTIME": "カレンダーから選択",
         "": "",
         "": "",
         "": "",
-        "": "",
-
     }
 
     MA_CLUB = {
