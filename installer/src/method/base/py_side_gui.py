@@ -5,9 +5,9 @@
 
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 # import
-import unicodedata, threading, time
+import unicodedata, threading, time, _asyncio
 from typing import Dict, Callable, List, Any
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLineEdit, QDateTimeEdit, QMessageBox, QLabel, QGroupBox, QComboBox
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLineEdit, QDateTimeEdit, QRadioButton, QLabel, QGroupBox, QComboBox
 from PySide6.QtCore import QDateTime, QRegularExpression
 from PySide6.QtGui import QIntValidator, QRegExpValidator
 
@@ -358,12 +358,142 @@ class SetUptime(QGroupBox):
 
 
     # ----------------------------------------------------------------------------------
+# **********************************************************************************
+
+
+class UpdateSelect(QGroupBox):
+    def __init__(self, gui_info: Dict) -> None:
+        super().__init__(gui_info['UPDATE_SELECT_GROUP_TITLE'])
+
+        # レイアウトを設定
+        self.setLayout(self._create_update_select_group(gui_info=gui_info))
+
+
+####################################################################################
+# 値を取得
+
+    def get_update_info(self):
+        if self.update_true.isChecked():
+            return True
+        else:
+            return False
+
+
+####################################################################################
+# 開始と終了の時刻入力
+
+    def _create_update_select_group(self, gui_info: Dict):
+        update_layout = QVBoxLayout()
+
+        # ラジオボタンを設置
+        self.update_true = QRadioButton(gui_info['RADIO_BTN_TRUE_TITLE'])
+        self.update_false = QRadioButton(gui_info['RADIO_BTN_FALSE_TITLE'])
+
+        # デフォルトでチェックを入れておく
+        self.update_true.setChecked(True)
+
+        # end_updateのレイアウト作成
+        update_select_layout = QHBoxLayout()  # 横レイアウト
+        update_select_layout.addWidget(self.update_true)
+        update_select_layout.addWidget(self.update_false)
+
+        # end_updateをグループに追加
+        update_layout.addLayout(update_select_layout)
+
+        return update_layout
+
+
+####################################################################################
+
+# **********************************************************************************
+
+
+class ActionBtn(QGroupBox):
+    def __init__(self, gui_info: Dict, process_func: Callable, cancel_func: Callable):
+        super().__init__()
+
+        # 処理関数をここで所持
+        self.process_func = process_func
+        self.cancel_func = cancel_func
+
+        # レイアウトを設定
+        self.setLayout(self._create_action_btn_group(gui_info=gui_info))
+
+
+####################################################################################
+# アクションを実行
+
+    def _create_action_btn_group(self, gui_info: Dict, process_func: Callable, cancel_func: Callable):
+        action_btn_layout = QVBoxLayout()
+
+        # ボタンを設置
+        self.process_btn = self._action_btn(name_in_btn=gui_info['PROCESS_BTN_NAME'], action_func=process_func)
+        self.cancel_btn = self._action_btn(name_in_btn=gui_info['CANCEL_BTN_NAME'], action_func=cancel_func)
+
+
+        # end_updateのレイアウト作成
+        btn_layout = QHBoxLayout()  # 横レイアウト
+        btn_layout.addWidget(self.process_btn)
+        btn_layout.addWidget(self.cancel_btn)
+
+        # end_updateをグループに追加
+        action_btn_layout.addLayout(btn_layout)
+
+        # status_labelを追加
+        self.status_label = self._status_label()
+        action_btn_layout.addWidget(self.status_label)
+
+        # 各ボタンのクリックイベントを定義
+        self.process_btn.clicked.connect(self._start_processing)
+        self.cancel_btn.clicked.connect(self._cancel_processing)
+
+        return action_btn_layout
+
+
+####################################################################################
+    # ----------------------------------------------------------------------------------
     # buttonを定義
 
-    def _action_btn(self, display_btn_name: str, action_func: Callable):
-        action_btn = QPushButton(display_btn_name)
-        action_btn.clicked.connect(action_func)  # 実行する処理
+    def _action_btn(self, name_in_btn: str):
+        action_btn = QPushButton(name_in_btn)
         return action_btn
 
+
+    # ----------------------------------------------------------------------------------
+    # スプシからのデータを受けたドロップダウンメニュー
+
+    def _status_label(self):
+        status_label = QLabel("待機中...")
+        status_label.setStyleSheet("color: green;")
+        return status_label
+
+
+    # ----------------------------------------------------------------------------------
+    # process_btnを実行した際のアクション
+
+    def _start_processing(self):
+        # ラベルにコメントを追記
+        self.status_label.setText("出品処理中...")
+
+        self.process_btn.setEnabled(False)  # 開始ボタンを押せないSTS変更
+        self.cancel_btn.setEnabled(True)  # キャンセルボタンを押せるSTS変更
+
+        self.process_func()
+
+
+    # ----------------------------------------------------------------------------------
+    # cancel_btnを実行した際のアクション
+
+    def _cancel_processing(self):
+
+        self.status_label.setText("処理を中断してます...")
+
+        self.process_btn.setEnabled(True)  # 開始ボタンを押せる状態にSTS変更
+        self.cancel_btn.setEnabled(False)  # キャンセルボタンを押せないSTS変更
+
+        self.cancel_func()
+
+        # キャンセル処理完了後に「待機中」に戻す
+        self.status_label.setText("待機中...")
 
     # ----------------------------------------------------------------------------------

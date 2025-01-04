@@ -297,8 +297,11 @@ class GuiInfo(Enum):
         "INPUT_EXAMPLE_START_UPTIME": "カレンダーから選択",
         "INPUT_END_UPTIME_TITLE": "終了時間",
         "INPUT_EXAMPLE_END_UPTIME": "カレンダーから選択",
-        "": "",
-        "": "",
+        "UPDATE_SELECT_GROUP_TITLE": "更新ステータス",
+        "RADIO_BTN_TRUE_TITLE": "既存データの自動更新を実施する",
+        "RADIO_BTN_FALSE_TITLE": "既存データの自動更新しない",
+        "PROCESS_BTN_NAME": "START",
+        "CANCEL_BTN_NAME": "STOP",
         "": "",
     }
 
