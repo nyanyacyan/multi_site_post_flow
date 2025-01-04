@@ -262,7 +262,7 @@ class SetUptime(QGroupBox):
         super().__init__(gui_info['INTERVAL_TIME_GROUP_TITLE'])
 
         # レイアウトを設定
-        self.setLayout(self._input_interval_time_group(gui_info=gui_info))
+        self.setLayout(self._create_uptime_input_group(gui_info=gui_info))
 
 
 ####################################################################################
@@ -270,18 +270,17 @@ class SetUptime(QGroupBox):
 
     def get_uptime_info(self):
         try:
-            uptime_start_time_value = self.uptime_start_time.text().strip()
-            uptime_end_time_value = self.uptime_end_time.text().strip()
-
-            if not uptime_start_time_value:
+            uptime_start_time = self.uptime_start_time.dateTime()
+            uptime_end_time = self.uptime_end_time.dateTime()
+            if not uptime_start_time:
                 self.error_label.setText("開始日時の設定がされてません")
                 raise ValueError("開始日時の設定がされてません")
 
-            if not uptime_end_time_value:
+            if not uptime_end_time:
                 self.error_label.setText("終了日時の設定がされてません")
                 raise ValueError("終了日時の設定がされてません")
 
-            if self.uptime_start_time.dateTime() >= self.uptime_end_time.dateTime():
+            if uptime_start_time >= uptime_end_time:
                 self.error_label.setText("開始日時は終了日時より前に設定する必要があります")
                 raise ValueError("開始日時は終了日時より前に設定する必要があります")
 
@@ -289,8 +288,8 @@ class SetUptime(QGroupBox):
             self.error_label.setText("")
 
             return {
-                "uptime_start_time": uptime_start_time_value,
-                "uptime_end_time": uptime_end_time_value,
+                "uptime_start_time": uptime_start_time,
+                "uptime_end_time": uptime_end_time,
             }
 
         except ValueError as e:
@@ -301,16 +300,12 @@ class SetUptime(QGroupBox):
 ####################################################################################
 # 開始と終了の時刻入力
 
-    def _input_uptime_group(self, gui_info: Dict):
+    def _create_uptime_input_group(self, gui_info: Dict):
         uptime_layout = QVBoxLayout()
 
         # start_uptimeを入力
         input_start_uptime_label = QLabel(gui_info['INPUT_START_UPTIME_TITLE'])
         self.uptime_start_time = self._set_datetime()
-
-        # end_uptimeを入力
-        input_last_label = QLabel(gui_info['INPUT_END_UPTIME_TITLE'])
-        self.uptime_end_time = self._set_datetime()
 
         # start_uptimeのレイアウト作成
         start_uptime_layout = QHBoxLayout()  # 横レイアウト
@@ -319,6 +314,10 @@ class SetUptime(QGroupBox):
 
         # start_uptimeグループに追加
         uptime_layout.addLayout(start_uptime_layout)
+
+        # end_uptimeを入力
+        input_last_label = QLabel(gui_info['INPUT_END_UPTIME_TITLE'])
+        self.uptime_end_time = self._set_datetime()
 
         # end_uptimeのレイアウト作成
         end_uptime_layout = QHBoxLayout()  # 横レイアウト
