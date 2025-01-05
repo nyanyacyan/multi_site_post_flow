@@ -5,6 +5,7 @@
 
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 # import
+from datetime import datetime, timedelta
 from typing import Dict
 from PySide6.QtWidgets import QVBoxLayout, QHBoxLayout, QDateTimeEdit, QLabel, QGroupBox
 from PySide6.QtCore import QDateTime
@@ -28,10 +29,15 @@ class SetUptime(QGroupBox):
     ####################################################################################
     # 値を取得
 
-    def get_uptime_info(self):
+    def get_uptime_info(self) -> Dict[str, timedelta]:
         try:
-            uptime_start_time = self.uptime_start_time.dateTime()
-            uptime_end_time = self.uptime_end_time.dateTime()
+            uptime_start_time = self.uptime_start_time.dateTime().toPython()
+            uptime_end_time = self.uptime_end_time.dateTime().toPython()
+
+            now = datetime.now()
+            start_diff = uptime_start_time - now
+            end_diff = uptime_end_time - now
+
             if not uptime_start_time:
                 self.error_label.setText("開始日時の設定がされてません")
                 raise ValueError("開始日時の設定がされてません")
@@ -48,8 +54,8 @@ class SetUptime(QGroupBox):
             self.error_label.setText("")
 
             return {
-                "uptime_start_time": uptime_start_time,
-                "uptime_end_time": uptime_end_time,
+                "start_diff": start_diff,
+                "end_diff": end_diff,
             }
 
         except ValueError as e:
