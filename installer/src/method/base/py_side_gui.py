@@ -497,3 +497,28 @@ class ActionBtn(QGroupBox):
         self.status_label.setText("待機中...")
 
     # ----------------------------------------------------------------------------------
+# **********************************************************************************
+
+
+class StatusManager(QGroupBox):
+    def __init__(self):
+        super().__init__()
+
+        self.status_label = QLabel("待機中...")
+        self.status_label.setStyleSheet("color: green;")
+
+        # レイアウトを設定
+        layout = QVBoxLayout()
+        layout.addWidget(self.status_label)
+        self.setLayout(layout)
+
+
+    ####################################################################################
+    # アクションを実行
+
+    def update_status(self, msg: str, color: str= "green"):
+        self.status_label.setText(msg)
+        self.status_label.setStyleSheet(f"color: {color};")
+
+
+    ####################################################################################

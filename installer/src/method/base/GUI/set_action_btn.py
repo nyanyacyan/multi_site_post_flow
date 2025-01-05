@@ -2,7 +2,6 @@
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 # export PYTHONPATH="/Users/nyanyacyan/Desktop/project_file/domain_search/installer/src"
 
-
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 # import
 from typing import Dict, Callable
@@ -68,7 +67,7 @@ class ActionBtn(QGroupBox):
 
 
     # ----------------------------------------------------------------------------------
-    # スプシからのデータを受けたドロップダウンメニュー
+    # ステータス状況を表示させる
 
     def _status_label(self):
         status_label = QLabel("待機中...")
