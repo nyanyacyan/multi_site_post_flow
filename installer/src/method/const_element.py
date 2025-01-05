@@ -280,7 +280,6 @@ class SellInfo(Enum):
 
 class GuiInfo(Enum):
     GAME_CLUB = {
-        "": "",
         "MAIN_WINDOW_TITLE": "GAME_CLUB Automation Tool",
         "USER_INPUT_TITLE": "",
         "INPUT_EXAMPLE_ID": "アカウントIDを入力",

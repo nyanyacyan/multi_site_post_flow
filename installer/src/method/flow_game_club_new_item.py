@@ -59,26 +59,6 @@ class FlowGameClubNewItem:
 
     ####################################################################################
     # ----------------------------------------------------------------------------------
-    # ループ処理を行う
-    # TODO エラーが起きてもループが続くように設計
-
-    async def loop_process(self, start_wait_time_info: Dict, stop_event: threading.Event, worksheet_name: str, id_text: str, pass_text: str, random_info: Dict):
-        # 開始時間
-        self.time_manager._start_wait_for_time(start_wait_time_info)
-
-        # stop_eventのフラグが立つまでは実行し続ける
-        while not stop_event.is_set():
-            await self.process(
-                worksheet_name=worksheet_name,
-                id_text=id_text,
-                pass_text=pass_text
-            )
-
-            # 設定した待機をランダムで実行
-            self.time_manager._random_sleep(random_info=random_info)
-
-
-    # ----------------------------------------------------------------------------------
     # 各メソッドをまとめる
 
     async def process(self, worksheet_name: str, id_text: str, pass_text: str):

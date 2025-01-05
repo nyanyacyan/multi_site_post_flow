@@ -4,15 +4,12 @@
 
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 # import
-import unicodedata, threading, time, _asyncio
+import threading, time, _asyncio, sys
 from datetime import datetime, timedelta
-from typing import Dict, Callable, List, Any
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLineEdit, QDateTimeEdit, QRadioButton, QLabel, QGroupBox, QComboBox
-from PySide6.QtCore import QDateTime, QRegularExpression
-from PySide6.QtGui import QIntValidator, QRegExpValidator
+from typing import Dict, Callable, List
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QApplication
 
 # 自作モジュール
-from src.method.base.utils import Logger
 from installer.src.method.base.GUI.set_user_info import UserInfoForm
 from installer.src.method.base.GUI.set_interval_time import IntervalTimeForm
 from src.method.base.GUI.set_uptime import SetUptime
@@ -20,7 +17,13 @@ from src.method.base.GUI.set_radio_btn import RadioSelect
 from src.method.base.GUI.set_action_btn import ActionBtn
 from src.method.base.GUI.set_status_display import StatusManager
 from src.method.base.time_manager import TimeManager
+from src.method.base.spreadsheetRead import GetDataGSSAPI
+from src.method.flow_game_club_new_item import FlowGameClubNewItem
+from src.method.flow_MA_club_new_item import FlowMAClubNewItem
 
+
+# const
+from src.method.const_element import GssInfo, GuiInfo
 
 
 # ----------------------------------------------------------------------------------
@@ -204,9 +207,22 @@ class MainApp(QWidget):
 
 
     # ----------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# GCテスト実施
 
+if __name__ == "__main__":
+    gss_info = GssInfo.GAME_CLUB.value
+    gui_info = GuiInfo.GAME_CLUB.value
 
+    # スプシからすべてのWorksheet名を取得
+    gss_read = GetDataGSSAPI()
+    worksheet_info = gss_read._get_all_worksheet(gss_info=gss_info, sort_word_list=gss_info['workSheetName'])
 
+    # 処理関数を定義
+    flow_game_club = FlowGameClubNewItem()
+    process_func = flow_game_club.process
 
-
-
+    app = QApplication(sys.argv)
+    main_app = MainApp(gui_info=gui_info, worksheet_info=worksheet_info, process_func=process_func)
+    main_app.show()
+    sys.exit(app.exec_())
