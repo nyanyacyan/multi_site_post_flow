@@ -58,7 +58,7 @@ class MainApp(QWidget):
         self.update_complete_event = threading.Event()
 
         # ここでupdateの要否を確認→bool
-        self.update_bool = self.radio_btn_form.get_update_info()
+        self.update_bool = True  # 初期値を設定
 
 
     # ----------------------------------------------------------------------------------
@@ -68,6 +68,8 @@ class MainApp(QWidget):
 
     def start_event(self):
         try:
+            # STARTボタンを押下したときのradio_btnを取得
+            self.update_bool = self.radio_btn_form.get_update_info()
 
             if self.update_bool:
                 self._update_task()
@@ -77,6 +79,9 @@ class MainApp(QWidget):
             uptime_info = self.uptime_form.get_uptime_info()
 
             self.loop_process(user_info, interval_info, uptime_info)
+
+        except Exception as e:
+            self.status_label.update_status(msg=f"エラー: {e}", color="red")
 
 
     # ----------------------------------------------------------------------------------
