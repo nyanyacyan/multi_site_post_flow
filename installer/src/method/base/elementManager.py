@@ -6,6 +6,7 @@
 import time, re, os
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.remote.webelement import WebElement
+from selenium.webdriver.support.ui import Select
 from datetime import datetime
 from typing import Dict, Any, List, Tuple
 from selenium.common.exceptions import ElementClickInterceptedException, ElementNotInteractableException
@@ -431,3 +432,33 @@ class ElementManager:
 
 
 # ----------------------------------------------------------------------------------
+# 取得した要素から選択する
+
+    def _select_element(self, value: str, select_value: str, by: str='xpath', on_text: bool=False):
+        # プルダウン系の要素を選択
+        element = self.getElement(by=by, value=value)
+
+        # Selectで要素を定義
+        select_element = Select(element)
+
+        if on_text:
+            select_element.select_by_visible_text(select_value)
+        else:
+            # 要素を特定する
+            select_element.select_by_value(select_value)
+
+
+    # ----------------------------------------------------------------------------------
+    # 特定の要素が無効化されているか確認
+
+
+    def _disable_element_check(self, value: str, by: str='xpath'):
+        disable_element = self.getElement(by=by, value=value)
+
+        if disable_element:
+            return True
+        else:
+            return False
+
+
+    # ----------------------------------------------------------------------------------

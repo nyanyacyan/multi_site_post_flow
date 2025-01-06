@@ -315,3 +315,44 @@ class GuiInfo(Enum):
 
 
 # ----------------------------------------------------------------------------------
+
+
+class UpdateInfo(Enum):
+    GAME_CLUB = {
+        "SELL_ITEM_BTN_VALUE": "//div[@class='boost-modal-content']//a[contains(@class, 'btn-boost')]",
+        "ITEM_SORT_BTN_VALUE": "//select[@name='sort_index']",
+        "SELECT_VALUE": "1",
+        "DISABLE_ELEMENT_VALUE": "//a[@class='btn btn-boost btn-disabled' and @href='javascript:void(0)']",
+        "UPDATE_BTN_VALUE": "//div[@class='boost-modal-content']//a[@class='btn btn-boost ']",
+        "": "",
+        "": "",
+        "": "",
+        "": "",
+        "": "",
+        "": "",
+        "": "",
+        "": "",
+        "": "",
+    }
+
+##########
+
+    MA_CLUB = {
+        "": "",
+        "": "",
+        "": "",
+        "": "",
+        "": "",
+        "": "",
+        "": "",
+        "": "",
+        "": "",
+        "": "",
+        "": "",
+        "": "",
+        "": "",
+        "": "",
+    }
+
+
+# ----------------------------------------------------------------------------------

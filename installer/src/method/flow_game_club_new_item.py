@@ -76,7 +76,7 @@ class FlowGameClubNewItem:
             f"スプシの全行数: {df_row_num}行\nスプシの全column数: {df_columns}"
         )
 
-        # 各行に対して処理を行う
+        # DFの各行に対して処理を行う
         for i, row in process_df.iterrows():
             # rowの情報を辞書化
             sell_data = row.to_dict()
