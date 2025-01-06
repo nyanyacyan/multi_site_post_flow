@@ -7,8 +7,6 @@ from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
-from const_str import FileName
-
 
 # 自作モジュール
 from .utils import Logger

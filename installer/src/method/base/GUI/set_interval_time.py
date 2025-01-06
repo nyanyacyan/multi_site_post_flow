@@ -8,7 +8,7 @@
 from typing import Dict
 from PySide6.QtWidgets import QVBoxLayout, QHBoxLayout, QLineEdit, QLabel, QGroupBox
 from PySide6.QtCore import QRegularExpression
-from PySide6.QtGui import QRegExpValidator
+from PySide6.QtGui import QRegularExpressionValidator
 
 # 自作モジュール
 
@@ -100,7 +100,7 @@ class IntervalTimeForm(QGroupBox):
         input_field.setPlaceholderText(input_example)  # input_exampleは入力例
 
         # 半角のみを許可する正規表現を設定
-        validator = QRegExpValidator(QRegularExpression("[0-9]+"))
+        validator = QRegularExpressionValidator(QRegularExpression("[0-9]+"))
         input_field.setValidator(validator)
 
         return input_field

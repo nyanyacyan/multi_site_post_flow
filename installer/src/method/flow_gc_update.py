@@ -7,23 +7,22 @@
 # import
 
 # 自作モジュール
-from base.utils import Logger
-from base.chrome import ChromeManager
-from base.loginWithId import SingleSiteIDLogin
-from base.seleniumBase import SeleniumBasicOperations
-from base.elementManager import ElementManager
-from base.decorators import Decorators
-from base.time_manager import TimeManager
+from method.base.utils import Logger
+from method.base.chrome import ChromeManager
+from method.base.loginWithId import SingleSiteIDLogin
+from method.base.seleniumBase import SeleniumBasicOperations
+from method.base.elementManager import ElementManager
+from method.base.decorators import Decorators
+from method.base.time_manager import TimeManager
 
 # const
-from const_element import LoginInfo, UpdateInfo
+from .const_element import LoginInfo, UpdateInfo
 
 deco = Decorators()
 
 # ----------------------------------------------------------------------------------
 # **********************************************************************************
 # 一連の流れ
-
 
 class FlowGameClubUpdate:
     def __init__(self):

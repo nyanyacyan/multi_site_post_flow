@@ -3,7 +3,6 @@
 
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 # import
-import time
 from selenium.webdriver.chrome.webdriver import WebDriver
 
 
@@ -11,8 +10,6 @@ from selenium.webdriver.chrome.webdriver import WebDriver
 from .utils import Logger
 from .driverDeco import jsCompleteWaitDeco
 from .seleniumBase import SeleniumBasicOperations
-
-from const_str import FileName
 
 
 decoInstance = jsCompleteWaitDeco()

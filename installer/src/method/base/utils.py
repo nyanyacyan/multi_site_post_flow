@@ -11,7 +11,7 @@ from datetime import datetime
 
 # 自作モジュール
 from pathlib import Path
-from const_str import FileName
+from ..const_str import FileName
 
 
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$%$$$$$$$$$$$$$$$$$$$

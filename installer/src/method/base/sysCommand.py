@@ -8,8 +8,6 @@ import sys, os
 
 # 自作モジュール
 from .utils import Logger
-from const_str import FileName
-
 
 # **********************************************************************************
 

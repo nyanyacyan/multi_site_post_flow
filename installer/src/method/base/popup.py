@@ -7,8 +7,6 @@ import tkinter as tk  # python -m tkinter このコマンドで使えるかど�
 from tkinter import messagebox
 from typing import Callable, Optional
 
-from const_str import FileName
-
 
 # 自作モジュール
 from .utils import Logger

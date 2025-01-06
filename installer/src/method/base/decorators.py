@@ -14,7 +14,7 @@ import asyncio
 from .utils import Logger
 from .path import BaseToPath
 from .sysCommand import SysCommand
-from const_str import ErrorMessage, FileName
+from ..const_str import ErrorMessage
 from .errorHandlers import (
     NetworkHandler,
     FileWriteError,

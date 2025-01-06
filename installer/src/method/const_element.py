@@ -325,14 +325,6 @@ class UpdateInfo(Enum):
         "DISABLE_ELEMENT_VALUE": "//a[@class='btn btn-boost btn-disabled' and @href='javascript:void(0)']",
         "UPDATE_BTN_VALUE": "//div[@class='boost-modal-content']//a[@class='btn btn-boost ']",
         "": "",
-        "": "",
-        "": "",
-        "": "",
-        "": "",
-        "": "",
-        "": "",
-        "": "",
-        "": "",
     }
 
 ##########

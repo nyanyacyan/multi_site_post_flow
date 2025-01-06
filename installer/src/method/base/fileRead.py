@@ -12,7 +12,7 @@ import aiofiles
 
 # 自作モジュール
 from .utils import Logger
-from const_str import Encoding, FileName
+from ..const_str import Encoding
 from .path import BaseToPath
 from .decorators import Decorators
 

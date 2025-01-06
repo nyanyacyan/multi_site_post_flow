@@ -17,7 +17,7 @@ from webdriver_manager.chrome import (
 from .utils import Logger
 from .path import BaseToPath
 from .decorators import Decorators
-from const_str import FileName
+from ..const_str import FileName
 
 decoInstance = Decorators()
 

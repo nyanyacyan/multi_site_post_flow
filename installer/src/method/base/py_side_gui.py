@@ -9,7 +9,7 @@ import unicodedata, threading, time, _asyncio
 from typing import Dict, Callable, List, Any
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLineEdit, QDateTimeEdit, QRadioButton, QLabel, QGroupBox, QComboBox
 from PySide6.QtCore import QDateTime, QRegularExpression
-from PySide6.QtGui import QIntValidator, QRegExpValidator
+from PySide6.QtGui import QIntValidator, QRegularExpressionValidator
 
 # 自作モジュール
 from base.utils import Logger
@@ -125,7 +125,7 @@ class UserInfoForm(QGroupBox):
         input_field.setPlaceholderText(input_example)  # input_exampleは入力例
 
         # 半角のみを許可する正規表現を設定
-        validator = QRegExpValidator(QRegularExpression("[a-zA-Z0-9]+"))
+        validator = QRegularExpressionValidator(QRegularExpression("[a-zA-Z0-9]+"))
         input_field.setValidator(validator)
 
         if is_password:
@@ -238,7 +238,7 @@ class IntervalTimeForm(QGroupBox):
         input_field.setPlaceholderText(input_example)  # input_exampleは入力例
 
         # 半角のみを許可する正規表現を設定
-        validator = QRegExpValidator(QRegularExpression("[0-9]+"))
+        validator = QRegularExpressionValidator(QRegularExpression("[0-9]+"))
         input_field.setValidator(validator)
 
         return input_field

@@ -8,7 +8,7 @@
 from typing import Dict, List
 from PySide6.QtWidgets import QVBoxLayout, QHBoxLayout, QLineEdit, QLabel, QGroupBox, QComboBox
 from PySide6.QtCore import QRegularExpression
-from PySide6.QtGui import QRegExpValidator
+from PySide6.QtGui import QRegularExpressionValidator
 
 # 自作モジュール
 
@@ -123,7 +123,7 @@ class UserInfoForm(QGroupBox):
         input_field.setPlaceholderText(input_example)  # input_exampleは入力例
 
         # 半角のみを許可する正規表現を設定
-        validator = QRegExpValidator(QRegularExpression("[a-zA-Z0-9]+"))
+        validator = QRegularExpressionValidator(QRegularExpression("[a-zA-Z0-9]+"))
         input_field.setValidator(validator)
 
         if is_password:

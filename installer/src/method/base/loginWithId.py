@@ -3,8 +3,8 @@
 
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 # import
-import time, asyncio
-from typing import Dict, List
+import time
+from typing import Dict
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.common.exceptions import TimeoutException
 
@@ -17,13 +17,9 @@ from .elementManager import ElementManager
 from .driverWait import Wait
 from .decorators import Decorators
 from .driverDeco import jsCompleteWaitDeco, InputDeco, ClickDeco
-from .sql_exists import SqliteExistsHandler
-from .sql_io_manager import SqliteInsert, SqliteUpdate, SqliteRead, SqliteBuckup
 
-
-from constSqliteTable import TableSchemas
-from const_element import LoginInfo
-from const_str import StatusName, FileName
+# const
+from ..const_element import LoginInfo
 
 decoInstance = Decorators()
 decoJsInstance = jsCompleteWaitDeco()

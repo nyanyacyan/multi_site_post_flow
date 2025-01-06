@@ -1,6 +1,7 @@
 # coding: utf-8
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-# export PYTHONPATH="/Users/nyanyacyan/Desktop/project_file/domain_search/installer/src"
+# export PYTHONPATH="/Users/nyanyacyan/Desktop/project_file/multi_site_post_flow/installer/src"
+
 
 
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
@@ -10,18 +11,18 @@ from typing import Dict
 from selenium.webdriver.common.keys import Keys
 
 # 自作モジュール
-from base.utils import Logger
-from base.chrome import ChromeManager
-from base.loginWithId import SingleSiteIDLogin
-from base.seleniumBase import SeleniumBasicOperations
-from base.spreadsheetRead import GetDataGSSAPI
-from base.elementManager import ElementManager
-from base.decorators import Decorators
-from base.jumpTargetPage import JumpTargetPage
-from base.time_manager import TimeManager
+from method.base.utils import Logger
+from method.base.chrome import ChromeManager
+from method.base.loginWithId import SingleSiteIDLogin
+from method.base.seleniumBase import SeleniumBasicOperations
+from method.base.spreadsheetRead import GetDataGSSAPI
+from method.base.elementManager import ElementManager
+from method.base.decorators import Decorators
+from method.base.jumpTargetPage import JumpTargetPage
+from method.base.time_manager import TimeManager
 
 # const
-from const_element import LoginInfo, GssInfo, SellInfo
+from .const_element import LoginInfo, GssInfo, SellInfo
 
 deco = Decorators()
 

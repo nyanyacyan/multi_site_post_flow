@@ -1,6 +1,6 @@
 # coding: utf-8
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-# export PYTHONPATH="/Users/nyanyacyan/Desktop/project_file/domain_search/installer/src"
+# export PYTHONPATH="/Users/nyanyacyan/Desktop/project_file/multi_site_post_flow/installer/src"
 
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 # import
@@ -10,20 +10,20 @@ from typing import Dict, Callable, List
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QApplication
 
 # 自作モジュール
-from installer.src.method.base.GUI.set_user_info import UserInfoForm
-from installer.src.method.base.GUI.set_interval_time import IntervalTimeForm
-from src.method.base.GUI.set_uptime import SetUptime
-from src.method.base.GUI.set_radio_btn import RadioSelect
-from src.method.base.GUI.set_action_btn import ActionBtn
-from src.method.base.GUI.set_status_display import StatusManager
-from src.method.base.time_manager import TimeManager
-from src.method.base.spreadsheetRead import GetDataGSSAPI
-from src.method.flow_game_club_new_item import FlowGameClubNewItem
-from src.method.flow_MA_club_new_item import FlowMAClubNewItem
-
+from method.base.GUI.set_user_info import UserInfoForm
+from method.base.GUI.set_interval_time import IntervalTimeForm
+from method.base.GUI.set_uptime import SetUptime
+from method.base.GUI.set_radio_btn import RadioSelect
+from method.base.GUI.set_action_btn import ActionBtn
+from method.base.GUI.set_status_display import StatusManager
+from method.base.time_manager import TimeManager
+from method.base.spreadsheetRead import GetDataGSSAPI
+from method.flow_game_club_new_item import FlowGameClubNewItem
+from method.flow_MA_club_new_item import FlowMAClubNewItem
+from method.flow_gc_update import FlowGameClubUpdate
 
 # const
-from src.method.const_element import GssInfo, GuiInfo
+from method.const_element import GssInfo, GuiInfo
 
 
 # ----------------------------------------------------------------------------------
@@ -31,7 +31,7 @@ from src.method.const_element import GssInfo, GuiInfo
 
 
 class MainApp(QWidget):
-    def __init__(self, gui_info: Dict, worksheet_info: List, process_func: Callable):
+    def __init__(self, gui_info: Dict, worksheet_info: List, process_func: Callable, update_func: Callable):
         super().__init__()
 
         self.windowTitle(gui_info['MAIN_WINDOW_TITLE'])
@@ -63,6 +63,7 @@ class MainApp(QWidget):
 
         # メインの処理を受け取る
         self.process_func = process_func
+        self.update_func = update_func
 
         # ここでupdateの要否を確認→bool
         self.update_bool = True  # 初期値を設定
@@ -222,7 +223,11 @@ if __name__ == "__main__":
     flow_game_club = FlowGameClubNewItem()
     process_func = flow_game_club.process
 
+    # 更新処理を定義
+    flow_game_club_update = FlowGameClubUpdate()
+    update_func = flow_game_club_update.process
+
     app = QApplication(sys.argv)
-    main_app = MainApp(gui_info=gui_info, worksheet_info=worksheet_info, process_func=process_func)
+    main_app = MainApp(gui_info=gui_info, worksheet_info=worksheet_info, process_func=process_func, update_func=update_func)
     main_app.show()
     sys.exit(app.exec_())

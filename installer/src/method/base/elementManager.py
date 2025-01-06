@@ -3,7 +3,7 @@
 
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 # import
-import time, re, os
+import time, re
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support.ui import Select
@@ -26,7 +26,7 @@ from .driverDeco import ClickDeco
 from .driverWait import Wait
 
 # const
-from const_str import ErrorComment, SeleniumWait
+from ..const_str import ErrorComment
 
 decoInstance = Decorators()
 
