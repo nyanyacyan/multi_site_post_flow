@@ -34,10 +34,14 @@ class MainApp(QWidget):
     def __init__(self, gui_info: Dict, worksheet_info: List, process_func: Callable, update_func: Callable):
         super().__init__()
 
-        self.windowTitle(gui_info['MAIN_WINDOW_TITLE'])
+        self.setWindowTitle(gui_info['MAIN_WINDOW_TITLE'])
 
         # メインレイアウトの設定
         self.layout = QVBoxLayout()
+
+        self.layout.setContentsMargins(15, 30, 15, 15)
+        self.layout.setSpacing(30)
+
         self.setLayout(self.layout)
 
         # 各GUIパーツを追加

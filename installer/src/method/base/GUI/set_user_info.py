@@ -22,6 +22,15 @@ class UserInfoForm(QGroupBox):
     def __init__(self, gui_info: Dict, worksheet_info: List):
         super().__init__(gui_info['USER_INPUT_TITLE'])  # タイトルを設定
 
+        # タイトルのスタイルを設定
+        self.setStyleSheet("""
+            QGroupBox {
+                font-size: 12px;  /* 文字の大きさ */
+                font-weight: bold;  /* 太字 */
+                text-decoration: underline;  /* 下線 */
+            }
+        """)
+
         # レイアウトを設定
         self.setLayout(self._create_user_info_layout(gui_info=gui_info, worksheet_info=worksheet_info))
 
@@ -36,19 +45,19 @@ class UserInfoForm(QGroupBox):
             select_dropdown_text = self.dropdown_input.currentText()
 
             if not id_text:
-                self.error_label.setText("IDが入力されていません")
+                self._set_error_msg("IDが入力されていません")
                 raise ValueError("IDが入力されていません")
 
             if not pass_text:
-                self.error_label.setText("PASSが入力されていません")
+                self._set_error_msg("PASSが入力されていません")
                 raise ValueError("PASSが入力されていません")
 
             if select_dropdown_text == "選択してください":
-                self.error_label.setText("Worksheetが選択されてません")
+                self._set_error_msg("Worksheetが選択されてません")
                 raise ValueError("Worksheetが選択されていません")
 
             # エラーがない場合はメッセージをクリア
-            self.error_label.setText("")
+            self._set_error_msg("")
 
             return {
                 "id": id_text,
@@ -69,9 +78,12 @@ class UserInfoForm(QGroupBox):
     def _create_user_info_layout(self, gui_info: Dict, worksheet_info: List):
         group_layout = QVBoxLayout()
 
+        group_layout.setContentsMargins(15, 15, 15, 15)
+        group_layout.setSpacing(15)
+
         # ID入力
         id_label = QLabel(gui_info['ID_LABEL'])
-        self.id_input = self._create_input_field(gui_info['INPUT_EXAMPLE_ID'])
+        self.id_input = self._create_input_field(gui_info['INPUT_EXAMPLE_ID'], fixed_width=250)
 
         # idのレイアウト作成
         id_layout = QHBoxLayout()  # 横レイアウト
@@ -84,7 +96,7 @@ class UserInfoForm(QGroupBox):
 
         # Pass入力
         pass_label = QLabel(gui_info['PASS_LABEL'])
-        self.pass_input = self._create_input_field(gui_info['INPUT_EXAMPLE_PASS'], is_password=True)
+        self.pass_input = self._create_input_field(gui_info['INPUT_EXAMPLE_PASS'], is_password=True, fixed_width=250)
 
         # Passのレイアウト作成
         pass_layout = QHBoxLayout()  # 横レイアウト
@@ -104,12 +116,14 @@ class UserInfoForm(QGroupBox):
         dropdown_layout.addWidget(dropdown_label)
         dropdown_layout.addWidget(self.dropdown_input)
 
+        # グループにworksheetレイアウトを追加
+        group_layout.addLayout(dropdown_layout)
+
         # errorラベルを追加
         self.error_label = self._error_label()
         group_layout.addWidget(self.error_label)
 
-        # グループにworksheetレイアウトを追加
-        group_layout.addLayout(dropdown_layout)
+
 
         return group_layout
 
@@ -118,7 +132,7 @@ class UserInfoForm(QGroupBox):
     # ----------------------------------------------------------------------------------
     # ID入力欄→passwordを渡せば非表示
 
-    def _create_input_field(self, input_example: str, is_password: bool = False):
+    def _create_input_field(self, input_example: str, is_password: bool = False, fixed_width: int=200):
         input_field = QLineEdit()
         input_field.setPlaceholderText(input_example)  # input_exampleは入力例
 
@@ -128,26 +142,50 @@ class UserInfoForm(QGroupBox):
 
         if is_password:
             input_field.setEchoMode(QLineEdit.Password)
+
+        # 入力欄の幅を調整
+        input_field.setFixedWidth(fixed_width)
+
         return input_field
 
 
     # ----------------------------------------------------------------------------------
     # スプシからのデータを受けたドロップダウンメニュー
 
-    def _dropdown_menu(self, dropdown_menu_list: List):
+    def _dropdown_menu(self, dropdown_menu_list: List, fixed_width: int=250):
         dropdown_menu = QComboBox()
-        dropdown_menu.addItem("選択してください")  # 初期値を設定
+        dropdown_menu.addItem("--選択してください--")  # 初期値を設定
         dropdown_menu.addItems(dropdown_menu_list)
+
+        # 入力幅の調整
+        dropdown_menu.setFixedWidth(fixed_width)
+
         return dropdown_menu
 
 
     # ----------------------------------------------------------------------------------
-
+    # エラーラベル（通常時は非表示）
 
     def _error_label(self):
         error_label = QLabel("")
         error_label.setStyleSheet("color: red;")
+        error_label.hide()
         return error_label
+
+
+    # ----------------------------------------------------------------------------------
+    # メッセージが合ったときに表示させる
+
+    def _set_error_msg(self, msg: str):
+        # エラーあり
+        if msg:
+            self.error_label.setText(msg)
+            self.error_label.show()
+
+        # エラーなし
+        else:
+            self.error_label.clear()
+            self.error_label.hide()
 
 
     # ----------------------------------------------------------------------------------

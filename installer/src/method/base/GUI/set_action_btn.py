@@ -24,7 +24,7 @@ class ActionBtn(QGroupBox):
         self.cancel_func = cancel_func
 
         # レイアウトを設定
-        self.setLayout(self._create_action_btn_group(gui_info=gui_info))
+        self.setLayout(self._create_action_btn_group(gui_info=gui_info, process_func=process_func, cancel_func=cancel_func))
 
 
     ####################################################################################
@@ -46,10 +46,6 @@ class ActionBtn(QGroupBox):
         # end_updateをグループに追加
         action_btn_layout.addLayout(btn_layout)
 
-        # status_labelを追加
-        self.status_label = self._status_label()
-        action_btn_layout.addWidget(self.status_label)
-
         # 各ボタンのクリックイベントを定義
         self.process_btn.clicked.connect(self._start_processing)
         self.cancel_btn.clicked.connect(self._cancel_processing)
@@ -61,8 +57,9 @@ class ActionBtn(QGroupBox):
     # ----------------------------------------------------------------------------------
     # buttonを定義
 
-    def _action_btn(self, name_in_btn: str):
+    def _action_btn(self, name_in_btn: str, action_func: Callable):
         action_btn = QPushButton(name_in_btn)
+        action_btn.clicked.connect(action_func)
         return action_btn
 
 
@@ -71,7 +68,7 @@ class ActionBtn(QGroupBox):
 
     def _status_label(self):
         status_label = QLabel("待機中...")
-        status_label.setStyleSheet("color: green;")
+        status_label.setStyleSheet("color: black;")
         return status_label
 
 

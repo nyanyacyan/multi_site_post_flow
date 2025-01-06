@@ -22,6 +22,15 @@ class IntervalTimeForm(QGroupBox):
     def __init__(self, gui_info: Dict):
         super().__init__(gui_info['INTERVAL_TIME_GROUP_TITLE'])
 
+        # タイトルのスタイルを設定
+        self.setStyleSheet("""
+            QGroupBox {
+                font-size: 12px;  /* 文字の大きさ */
+                font-weight: bold;  /* 太字 */
+                text-decoration: underline;  /* 下線 */
+            }
+        """)
+
         # レイアウトを設定
         self.setLayout(self._input_interval_time_group(gui_info=gui_info))
 
@@ -35,19 +44,19 @@ class IntervalTimeForm(QGroupBox):
             max_value = self.interval_max_text.text().strip()
 
             if not min_value:
-                self.error_label.setText("下限が入力されてません")
+                self._set_error_msg("下限が入力されてません")
                 raise ValueError("下限が入力されてません")
 
             if not max_value:
-                self.error_label.setText("上限が入力されてません")
+                self._set_error_msg("上限が入力されてません")
                 raise ValueError("上限が入力されてません")
 
             if int(min_value) > int(max_value):
-                self.error_label.setText("最小時間は最大時間以下である必要があります")
+                self._set_error_msg("最小時間は最大時間以下である必要があります")
                 raise ValueError("最小時間は最大時間以下である必要があります")
 
             # エラーがない場合はメッセージをクリア
-            self.error_label.setText("")
+            self._set_error_msg("")
 
             return {
                 "min": min_value,
@@ -95,7 +104,7 @@ class IntervalTimeForm(QGroupBox):
     # ----------------------------------------------------------------------------------
     # ID入力欄→passwordを渡せば非表示
 
-    def _create_input_int_field(self, input_example: str):
+    def _create_input_int_field(self, input_example: str, fixed_width: int=100):
         input_field = QLineEdit()
         input_field.setPlaceholderText(input_example)  # input_exampleは入力例
 
@@ -103,16 +112,35 @@ class IntervalTimeForm(QGroupBox):
         validator = QRegularExpressionValidator(QRegularExpression("[0-9]+"))
         input_field.setValidator(validator)
 
+        # 入力欄の幅を調整
+        input_field.setFixedWidth(fixed_width)
+
         return input_field
 
 
     # ----------------------------------------------------------------------------------
-    # スプシからのデータを受けたドロップダウンメニュー
+    # エラーラベル（通常時は非表示）
 
     def _error_label(self):
         error_label = QLabel("")
         error_label.setStyleSheet("color: red;")
+        error_label.hide()
         return error_label
+
+
+    # ----------------------------------------------------------------------------------
+    # メッセージが合ったときに表示させる
+
+    def _set_error_msg(self, msg: str):
+        # エラーあり
+        if msg:
+            self.error_label.setText(msg)
+            self.error_label.show()
+
+        # エラーなし
+        else:
+            self.error_label.clear()
+            self.error_label.hide()
 
 
     # ----------------------------------------------------------------------------------

@@ -20,6 +20,15 @@ class RadioSelect(QGroupBox):
     def __init__(self, gui_info: Dict) -> None:
         super().__init__(gui_info['UPDATE_SELECT_GROUP_TITLE'])
 
+        # タイトルのスタイルを設定
+        self.setStyleSheet("""
+            QGroupBox {
+                font-size: 12px;  /* 文字の大きさ */
+                font-weight: bold;  /* 太字 */
+                text-decoration: underline;  /* 下線 */
+            }
+        """)
+
         # レイアウトを設定
         self.setLayout(self._create_radio_select_group(gui_info=gui_info))
 

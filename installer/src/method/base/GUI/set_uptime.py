@@ -20,7 +20,16 @@ from PySide6.QtCore import QDateTime
 
 class SetUptime(QGroupBox):
     def __init__(self, gui_info: Dict):
-        super().__init__(gui_info['INTERVAL_TIME_GROUP_TITLE'])
+        super().__init__(gui_info['UPTIME_TIME_GROUP_TITLE'])
+
+        # タイトルのスタイルを設定
+        self.setStyleSheet("""
+            QGroupBox {
+                font-size: 12px;  /* 文字の大きさ */
+                font-weight: bold;  /* 太字 */
+                text-decoration: underline;  /* 下線 */
+            }
+        """)
 
         # レイアウトを設定
         self.setLayout(self._create_uptime_input_group(gui_info=gui_info))
@@ -39,19 +48,19 @@ class SetUptime(QGroupBox):
             end_diff = uptime_end_time - now
 
             if not uptime_start_time:
-                self.error_label.setText("開始日時の設定がされてません")
+                self._set_error_msg("開始日時の設定がされてません")
                 raise ValueError("開始日時の設定がされてません")
 
             if not uptime_end_time:
-                self.error_label.setText("終了日時の設定がされてません")
+                self._set_error_msg("終了日時の設定がされてません")
                 raise ValueError("終了日時の設定がされてません")
 
             if uptime_start_time >= uptime_end_time:
-                self.error_label.setText("開始日時は終了日時より前に設定する必要があります")
+                self._set_error_msg("開始日時は終了日時より前に設定する必要があります")
                 raise ValueError("開始日時は終了日時より前に設定する必要があります")
 
             # エラーがない場合はメッセージをクリア
-            self.error_label.setText("")
+            self._set_error_msg("")
 
             return {
                 "start_diff": start_diff,
@@ -107,20 +116,40 @@ class SetUptime(QGroupBox):
     # 実行されて初めて入力内容が確認できる→デバッグはこの関数が実行された後に
     # 値は見えるやすように処理する必要がある→ .dateTime().toString("yyyy-MM-dd HH:mm:ss")
 
-    def _set_datetime(self):
+    def _set_datetime(self, fixed_width: int=250):
         edit_datetime = QDateTimeEdit(self)
         edit_datetime.setDateTime(QDateTime.currentDateTime())  # 現時刻をデフォルトにする
         edit_datetime.setCalendarPopup(True)  # カレンダー表示を有効化
+
+        # 入力欄の幅を調整
+        edit_datetime.setFixedWidth(fixed_width)
+
         return edit_datetime
 
 
     # ----------------------------------------------------------------------------------
-    # スプシからのデータを受けたドロップダウンメニュー
+    # エラーラベル（通常時は非表示）
 
     def _error_label(self):
         error_label = QLabel("")
         error_label.setStyleSheet("color: red;")
+        error_label.hide()
         return error_label
+
+
+    # ----------------------------------------------------------------------------------
+    # メッセージが合ったときに表示させる
+
+    def _set_error_msg(self, msg: str):
+        # エラーあり
+        if msg:
+            self.error_label.setText(msg)
+            self.error_label.show()
+
+        # エラーなし
+        else:
+            self.error_label.clear()
+            self.error_label.hide()
 
 
     # ----------------------------------------------------------------------------------

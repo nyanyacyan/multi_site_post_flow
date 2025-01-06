@@ -16,7 +16,7 @@ class StatusManager(QGroupBox):
         super().__init__()
 
         self.status_label = QLabel("待機中...")
-        self.status_label.setStyleSheet("color: green;")
+        self.status_label.setStyleSheet("color: black;")
 
         # レイアウトを設定
         layout = QVBoxLayout()
@@ -27,7 +27,7 @@ class StatusManager(QGroupBox):
     ####################################################################################
     # アクションを実行
 
-    def update_status(self, msg: str, color: str= "green"):
+    def update_status(self, msg: str, color: str= "black"):
         self.status_label.setText(msg)
         self.status_label.setStyleSheet(f"color: {color};")
 
