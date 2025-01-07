@@ -281,6 +281,8 @@ class SellInfo(Enum):
 class GuiInfo(Enum):
     GAME_CLUB = {
         "MAIN_WINDOW_TITLE": "GAME_CLUB Automation Tool",
+        "BACKGROUND_COLOR": "#FFFFFF",
+        "LOGO_NAME": "gc_logo",
         "USER_INPUT_TITLE": "USER情報",
         "INPUT_EXAMPLE_ID": "対象のIDを入力",
         "INPUT_EXAMPLE_PASS": "対象のPassを入力",
@@ -306,11 +308,57 @@ class GuiInfo(Enum):
     }
 
     MA_CLUB = {
-        "main_window_title": "",
+        "MAIN_WINDOW_TITLE": "MA_CLUB Automation Tool",
+        "BACKGROUND_COLOR": "#F0F0F0",
+        "LOGO_NAME": "ma_logo",
+        "USER_INPUT_TITLE": "USER情報",
+        "INPUT_EXAMPLE_ID": "対象のIDを入力",
+        "INPUT_EXAMPLE_PASS": "対象のPassを入力",
+        "ID_LABEL": "USER ID",
+        "PASS_LABEL": "PASSWORD",
+        "DROPDOWN_LABEL": "Worksheet",
+        "INTERVAL_TIME_GROUP_TITLE": "出品間隔",
+        "INPUT_EXAMPLE_INTERVAL_MIN": "下限",
+        "INPUT_BETWEEN_LABEL": "分 から",
+        "INPUT_EXAMPLE_INTERVAL_MAX": "上限",
+        "INPUT_LAST_LABEL": "分 まで",
+        "UPTIME_TIME_GROUP_TITLE": "稼働時間",
+        "INPUT_START_UPTIME_TITLE": "開始時間",
+        "INPUT_EXAMPLE_START_UPTIME": "カレンダーから選択",
+        "INPUT_END_UPTIME_TITLE": "終了時間",
+        "INPUT_EXAMPLE_END_UPTIME": "カレンダーから選択",
+        "UPDATE_SELECT_GROUP_TITLE": "自動 更新処理",
+        "RADIO_BTN_TRUE_TITLE": "あり",
+        "RADIO_BTN_FALSE_TITLE": "なし",
+        "PROCESS_BTN_NAME": "START",
+        "CANCEL_BTN_NAME": "STOP",
     }
 
     RMT_CLUB = {
-        "main_window_title": "",
+        "MAIN_WINDOW_TITLE": "RMT_CLUB Automation Tool",
+        "BACKGROUND_COLOR": "#D9D9D9",
+        "LOGO_NAME": "rmt_logo",
+        "USER_INPUT_TITLE": "USER情報",
+        "INPUT_EXAMPLE_ID": "対象のIDを入力",
+        "INPUT_EXAMPLE_PASS": "対象のPassを入力",
+        "ID_LABEL": "USER ID",
+        "PASS_LABEL": "PASSWORD",
+        "DROPDOWN_LABEL": "Worksheet",
+        "INTERVAL_TIME_GROUP_TITLE": "出品間隔",
+        "INPUT_EXAMPLE_INTERVAL_MIN": "下限",
+        "INPUT_BETWEEN_LABEL": "分 から",
+        "INPUT_EXAMPLE_INTERVAL_MAX": "上限",
+        "INPUT_LAST_LABEL": "分 まで",
+        "UPTIME_TIME_GROUP_TITLE": "稼働時間",
+        "INPUT_START_UPTIME_TITLE": "開始時間",
+        "INPUT_EXAMPLE_START_UPTIME": "カレンダーから選択",
+        "INPUT_END_UPTIME_TITLE": "終了時間",
+        "INPUT_EXAMPLE_END_UPTIME": "カレンダーから選択",
+        "UPDATE_SELECT_GROUP_TITLE": "自動 更新処理",
+        "RADIO_BTN_TRUE_TITLE": "あり",
+        "RADIO_BTN_FALSE_TITLE": "なし",
+        "PROCESS_BTN_NAME": "START",
+        "CANCEL_BTN_NAME": "STOP",
     }
 
 

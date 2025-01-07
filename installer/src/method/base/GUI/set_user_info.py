@@ -137,7 +137,7 @@ class UserInfoForm(QGroupBox):
         input_field.setPlaceholderText(input_example)  # input_exampleは入力例
 
         # 半角のみを許可する正規表現を設定
-        validator = QRegularExpressionValidator(QRegularExpression("[a-zA-Z0-9]+"))
+        validator = QRegularExpressionValidator(QRegularExpression(".+"))
         input_field.setValidator(validator)
 
         if is_password:

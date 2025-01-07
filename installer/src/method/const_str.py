@@ -26,6 +26,7 @@ class SubDir(Enum):
     BUCK_UP= 'buck_up'
     SCREEN_SHOT='screenshot'
     INPUT_PHOTO='input_photo'
+    LOGO='logo'
 
 
 # ----------------------------------------------------------------------------------
@@ -51,6 +52,7 @@ class Extension(Enum):
     cookie='cookie.pkl'
     DB='.db'
     PNG='.png'
+    ICO='.ico'
 
 
 # ----------------------------------------------------------------------------------

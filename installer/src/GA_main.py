@@ -8,6 +8,7 @@ import threading, time, _asyncio, sys
 from datetime import datetime, timedelta
 from typing import Dict, Callable, List
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QApplication
+from PySide6.QtGui import QIcon
 
 # 自作モジュール
 from method.base.GUI.set_user_info import UserInfoForm
@@ -17,10 +18,12 @@ from method.base.GUI.set_radio_btn import RadioSelect
 from method.base.GUI.set_action_btn import ActionBtn
 from method.base.GUI.set_status_display import StatusManager
 from method.base.time_manager import TimeManager
+from method.base.path import BaseToPath
 from method.base.spreadsheetRead import GetDataGSSAPI
 from method.flow_game_club_new_item import FlowGameClubNewItem
 from method.flow_MA_club_new_item import FlowMAClubNewItem
 from method.flow_gc_update import FlowGameClubUpdate
+from PySide6.QtGui import QGuiApplication
 
 # const
 from method.const_element import GssInfo, GuiInfo
@@ -33,24 +36,38 @@ from method.const_element import GssInfo, GuiInfo
 class MainApp(QWidget):
     def __init__(self, gui_info: Dict, worksheet_info: List, process_func: Callable, update_func: Callable):
         super().__init__()
-
+        # メインタイトル
         self.setWindowTitle(gui_info['MAIN_WINDOW_TITLE'])
+
+        # バックグラウンドカラー
+        # self.setStyleSheet(f"background-color: {gui_info['BACKGROUND_COLOR']};")
+
+        # logo
+        self.path =BaseToPath()
+        logo_path = self.path.getInputLogoFilePath(fileName=gui_info['LOGO_NAME'])
+        QGuiApplication.setWindowIcon(QIcon(str(logo_path)))
 
         # メインレイアウトの設定
         self.layout = QVBoxLayout()
 
+        # 各padding設定
         self.layout.setContentsMargins(15, 30, 15, 15)
+
+        # 各レイアウト間の幅
         self.layout.setSpacing(30)
 
         self.setLayout(self.layout)
+
+        # ステータスラベルを定義
+        self.status_label = StatusManager()
 
         # 各GUIパーツを追加
         self.user_info_form = UserInfoForm(gui_info=gui_info, worksheet_info=worksheet_info)
         self.interval_form = IntervalTimeForm(gui_info=gui_info)
         self.uptime_form = SetUptime(gui_info=gui_info)
         self.radio_btn_form = RadioSelect(gui_info=gui_info)
-        self.action_btn_form = ActionBtn(gui_info=gui_info, process_func=self.start_event, cancel_func=self.cancel_event)
-        self.status_label = StatusManager()
+        self.action_btn_form = ActionBtn(gui_info=gui_info, status_label=self.status_label, process_func=self.start_event, cancel_func=self.cancel_event)
+
 
         # レイアウトに追加
         self.layout.addWidget(self.user_info_form)
@@ -81,25 +98,32 @@ class MainApp(QWidget):
 
     def start_event(self):
         try:
+            user_info = self.user_info_form.get_user_info()
+            interval_info = self.interval_form.get_interval_info()
+            uptime_info = self.uptime_form.get_uptime_info()
+
+            # スタートするまで待機
+            self._start_wait_time(uptime_info=uptime_info)
+
             # STARTボタンを押下したときのradio_btnを取得
             self.update_bool = self.radio_btn_form.get_radio_info()
 
             # 更新処理がある場合には実施
             if self.update_bool:
-                self._update_task()
-
-            user_info = self.user_info_form.get_user_info()
-            interval_info = self.interval_form.get_interval_info()
-            uptime_info = self.uptime_form.get_uptime_info()
+                self._update_task(user_info=user_info)
 
             # 終了時間の監視taskをスタート
             threading.Thread(target=self._monitor_end_time, args=(uptime_info,), daemon=True).start()
+
+            # 終了時間の監視taskをスタート
+            threading.Thread(target=self._monitor_date_change, args=(user_info,), daemon=True).start()
 
             # メイン処理実施
             self.loop_process(user_info=user_info, interval_info=interval_info, uptime_info=uptime_info)
 
         except Exception as e:
             self.status_label.update_status(msg=f"エラー: {e}", color="red")
+            print(f"処理中にエラーが発生: {e}")
 
 
     ####################################################################################
@@ -122,7 +146,7 @@ class MainApp(QWidget):
     ####################################################################################
     # 日付が変わるまでの時間を算出して待機する
 
-    async def _monitor_date_change(self):
+    def _monitor_date_change(self, user_info: Dict):
         # ストップフラグがis_setされるまでループ処理
         while not self.stop_event.is_set():
             now = datetime.now()
@@ -130,10 +154,10 @@ class MainApp(QWidget):
 
             total_sleep_time = (next_day - now).total_seconds()
 
-            await _asyncio.sleep(total_sleep_time)
+            time.sleep(total_sleep_time)
 
             if self.update_bool:
-                self._update_task()
+                self._update_task(user_info=user_info)
 
 
     # ----------------------------------------------------------------------------------
@@ -161,9 +185,18 @@ class MainApp(QWidget):
 
 
     # ----------------------------------------------------------------------------------
+
+
+    def _start_wait_time(self, uptime_info: Dict):
+        # 開始時間まで待機
+        start_diff = uptime_info['start_diff']
+        time.sleep(start_diff.total_seconds())
+
+
+    # ----------------------------------------------------------------------------------
     # 更新処理
 
-    def _update_task(self):
+    def _update_task(self, user_info: Dict):
         # 出品処理を停止
         self.stop_event.set()
 
@@ -173,8 +206,8 @@ class MainApp(QWidget):
         # ステータス変更
         self.status_label.update_status(msg="更新処理中...", color="black")
 
-        # TODO 更新処理を実施
-        self.update_process()
+        # 更新処理を実施
+        self.update_func(id_text=user_info['id'], pass_text=user_info['pass'])
 
         # 更新作業完了フラグを立てる
         self.update_complete_event.set()
@@ -186,16 +219,8 @@ class MainApp(QWidget):
     # 出品処理
 
     def loop_process(self, user_info: Dict, interval_info: Dict, uptime_info: Dict[str, timedelta]):
-
-        # 開始時間まで待機
-        start_diff = uptime_info['start_diff']
-        time.sleep(start_diff.total_seconds())
-
-
         # ストップフラグがis_setされるまでループ処理
         while not self.stop_event.is_set():
-            self.status_label.update_status(msg="更新処理が完了しました。", color="blue")
-
             # 更新作業が完了するまで待機
             self.update_complete_event.wait()
 
@@ -223,15 +248,21 @@ if __name__ == "__main__":
     gss_read = GetDataGSSAPI()
     worksheet_info = gss_read._get_all_worksheet(gss_info=gss_info, sort_word_list=gss_info['workSheetName'])
 
-    # 処理関数を定義
-    flow_game_club = FlowGameClubNewItem()
-    process_func = flow_game_club.process
 
-    # 更新処理を定義
-    flow_game_club_update = FlowGameClubUpdate()
-    update_func = flow_game_club_update.process
+    def process_func(*args, **kwargs):
+        if not hasattr(process_func, "instance"):
+            process_func.instance = FlowGameClubNewItem()
+        return process_func.instance.process(*args, **kwargs)
+
+
+   # 更新処理をラップして遅延初期化
+    def update_func(*args, **kwargs):
+        if not hasattr(update_func, "instance"):
+            update_func.instance = FlowGameClubUpdate()  # 初回呼び出し時にインスタンス化
+        return update_func.instance.process(*args, **kwargs)
+
 
     app = QApplication(sys.argv)
     main_app = MainApp(gui_info=gui_info, worksheet_info=worksheet_info, process_func=process_func, update_func=update_func)
     main_app.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

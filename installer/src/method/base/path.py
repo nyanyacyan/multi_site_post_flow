@@ -185,6 +185,21 @@ class BaseToPath:
         return all_photos_all_path_list
 
     # ----------------------------------------------------------------------------------
+    # Input > logo > SubDir
+
+    def getInputLogoFilePath(self, fileName: str, subDirName: str=  SubDir.LOGO.value, extension: str= Extension.ICO.value):
+        inputDataPath = self.getInputDataPath()
+        dirPath = inputDataPath / subDirName
+        file = fileName + extension
+        FilePath = dirPath / file
+        self.logger.warning(f"FilePath: {FilePath}")
+        self.logger.debug(f"FilePathの型: {type(FilePath)}")
+        self.isDirExists(path=dirPath)
+        self.logger.debug(f"FilePath: {FilePath}")
+        return FilePath
+
+
+    # ----------------------------------------------------------------------------------
     # Result > File
 
     def getResultFilePath(self, fileName: str):

@@ -8,7 +8,7 @@ from typing import Dict, Callable
 from PySide6.QtWidgets import QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QGroupBox
 
 # 自作モジュール
-
+from method.base.GUI.set_status_display import StatusManager
 
 
 # ----------------------------------------------------------------------------------
@@ -16,8 +16,10 @@ from PySide6.QtWidgets import QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QGr
 
 
 class ActionBtn(QGroupBox):
-    def __init__(self, gui_info: Dict, process_func: Callable, cancel_func: Callable):
+    def __init__(self, gui_info: Dict, status_label: StatusManager, process_func: Callable, cancel_func: Callable):
         super().__init__()
+
+        self.status_label = status_label
 
         # 処理関数をここで所持
         self.process_func = process_func
@@ -64,20 +66,11 @@ class ActionBtn(QGroupBox):
 
 
     # ----------------------------------------------------------------------------------
-    # ステータス状況を表示させる
-
-    def _status_label(self):
-        status_label = QLabel("待機中...")
-        status_label.setStyleSheet("color: black;")
-        return status_label
-
-
-    # ----------------------------------------------------------------------------------
     # process_btnを実行した際のアクション
 
     def _start_processing(self):
         # ラベルにコメントを追記
-        self.status_label.setText("出品処理中...")
+        self.status_label.update_status("出品処理中...", color="blue")
 
         self.process_btn.setEnabled(False)  # 開始ボタンを押せないSTS変更
         self.cancel_btn.setEnabled(True)  # キャンセルボタンを押せるSTS変更
@@ -90,7 +83,7 @@ class ActionBtn(QGroupBox):
 
     def _cancel_processing(self):
 
-        self.status_label.setText("処理を中断してます...")
+        self.status_label.update_status("処理を中断してます...", color="red")
 
         self.process_btn.setEnabled(True)  # 開始ボタンを押せる状態にSTS変更
         self.cancel_btn.setEnabled(False)  # キャンセルボタンを押せないSTS変更
@@ -98,6 +91,6 @@ class ActionBtn(QGroupBox):
         self.cancel_func()
 
         # キャンセル処理完了後に「待機中」に戻す
-        self.status_label.setText("待機中...")
+        self.status_label.update_status("待機中...", color="black")
 
     # ----------------------------------------------------------------------------------
