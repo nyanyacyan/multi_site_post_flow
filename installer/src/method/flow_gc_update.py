@@ -5,6 +5,8 @@
 
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 # import
+from selenium.common.exceptions import ElementClickInterceptedException, ElementNotInteractableException, NoSuchElementException
+
 
 # 自作モジュール
 from method.base.utils import Logger
@@ -16,7 +18,7 @@ from method.base.decorators import Decorators
 from method.base.time_manager import TimeManager
 
 # const
-from .const_element import LoginInfo, UpdateInfo
+from method.const_element import LoginInfo, UpdateInfo
 
 deco = Decorators()
 
@@ -121,12 +123,20 @@ class FlowGameClubUpdate:
         while count < max_count:
             if not disable_element_bool:
                 self.logger.debug(f"クリック試行: {count + 1}回目")
-                self._click_update_btn()
+                try:
+                    self._click_update_btn()
+                except NoSuchElementException as e:
+                    self.logger.info(f'更新の上限に達しました: 実施回数 {count}回、Update実施')
+                    break
+
                 count += 1
                 self._random_sleep()
 
             else:
-                self.logger.info(f'更新の上限に達しました: 実施回数 {count}回、Update実施')
+                if count == 0:
+                    self.logger.debug(f'本日の更新処理は実施済')
+                else:
+                    self.logger.info(f'更新の上限に達しました: 実施回数 {count}回、Update実施')
                 break
 
 
@@ -148,3 +158,15 @@ class FlowGameClubUpdate:
 
 
 # ----------------------------------------------------------------------------------
+# テスト実施
+
+if __name__ == "__main__":
+    id_text = LoginInfo.SITE_PATTERNS.value["GAME_CLUB"]["ID_TEXT"]
+    pass_text = LoginInfo.SITE_PATTERNS.value["GAME_CLUB"]["PASS_TEXT"]
+    print(
+        f"id_text: {id_text}\npass_text: {pass_text}"
+    )
+
+
+    test_flow = FlowGameClubUpdate()
+    test_flow.process(id_text=id_text, pass_text=pass_text)

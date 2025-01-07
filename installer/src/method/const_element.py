@@ -375,7 +375,7 @@ class GuiInfo(Enum):
 
 class UpdateInfo(Enum):
     GAME_CLUB = {
-        "SELL_ITEM_BTN_VALUE": "//div[@class='boost-modal-content']//a[contains(@class, 'btn-boost')]",
+        "SELL_ITEM_BTN_VALUE": "//div[@class='side-mypage-menu']//a[@href='/mypage/products' and contains(text(), '出品した商品')]",
         "ITEM_SORT_BTN_VALUE": "//select[@name='sort_index']",
         "SELECT_VALUE": "1",
         "DISABLE_ELEMENT_VALUE": "//a[@class='btn btn-boost btn-disabled' and @href='javascript:void(0)']",

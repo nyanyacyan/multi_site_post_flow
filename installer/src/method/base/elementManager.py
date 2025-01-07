@@ -9,7 +9,7 @@ from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support.ui import Select
 from datetime import datetime
 from typing import Dict, Any, List, Tuple
-from selenium.common.exceptions import ElementClickInterceptedException, ElementNotInteractableException
+from selenium.common.exceptions import ElementClickInterceptedException, ElementNotInteractableException, NoSuchElementException
 
 from pathlib import Path
 
@@ -453,12 +453,15 @@ class ElementManager:
 
 
     def _disable_element_check(self, value: str, by: str='xpath'):
-        disable_element = self.getElement(by=by, value=value)
+        try:
+            disable_element = self.getElement(by=by, value=value)
 
-        if disable_element:
-            return True
-        else:
+            if disable_element:
+                return True
+        except NoSuchElementException as e:
+            self.logger.debug(f'無効化されてない')
             return False
+
 
 
     # ----------------------------------------------------------------------------------
