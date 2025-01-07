@@ -386,19 +386,11 @@ class UpdateInfo(Enum):
 ##########
 
     MA_CLUB = {
-        "": "",
-        "": "",
-        "": "",
-        "": "",
-        "": "",
-        "": "",
-        "": "",
-        "": "",
-        "": "",
-        "": "",
-        "": "",
-        "": "",
-        "": "",
+        "SELL_ITEM_BTN_VALUE": "//div[@class='side-mypage-menu']//a[@href='/mypage/products' and contains(text(), '出品した商品')]",
+        "ITEM_SORT_BTN_VALUE": "//select[@name='sort_index']",
+        "SELECT_VALUE": "1",
+        "DISABLE_ELEMENT_VALUE": "//a[@class='btn btn-boost btn-disabled' and @href='javascript:void(0)']",
+        "UPDATE_BTN_VALUE": "//div[@class='boost-modal-content']//a[@class='btn btn-boost ']",
         "": "",
     }
 

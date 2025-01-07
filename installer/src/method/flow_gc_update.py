@@ -5,7 +5,7 @@
 
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 # import
-from selenium.common.exceptions import ElementClickInterceptedException, ElementNotInteractableException, NoSuchElementException
+from selenium.common.exceptions import NoSuchElementException
 
 
 # 自作モジュール
@@ -90,16 +90,7 @@ class FlowGameClubUpdate:
 
 
     # ----------------------------------------------------------------------------------
-    # 出品した日時をクリック→_select_old_datetimeで事足りるかな？
 
-    # def _click_item_sort_btn(self):
-    #     value = self.update_info["ITEM_SORT_BTN_VALUE"]
-    #     self.logger.debug(f"value: {value}")
-    #     self.element.clickElement(value=value)
-    #     self._random_sleep()
-
-
-    # ----------------------------------------------------------------------------------
     # 日時が古い順を選択
 
     def _select_old_datetime(self):
