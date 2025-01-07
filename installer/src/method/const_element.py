@@ -23,18 +23,21 @@ class GssInfo(Enum):
         "jsonKeyName": "sns-auto-430920-08274ad68b41.json",
         "spreadsheetId": "11hUzuGZaXmM070E8Gl5YA5ydUcWGDcjV0MkGQEpzLx8",
         "workSheetName": "GAME_CLUB",
+        "SORT_WORD_LIST": ["GAME_CLUB", "GC", "ゲームクラブ", "GAME"],
     }
 
     MA_CLUB = {
         "jsonKeyName": "sns-auto-430920-08274ad68b41.json",
         "spreadsheetId": "11hUzuGZaXmM070E8Gl5YA5ydUcWGDcjV0MkGQEpzLx8",
         "workSheetName": "MA_CLUB",
+        "SORT_WORD_LIST": ["M&A", "MA", "エムアンドエー"],
     }
 
     RMT_CLUB = {
         "jsonKeyName": "sns-auto-430920-08274ad68b41.json",
         "spreadsheetId": "11hUzuGZaXmM070E8Gl5YA5ydUcWGDcjV0MkGQEpzLx8",
         "workSheetName": "RMT_CLUB",
+        "SORT_WORD_LIST": ["RMT", "rmt", "アールエムティ"],
     }
 
 
@@ -280,14 +283,19 @@ class SellInfo(Enum):
 
 class GuiInfo(Enum):
     GAME_CLUB = {
+        "JSON_KEY_NAME": "sns-auto-430920-08274ad68b41.json",
+        "SORT_WORD_LIST": ["GAME_CLUB", "GC", "ゲームクラブ", "GAME"],
+        "GSS_INPUT_TITLE": "Spreadsheet 情報",
         "MAIN_WINDOW_TITLE": "GAME_CLUB Automation Tool",
         "BACKGROUND_COLOR": "#FFFFFF",
         "LOGO_NAME": "gc_logo",
         "USER_INPUT_TITLE": "USER情報",
         "INPUT_EXAMPLE_ID": "対象のIDを入力",
         "INPUT_EXAMPLE_PASS": "対象のPassを入力",
+        "INPUT_EXAMPLE_GSS_URL": "対象のスプレッドシートのURLを入力",
         "ID_LABEL": "USER ID",
         "PASS_LABEL": "PASSWORD",
+        "GSS_URL_LABEL": "URL",
         "DROPDOWN_LABEL": "Worksheet",
         "INTERVAL_TIME_GROUP_TITLE": "出品間隔",
         "INPUT_EXAMPLE_INTERVAL_MIN": "下限",
@@ -304,7 +312,7 @@ class GuiInfo(Enum):
         "RADIO_BTN_FALSE_TITLE": "なし",
         "PROCESS_BTN_NAME": "START",
         "CANCEL_BTN_NAME": "STOP",
-        "": "",
+        "GSS_URL_BTN": "取得",
     }
 
     MA_CLUB = {

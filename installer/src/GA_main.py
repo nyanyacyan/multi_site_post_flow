@@ -8,10 +8,12 @@ import threading, time, _asyncio, sys
 from datetime import datetime, timedelta
 from typing import Dict, Callable, List
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QApplication
+from PySide6.QtCore import QTimer
 from PySide6.QtGui import QIcon
 
 # 自作モジュール
 from method.base.GUI.set_user_info import UserInfoForm
+from method.base.GUI.set_gss_info import GSSInfoForm
 from method.base.GUI.set_interval_time import IntervalTimeForm
 from method.base.GUI.set_uptime import SetUptime
 from method.base.GUI.set_radio_btn import RadioSelect
@@ -34,7 +36,7 @@ from method.const_element import GssInfo, GuiInfo
 
 
 class MainApp(QWidget):
-    def __init__(self, gui_info: Dict, worksheet_info: List, process_func: Callable, update_func: Callable):
+    def __init__(self, gui_info: Dict, process_func: Callable, update_func: Callable):
         super().__init__()
         # メインタイトル
         self.setWindowTitle(gui_info['MAIN_WINDOW_TITLE'])
@@ -62,15 +64,17 @@ class MainApp(QWidget):
         self.status_label = StatusManager()
 
         # 各GUIパーツを追加
-        self.user_info_form = UserInfoForm(gui_info=gui_info, worksheet_info=worksheet_info)
+        self.user_info_form = UserInfoForm(gui_info=gui_info)
+        self.gss_info_form = GSSInfoForm(gui_info=gui_info)
         self.interval_form = IntervalTimeForm(gui_info=gui_info)
         self.uptime_form = SetUptime(gui_info=gui_info)
         self.radio_btn_form = RadioSelect(gui_info=gui_info)
-        self.action_btn_form = ActionBtn(gui_info=gui_info, status_label=self.status_label, process_func=self.start_event, cancel_func=self.cancel_event)
+        self.action_btn_form = ActionBtn(gui_info=gui_info, status_label=self.status_label, process_func=self._start_wait_time, cancel_func=self.cancel_event)
 
 
         # レイアウトに追加
         self.layout.addWidget(self.user_info_form)
+        self.layout.addWidget(self.gss_info_form)
         self.layout.addWidget(self.interval_form)
         self.layout.addWidget(self.uptime_form)
         self.layout.addWidget(self.radio_btn_form)
@@ -103,7 +107,7 @@ class MainApp(QWidget):
             uptime_info = self.uptime_form.get_uptime_info()
 
             # スタートするまで待機
-            self._start_wait_time(uptime_info=uptime_info)
+            # self._start_wait_time(uptime_info=uptime_info)
 
             # STARTボタンを押下したときのradio_btnを取得
             self.update_bool = self.radio_btn_form.get_radio_info()
@@ -133,6 +137,10 @@ class MainApp(QWidget):
 
     def cancel_event(self):
         self.status_label.update_status(msg="出品処理を停止中です。", color="red")
+
+        # タイマーが設定されてればストップ
+        if self.timer:
+            self.timer.stop()
 
         # 出品処理を停止
         self.stop_event.set()
@@ -187,10 +195,40 @@ class MainApp(QWidget):
     # ----------------------------------------------------------------------------------
 
 
-    def _start_wait_time(self, uptime_info: Dict):
+    def _start_wait_time(self):
         # 開始時間まで待機
+        uptime_info = self.uptime_form.get_uptime_info()
         start_diff = uptime_info['start_diff']
-        time.sleep(start_diff.total_seconds())
+        self.wait_seconds = start_diff.total_seconds()
+
+        # タイマーの設定
+        self.timer = QTimer()
+        self.timer.setInterval(1000)  # 1秒ごとに発火
+        self.timer.timeout.connect(self._countdown_tick)  # カウントダウン処理に接続
+
+        # タイマーを開始
+        self.timer.start()
+
+
+    # ----------------------------------------------------------------------------------
+    # QTimerによって1秒毎に実施されるアクションを定義
+
+    def _countdown_tick(self):
+        if self.wait_seconds > 0:
+            # 残り時間を更新
+            minutes, seconds = divmod(self.wait_seconds, 60)
+            if minutes > 0:
+                msg = f"実行開始まで {int(minutes)} 分 {int(seconds)} 秒"
+            else:
+                msg = f"実行開始まで {int(seconds)} 秒"
+
+            self.status_label.update_status(msg)
+            self.wait_seconds -= 1
+        else:
+            # カウントダウン終了時の処理
+            self.timer.stop()  # タイマー停止
+            self.status_label.update_status("実行を開始します！")
+            self.start_event()  # メインタスクを開始
 
 
     # ----------------------------------------------------------------------------------
@@ -245,8 +283,8 @@ if __name__ == "__main__":
     gui_info = GuiInfo.GAME_CLUB.value
 
     # スプシからすべてのWorksheet名を取得
-    gss_read = GetDataGSSAPI()
-    worksheet_info = gss_read._get_all_worksheet(gss_info=gss_info, sort_word_list=gss_info['workSheetName'])
+    # gss_read = GetDataGSSAPI()
+    # worksheet_info = gss_read._get_all_worksheet(gss_info=gss_info, sort_word_list=gss_info['workSheetName'])
 
 
     def process_func(*args, **kwargs):
@@ -263,6 +301,6 @@ if __name__ == "__main__":
 
 
     app = QApplication(sys.argv)
-    main_app = MainApp(gui_info=gui_info, worksheet_info=worksheet_info, process_func=process_func, update_func=update_func)
+    main_app = MainApp(gui_info=gui_info, process_func=process_func, update_func=update_func)
     main_app.show()
     sys.exit(app.exec())

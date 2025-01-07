@@ -222,6 +222,30 @@ class GetDataGSSAPI:
         return worksheet_title_list
 
     # ----------------------------------------------------------------------------------
+    # スプシにあるWorksheetのリストを返す
+    # GUIに返す
+
+    def _get_all_worksheet_to_gui(self, gui_info: Dict, sheet_url: str, sort_word_list: List):
+        client = self.client(jsonKeyName=gui_info["JSON_KEY_NAME"])
+
+        # 対象のスプシを開く
+        spreadsheet = client.open_by_url(sheet_url)
+
+        # すべてのWorksheetオブジェクトを抽出
+        all_worksheet = spreadsheet.worksheets()
+        self.logger.debug(f'all_worksheet: {all_worksheet}')
+
+        # すべてのワークシートのリスト
+        worksheet_title_list = [
+            ws.title
+            for ws in all_worksheet
+            if any (sort_word in ws.title for sort_word in sort_word_list)
+        ]
+        self.logger.debug(f"ワークシート全データ: {worksheet_title_list}")
+
+        return worksheet_title_list
+
+    # ----------------------------------------------------------------------------------
     # スプシの認証プロパティ
 
     def creds(self, jsonKeyName: str):

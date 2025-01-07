@@ -6,34 +6,46 @@
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 # import
 from typing import Dict, List
-from PySide6.QtWidgets import QVBoxLayout, QHBoxLayout, QLineEdit, QLabel, QGroupBox, QComboBox
+from PySide6.QtWidgets import (
+    QVBoxLayout,
+    QHBoxLayout,
+    QLineEdit,
+    QLabel,
+    QGroupBox,
+    QComboBox,
+)
 from PySide6.QtCore import QRegularExpression
 from PySide6.QtGui import QRegularExpressionValidator
 
 # 自作モジュール
 
 
-
 # ----------------------------------------------------------------------------------
 # **********************************************************************************
 # ユーザー情報のグループを設定
 
+
 class UserInfoForm(QGroupBox):
-    def __init__(self, gui_info: Dict, worksheet_info: List):
-        super().__init__(gui_info['USER_INPUT_TITLE'])  # タイトルを設定
+    def __init__(self, gui_info: Dict):
+        super().__init__(gui_info["USER_INPUT_TITLE"])  # タイトルを設定
 
         # タイトルのスタイルを設定
-        self.setStyleSheet("""
+        self.setStyleSheet(
+            """
             QGroupBox {
                 font-size: 12px;  /* 文字の大きさ */
                 font-weight: bold;  /* 太字 */
                 text-decoration: underline;  /* 下線 */
             }
-        """)
+        """
+        )
 
         # レイアウトを設定
-        self.setLayout(self._create_user_info_layout(gui_info=gui_info, worksheet_info=worksheet_info))
-
+        self.setLayout(
+            self._create_user_info_layout(
+                gui_info=gui_info
+            )
+        )
 
     ####################################################################################
     # 値を取得
@@ -42,7 +54,7 @@ class UserInfoForm(QGroupBox):
         try:
             id_text = self.id_input.text().strip()
             pass_text = self.pass_input.text().strip()
-            select_dropdown_text = self.dropdown_input.currentText()
+            # select_dropdown_text = self.dropdown_input.currentText()
 
             if not id_text:
                 self._set_error_msg("IDが入力されていません")
@@ -52,38 +64,35 @@ class UserInfoForm(QGroupBox):
                 self._set_error_msg("PASSが入力されていません")
                 raise ValueError("PASSが入力されていません")
 
-            if select_dropdown_text == "選択してください":
-                self._set_error_msg("Worksheetが選択されてません")
-                raise ValueError("Worksheetが選択されていません")
+            # if select_dropdown_text == "選択してください":
+            #     self._set_error_msg("Worksheetが選択されてません")
+            #     raise ValueError("Worksheetが選択されていません")
 
             # エラーがない場合はメッセージをクリア
             self._set_error_msg("")
 
-            return {
-                "id": id_text,
-                "pass": pass_text,
-                "worksheet": select_dropdown_text
-            }
+            return {"id": id_text, "pass": pass_text}
 
         except ValueError as e:
             self.error_label.setText(str(e))
             raise
-
 
     ####################################################################################
 
     ####################################################################################
     # ユーザー入力欄のグループ
 
-    def _create_user_info_layout(self, gui_info: Dict, worksheet_info: List):
+    def _create_user_info_layout(self, gui_info: Dict):
         group_layout = QVBoxLayout()
 
         group_layout.setContentsMargins(15, 15, 15, 15)
         group_layout.setSpacing(15)
 
         # ID入力
-        id_label = QLabel(gui_info['ID_LABEL'])
-        self.id_input = self._create_input_field(gui_info['INPUT_EXAMPLE_ID'], fixed_width=250)
+        id_label = QLabel(gui_info["ID_LABEL"])
+        self.id_input = self._create_input_field(
+            gui_info["INPUT_EXAMPLE_ID"], fixed_width=250
+        )
 
         # idのレイアウト作成
         id_layout = QHBoxLayout()  # 横レイアウト
@@ -93,10 +102,11 @@ class UserInfoForm(QGroupBox):
         # グループにidレイアウトを追加
         group_layout.addLayout(id_layout)
 
-
         # Pass入力
-        pass_label = QLabel(gui_info['PASS_LABEL'])
-        self.pass_input = self._create_input_field(gui_info['INPUT_EXAMPLE_PASS'], is_password=True, fixed_width=250)
+        pass_label = QLabel(gui_info["PASS_LABEL"])
+        self.pass_input = self._create_input_field(
+            gui_info["INPUT_EXAMPLE_PASS"], is_password=True, fixed_width=250
+        )
 
         # Passのレイアウト作成
         pass_layout = QHBoxLayout()  # 横レイアウト
@@ -106,33 +116,45 @@ class UserInfoForm(QGroupBox):
         # グループにPassレイアウトを追加
         group_layout.addLayout(pass_layout)
 
+        # # gss_url入力
+        # gss_url_label = QLabel(gui_info["GSS_URL_LABEL"])
+        # self.gss_url_input = self._create_input_field(
+        #     gui_info["INPUT_EXAMPLE_GSS_URL"], fixed_width=250
+        # )
 
-        # Worksheetを選択
-        dropdown_label = QLabel(gui_info['DROPDOWN_LABEL'])
-        self.dropdown_input = self._dropdown_menu(dropdown_menu_list=worksheet_info)
+        # # gss_urlのレイアウト作成
+        # gss_url_layout = QHBoxLayout()  # 横レイアウト
+        # gss_url_layout.addWidget(gss_url_label)
+        # gss_url_layout.addWidget(self.gss_url_input)
 
-        # worksheetのレイアウト作成
-        dropdown_layout = QHBoxLayout()  # 横レイアウト
-        dropdown_layout.addWidget(dropdown_label)
-        dropdown_layout.addWidget(self.dropdown_input)
+        # # グループにgss_urlレイアウトを追加
+        # group_layout.addLayout(gss_url_layout)
 
-        # グループにworksheetレイアウトを追加
-        group_layout.addLayout(dropdown_layout)
+        # # Worksheetを選択
+        # dropdown_label = QLabel(gui_info["DROPDOWN_LABEL"])
+        # self.dropdown_input = self._dropdown_menu(dropdown_menu_list=worksheet_info)
+
+        # # worksheetのレイアウト作成
+        # dropdown_layout = QHBoxLayout()  # 横レイアウト
+        # dropdown_layout.addWidget(dropdown_label)
+        # dropdown_layout.addWidget(self.dropdown_input)
+
+        # # グループにworksheetレイアウトを追加
+        # group_layout.addLayout(dropdown_layout)
 
         # errorラベルを追加
         self.error_label = self._error_label()
         group_layout.addWidget(self.error_label)
 
-
-
         return group_layout
-
 
     ####################################################################################
     # ----------------------------------------------------------------------------------
     # ID入力欄→passwordを渡せば非表示
 
-    def _create_input_field(self, input_example: str, is_password: bool = False, fixed_width: int=200):
+    def _create_input_field(
+        self, input_example: str, is_password: bool = False, fixed_width: int = 200
+    ):
         input_field = QLineEdit()
         input_field.setPlaceholderText(input_example)  # input_exampleは入力例
 
@@ -148,11 +170,10 @@ class UserInfoForm(QGroupBox):
 
         return input_field
 
-
     # ----------------------------------------------------------------------------------
     # スプシからのデータを受けたドロップダウンメニュー
 
-    def _dropdown_menu(self, dropdown_menu_list: List, fixed_width: int=250):
+    def _dropdown_menu(self, dropdown_menu_list: List, fixed_width: int = 250):
         dropdown_menu = QComboBox()
         dropdown_menu.addItem("--選択してください--")  # 初期値を設定
         dropdown_menu.addItems(dropdown_menu_list)
@@ -162,7 +183,6 @@ class UserInfoForm(QGroupBox):
 
         return dropdown_menu
 
-
     # ----------------------------------------------------------------------------------
     # エラーラベル（通常時は非表示）
 
@@ -171,7 +191,6 @@ class UserInfoForm(QGroupBox):
         error_label.setStyleSheet("color: red;")
         error_label.hide()
         return error_label
-
 
     # ----------------------------------------------------------------------------------
     # メッセージが合ったときに表示させる
@@ -186,6 +205,5 @@ class UserInfoForm(QGroupBox):
         else:
             self.error_label.clear()
             self.error_label.hide()
-
 
     # ----------------------------------------------------------------------------------
