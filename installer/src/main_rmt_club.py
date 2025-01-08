@@ -23,6 +23,7 @@ from method.base.time_manager import TimeManager
 from method.base.path import BaseToPath
 from method.base.spreadsheetRead import GetDataGSSAPI
 from method.flow_game_club_new_item import FlowGameClubNewItem
+from method.flow_RMT_club_new_item import FlowRMTClubNewItem
 from method.flow_MA_club_new_item import FlowMAClubNewItem
 from method.flow_gc_update import FlowGameClubUpdate
 from PySide6.QtGui import QGuiApplication
@@ -35,7 +36,7 @@ from method.const_element import GssInfo, GuiInfo
 # **********************************************************************************
 
 
-class MainApp(QWidget):
+class MainRMTClubApp(QWidget):
     def __init__(self, gui_info: Dict, process_func: Callable, update_func: Callable):
         super().__init__()
         # メインタイトル
@@ -289,18 +290,18 @@ if __name__ == "__main__":
 
     def process_func(*args, **kwargs):
         if not hasattr(process_func, "instance"):
-            process_func.instance = FlowGameClubNewItem()
+            process_func.instance = FlowRMTClubNewItem()
         return process_func.instance.process(*args, **kwargs)
 
 
-   # 更新処理をラップして遅延初期化
-    def update_func(*args, **kwargs):
-        if not hasattr(update_func, "instance"):
-            update_func.instance = FlowGameClubUpdate()  # 初回呼び出し時にインスタンス化
-        return update_func.instance.process(*args, **kwargs)
+    # 更新処理をラップして遅延初期化
+    # def update_func(*args, **kwargs):
+    #     if not hasattr(update_func, "instance"):
+    #         update_func.instance = FlowGameClubUpdate()  # 初回呼び出し時にインスタンス化
+    #     return update_func.instance.process(*args, **kwargs)
 
 
     app = QApplication(sys.argv)
-    main_app = MainApp(gui_info=gui_info, process_func=process_func, update_func=update_func)
+    main_app = MainRMTClubApp(gui_info=gui_info, process_func=process_func, update_func=update_func)
     main_app.show()
     sys.exit(app.exec())
