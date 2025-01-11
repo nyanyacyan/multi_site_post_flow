@@ -4,8 +4,8 @@
 
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 # import
-from PySide6.QtWidgets import QVBoxLayout, QLabel, QGroupBox
-
+from PySide6.QtWidgets import QVBoxLayout, QLabel, QGroupBox, QApplication
+from PySide6.QtCore import QTimer
 
 # ----------------------------------------------------------------------------------
 # **********************************************************************************
@@ -28,8 +28,19 @@ class StatusManager(QGroupBox):
     # アクションを実行
 
     def update_status(self, msg: str, color: str= "black"):
+        QApplication.processEvents()
+        QTimer.singleShot(0, lambda: self._update_label(msg, color))
+
+    ####################################################################################
+
+    def _update_label(self, msg: str, color: str= "black"):
+        print(f"Status Update: {msg}")
         self.status_label.setText(msg)
         self.status_label.setStyleSheet(f"color: {color};")
 
 
     ####################################################################################
+
+
+    def _get_status_text(self):
+        return self.status_label.text()

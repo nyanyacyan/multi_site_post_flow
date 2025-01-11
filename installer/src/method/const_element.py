@@ -284,7 +284,7 @@ class SellInfo(Enum):
 class GuiInfo(Enum):
     GAME_CLUB = {
         "JSON_KEY_NAME": "sns-auto-430920-08274ad68b41.json",
-        "SORT_WORD_LIST": ["GAME_CLUB", "GC", "ゲームクラブ", "GAME"],
+        "SORT_WORD_LIST": ["GAME_CLUB", "GC", "ゲームクラブ", "GAME", 'game_club', "game", "game club"],
         "GSS_INPUT_TITLE": "Spreadsheet 情報",
         "MAIN_WINDOW_TITLE": "GAME_CLUB Automation Tool",
         "BACKGROUND_COLOR": "#FFFFFF",

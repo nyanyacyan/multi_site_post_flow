@@ -4,12 +4,14 @@
 
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 # import
-import threading, time, _asyncio, sys
+import threading, time, asyncio, sys
+from functools import partial
 from datetime import datetime, timedelta
 from typing import Dict, Callable, List
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QApplication
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QApplication, QLabel
 from PySide6.QtCore import QTimer
 from PySide6.QtGui import QIcon
+from PySide6.QtGui import QGuiApplication
 
 # 自作モジュール
 from method.base.GUI.set_user_info import UserInfoForm
@@ -25,7 +27,9 @@ from method.base.spreadsheetRead import GetDataGSSAPI
 from method.flow_game_club_new_item import FlowGameClubNewItem
 from method.flow_MA_club_new_item import FlowMAClubNewItem
 from method.flow_gc_update import FlowGameClubUpdate
-from PySide6.QtGui import QGuiApplication
+from method.base.GUI.Qtimer_content import CountDownQTimer
+from method.QTimer_test import SingleShotTest
+
 
 # const
 from method.const_element import GssInfo, GuiInfo
@@ -38,6 +42,9 @@ from method.const_element import GssInfo, GuiInfo
 class MainGamaClubApp(QWidget):
     def __init__(self, gui_info: Dict, process_func: Callable, update_func: Callable):
         super().__init__()
+
+        self.countdown_timer = None  # クラスの属性として初期化
+
         # メインタイトル
         self.setWindowTitle(gui_info['MAIN_WINDOW_TITLE'])
 
@@ -69,7 +76,10 @@ class MainGamaClubApp(QWidget):
         self.interval_form = IntervalTimeForm(gui_info=gui_info)
         self.uptime_form = SetUptime(gui_info=gui_info)
         self.radio_btn_form = RadioSelect(gui_info=gui_info)
-        self.action_btn_form = ActionBtn(gui_info=gui_info, status_label=self.status_label, process_func=self._start_wait_time, cancel_func=self.cancel_event)
+        self.action_btn_form = ActionBtn(gui_info=gui_info, status_label=self.status_label, process_func=self.entry_event, cancel_func=self.cancel_event)
+
+        # カウントダウン用ラベルを追加
+        self.process_label = QLabel("カウントダウン待機中...")
 
 
         # レイアウトに追加
@@ -80,6 +90,11 @@ class MainGamaClubApp(QWidget):
         self.layout.addWidget(self.radio_btn_form)
         self.layout.addWidget(self.action_btn_form)
         self.layout.addWidget(self.status_label)
+        self.layout.addWidget(self.process_label)
+
+        # タイマーの設定
+        self.uptime_info = {}  # 初期化
+        self.timer = CountDownQTimer(label=self.process_label, uptime_info=self.uptime_info)
 
 
         # フラグをセット（フラグを立てる場合には self.stop_event.set() を実施）
@@ -98,6 +113,30 @@ class MainGamaClubApp(QWidget):
 
 
     ####################################################################################
+
+
+    def entry_event(self):
+        try:
+            self.uptime_info = self.uptime_form.get_uptime_info()
+            print(self.uptime_info)
+
+            self.timer.update_uptime_info(self.uptime_info)  # 最新の数値に実行するMethod側の数値を更新する
+
+            print("Entry Event 開始")
+            self.timer.countdown_event()  # SingleShotTestのタイマーを起動
+            print("Entry Event 完了")
+
+        except Exception as e:
+            print(f"エラーです{e}")
+
+        if self.uptime_info['start_diff'] == 0:
+            pass
+
+
+        # self.start_event()
+
+
+    # ----------------------------------------------------------------------------------
     # start_event
 
     def start_event(self):
@@ -105,9 +144,6 @@ class MainGamaClubApp(QWidget):
             user_info = self.user_info_form.get_user_info()
             interval_info = self.interval_form.get_interval_info()
             uptime_info = self.uptime_form.get_uptime_info()
-
-            # スタートするまで待機
-            # self._start_wait_time(uptime_info=uptime_info)
 
             # STARTボタンを押下したときのradio_btnを取得
             self.update_bool = self.radio_btn_form.get_radio_info()
@@ -122,6 +158,9 @@ class MainGamaClubApp(QWidget):
             # 終了時間の監視taskをスタート
             threading.Thread(target=self._monitor_date_change, args=(user_info,), daemon=True).start()
 
+            # 更新作業が完了するまで待機
+            self.update_complete_event.wait()
+
             # メイン処理実施
             self.loop_process(user_info=user_info, interval_info=interval_info, uptime_info=uptime_info)
 
@@ -130,9 +169,10 @@ class MainGamaClubApp(QWidget):
             print(f"処理中にエラーが発生: {e}")
 
 
-    ####################################################################################
+    # ----------------------------------------------------------------------------------
 
-    ####################################################################################
+
+    # ----------------------------------------------------------------------------------
     # キャンセル処理
 
     def cancel_event(self):
@@ -151,7 +191,7 @@ class MainGamaClubApp(QWidget):
         self.status_label.update_status(msg="待機中...", color="red")
 
 
-    ####################################################################################
+    # ----------------------------------------------------------------------------------
     # 日付が変わるまでの時間を算出して待機する
 
     def _monitor_date_change(self, user_info: Dict):
@@ -175,9 +215,9 @@ class MainGamaClubApp(QWidget):
         try:
             end_diff = uptime_info['end_diff']
 
-            if end_diff.total_seconds() > 0:
+            if end_diff > 0:
                 # 終了時間まで待機
-                threading.Timer(end_diff.total_seconds(), self._end_time_task).start()
+                threading.Timer(end_diff, self._end_time_task).start()
 
         except Exception as e:
             self.status_label.update_status(msg=f"終了時間の設定などによるエラー: {e}", color="red")
@@ -195,19 +235,59 @@ class MainGamaClubApp(QWidget):
     # ----------------------------------------------------------------------------------
 
 
-    def _start_wait_time(self):
-        # 開始時間まで待機
-        uptime_info = self.uptime_form.get_uptime_info()
-        start_diff = uptime_info['start_diff']
-        self.wait_seconds = start_diff.total_seconds()
+    # def _start_wait_time(self):
+    #     # 開始時間まで待機
+    #     uptime_info = self.uptime_form.get_uptime_info()
+    #     start_diff = uptime_info['start_diff']
+    #     self.wait_seconds = start_diff.total_seconds()
+    #     print(f"self.wait_seconds: {self.wait_seconds}")
 
-        # タイマーの設定
-        self.timer = QTimer()
-        self.timer.setInterval(1000)  # 1秒ごとに発火
-        self.timer.timeout.connect(self._countdown_tick)  # カウントダウン処理に接続
+    #     # タイマーの設定
+    #     self.countdown_timer.setInterval(1000)  # 1秒ごとに発火
+    #     self.countdown_timer.timeout.connect(self._countdown_tick)  # カウントダウン処理に接続
 
-        # タイマーを開始
-        self.timer.start()
+    #     # タイマーを開始
+    #     self.countdown_timer.start()
+
+
+    # # ----------------------------------------------------------------------------------
+
+    # def _start_timer(self, msg: str, color: str='black'):
+    #     # タイマーの設定
+    #     if hasattr(self, 'timer') and self.timer.isActive():
+    #         print("Stopping previous timer")  # デバッグ
+    #         self.timer.stop()
+
+    #     self.status_timer.timeout.disconnect()
+    #     self.status_timer.setInterval(1000)  # 1秒ごとに発火
+
+    #     self.status_timer.timeout.connect(partial(self._status_update, msg, color))
+
+    #     print("Starting new timer with message:", msg)  # デバッグ
+    #     # タイマーを開始
+    #     self.status_timer.start()
+
+
+    # ----------------------------------------------------------------------------------
+
+
+    def _status_update(self, msg: str, color: str='black'):
+        current_text = self.status_label._get_status_text()
+
+        if current_text == msg:
+            self._stop_timer()
+            print("タイマーストップ")
+            return
+
+        self.status_label.update_status(msg=msg, color=color)
+
+
+    def _test_update(self):
+        print("Timer triggered!")
+
+    def _stop_timer(self):
+        if hasattr(self, 'timer') and self.timer.isActive():
+            self.status_timer.stop()
 
 
     # ----------------------------------------------------------------------------------
@@ -225,11 +305,31 @@ class MainGamaClubApp(QWidget):
             self.status_label.update_status(msg)
             self.wait_seconds -= 1
         else:
-            # カウントダウン終了時の処理
-            self.timer.stop()  # タイマー停止
-            self.status_label.update_status("実行を開始します！")
-            self.start_event()  # メインタスクを開始
+            self.status_label.update_status("タイマーストップ")
+            self.countdown_timer.stop()  # タイマー停止
 
+            # タイマーが停止したかどうかを確認
+            if not self.countdown_timer.isActive():
+                print("タイマーが正常に停止しました")
+            else:
+                print("タイマーがまだ動作中です！")
+
+
+        # タイマー終了後の次の処理を非同期で実行
+            self._start_timer(msg="実行を開始します1！")
+
+
+            self._start_timer(msg="実行を開始します2！")
+
+    async def _after_countdown(self):
+        await asyncio.sleep(0.5)
+        self.status_label.update_status("実行を開始します1！")
+
+
+    async def _after_start_event(self):
+        # await asyncio.sleep(0.5)
+        # self.status_label.update_status("実行を開始します2！")
+        self.start_event()  # メインタスクを開始
 
     # ----------------------------------------------------------------------------------
     # 更新処理
@@ -240,15 +340,20 @@ class MainGamaClubApp(QWidget):
 
         # 更新処理ストップフラグをクリア→更新処理が実施できるようにする
         self.update_complete_event.clear()
+        print("更新処理のクリアを実施")
 
         # ステータス変更
-        self.status_label.update_status(msg="更新処理中...", color="black")
+        self.status_label.update_status(msg="")
+        self.status_label.update_status(msg="更新処理中...")
+        print("更新処理の開始")
+
 
         # 更新処理を実施
         self.update_func(id_text=user_info['id'], pass_text=user_info['pass'])
 
         # 更新作業完了フラグを立てる
         self.update_complete_event.set()
+        print("更新処理が完了したのでフラグ立て")
 
         self.status_label.update_status(msg="更新処理が完了しました。", color="blue")
 
@@ -256,16 +361,19 @@ class MainGamaClubApp(QWidget):
     # ----------------------------------------------------------------------------------
     # 出品処理
 
-    def loop_process(self, user_info: Dict, interval_info: Dict, uptime_info: Dict[str, timedelta]):
+    def loop_process(self, user_info: Dict, interval_info: Dict):
         # ストップフラグがis_setされるまでループ処理
+        count = 0
         while not self.stop_event.is_set():
-            # 更新作業が完了するまで待機
-            self.update_complete_event.wait()
 
             if self.stop_event.is_set():
+                self.status_label.update_status(msg="出品処理処理を停止...", color="blue")
+                print("ストップイベントフラグを確認。出品処理を停止")
                 break
 
-            self.status_label.update_status(msg="実行処理中...", color="blue")
+            count += 1
+            self.status_label.update_status(msg=f"実行処理中({count}回目)...", color="blue")
+            print(f"実行処理中({count}回目)")
 
             # 処理を実施
             self.process_func(id_text=user_info['id'], pass_text=user_info['pass'], worksheet_name=user_info['worksheet'])

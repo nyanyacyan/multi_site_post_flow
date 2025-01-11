@@ -47,6 +47,9 @@ class SetUptime(QGroupBox):
             start_diff = uptime_start_time - now
             end_diff = uptime_end_time - now
 
+            start_diff_int = int(start_diff.total_seconds())
+            end_diff_int = int(end_diff.total_seconds())
+
             if not uptime_start_time:
                 self._set_error_msg("開始日時の設定がされてません")
                 raise ValueError("開始日時の設定がされてません")
@@ -63,8 +66,8 @@ class SetUptime(QGroupBox):
             self._set_error_msg("")
 
             return {
-                "start_diff": start_diff,
-                "end_diff": end_diff,
+                "start_diff": start_diff_int,
+                "end_diff": end_diff_int,
             }
 
         except ValueError as e:
