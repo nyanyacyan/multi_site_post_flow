@@ -5,13 +5,13 @@
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 # import
 import threading, time, asyncio, sys
-from functools import partial
 from datetime import datetime, timedelta
-from typing import Dict, Callable, List
+from typing import Dict, Callable
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QApplication, QLabel
-from PySide6.QtCore import QTimer
 from PySide6.QtGui import QIcon
 from PySide6.QtGui import QGuiApplication
+from PySide6.QtCore import QTimer
+
 
 # 自作モジュール
 from method.base.GUI.set_user_info import UserInfoForm
@@ -21,14 +21,14 @@ from method.base.GUI.set_uptime import SetUptime
 from method.base.GUI.set_radio_btn import RadioSelect
 from method.base.GUI.set_action_btn import ActionBtn
 from method.base.GUI.set_status_display import StatusManager
+
+from method.base.event.update_event import UpdateEvent
+
 from method.base.time_manager import TimeManager
 from method.base.path import BaseToPath
-from method.base.spreadsheetRead import GetDataGSSAPI
 from method.flow_game_club_new_item import FlowGameClubNewItem
-from method.flow_MA_club_new_item import FlowMAClubNewItem
 from method.flow_gc_update import FlowGameClubUpdate
 from method.base.GUI.Qtimer_content import CountDownQTimer
-from method.QTimer_test import SingleShotTest
 
 
 # const
@@ -92,14 +92,11 @@ class MainGamaClubApp(QWidget):
         self.layout.addWidget(self.status_label)
         self.layout.addWidget(self.process_label)
 
-        # タイマーの設定
-        self.uptime_info = {}  # 初期化
-        self.timer = CountDownQTimer(label=self.process_label, uptime_info=self.uptime_info)
-
 
         # フラグをセット（フラグを立てる場合には self.stop_event.set() を実施）
         self.stop_event = threading.Event()
         self.update_complete_event = threading.Event()
+        self.start_event_flag = threading.Event()
 
         # メインの処理を受け取る
         self.process_func = process_func
@@ -110,6 +107,11 @@ class MainGamaClubApp(QWidget):
 
         # インスタンス
         self.time_manager = TimeManager()
+        self.update_event = UpdateEvent()
+
+        # タイマーの設定
+        self.uptime_info = {}  # 初期化
+        self.timer = CountDownQTimer(label=self.process_label, uptime_info=self.uptime_info, start_event_flag=self.start_event_flag)
 
 
     ####################################################################################
@@ -126,14 +128,33 @@ class MainGamaClubApp(QWidget):
             self.timer.countdown_event()  # SingleShotTestのタイマーを起動
             print("Entry Event 完了")
 
+            # QTimerでフラグを監視
+            self.check_timer = QTimer()
+            self.check_timer.setInterval(500)  # 500msごとに監視
+            self.check_timer.timeout.connect(self._check_flag_and_start)
+            self.check_timer.start()
+
         except Exception as e:
             print(f"エラーです{e}")
 
-        if self.uptime_info['start_diff'] == 0:
-            pass
+        # if not self.start_event_flag.is_set():
+        #     print("フラグはまだ立ってません。")
+        # else:
+        #     print("フラグが立ちました")
+        #     # フラグを監視しながら処理を進める
+        #     threading.Thread(target=self._check_flag_and_start, daemon=True).start()
+
+    # ----------------------------------------------------------------------------------
 
 
-        # self.start_event()
+    def _check_flag_and_start(self):
+        """フラグを監視し、立ったらstart_eventを実行"""
+        if self.start_event_flag.is_set():
+            print("[DEBUG] フラグが立ちました！start_eventを開始します")
+            self.check_timer.stop()  # タイマーを停止
+            self.start_event()
+        else:
+            print("[DEBUG] フラグはまだ立っていません")
 
 
     # ----------------------------------------------------------------------------------
@@ -150,7 +171,10 @@ class MainGamaClubApp(QWidget):
 
             # 更新処理がある場合には実施
             if self.update_bool:
-                self._update_task(user_info=user_info)
+                if self.process_label is None:
+                    print(f"[DEBUG] ラベルが初期化されていません {self.process_label}")
+                print(f"ラベルの中身 {self.process_label}")
+                self.update_event._update_task(stop_event=self.stop_event, update_complete_event=self.update_complete_event, update_func=self.update_func, label=self.process_label, user_info=user_info)
 
             # 終了時間の監視taskをスタート
             threading.Thread(target=self._monitor_end_time, args=(uptime_info,), daemon=True).start()
@@ -165,7 +189,6 @@ class MainGamaClubApp(QWidget):
             self.loop_process(user_info=user_info, interval_info=interval_info, uptime_info=uptime_info)
 
         except Exception as e:
-            self.status_label.update_status(msg=f"エラー: {e}", color="red")
             print(f"処理中にエラーが発生: {e}")
 
 

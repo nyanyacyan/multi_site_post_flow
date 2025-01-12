@@ -5,6 +5,7 @@
 
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 # import
+import threading
 from datetime import timedelta
 from typing import Dict
 from PySide6.QtWidgets import QLabel
@@ -13,7 +14,6 @@ from PySide6.QtCore import QObject, QTimer, Signal
 
 # 自作モジュール
 from method.base.utils import Logger
-from method.base.GUI.set_status_display import StatusManager
 
 
 # ----------------------------------------------------------------------------------
@@ -22,7 +22,7 @@ from method.base.GUI.set_status_display import StatusManager
 
 class CountDownQTimer(QObject):
     countdown_signal = Signal(int)
-    def __init__(self, label: QLabel, uptime_info: Dict[int, int]):
+    def __init__(self, label: QLabel, uptime_info: Dict[int, int], start_event_flag: threading.Event):
         super().__init__()
         # logger
         self.getLogger = Logger()
@@ -30,11 +30,9 @@ class CountDownQTimer(QObject):
 
         self.label = label  # GUIのラベルを更新する
 
-        # インスタンス
-        self.status_label = StatusManager()
-
         self.countdown_timer = QTimer(self)
         self.uptime_info = uptime_info
+        self.start_event_flag = start_event_flag
 
 
     ####################################################################################
@@ -54,7 +52,9 @@ class CountDownQTimer(QObject):
 
         self.logger.debug(f"カウントダウン開始: {wait_seconds} 秒")
         self.countdown_timer.timeout.disconnect()  # 古い接続を解除してリセット
-        self.countdown_timer.setInterval(1000)  # 1秒ごとに発火
+        # self.countdown_timer.setInterval(1000)  # 1秒ごとに発火
+        self.countdown_timer.setInterval(10)  # テスト用
+
         self.countdown_timer.timeout.connect(self.update_label)
         self.countdown_timer.start()
 
@@ -77,6 +77,8 @@ class CountDownQTimer(QObject):
         else:
             self.label.setText("カウントダウン終了")
             self.countdown_timer.stop()
+            self.start_event_flag.set()  # スタートフラグをON
+            self.logger.debug('スタートフラグをON')
 
 
     # ----------------------------------------------------------------------------------
