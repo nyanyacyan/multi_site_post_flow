@@ -18,7 +18,7 @@ from method.base.GUI.set_interval_time import IntervalTimeForm
 from method.base.GUI.set_uptime import SetUptime
 from method.base.GUI.set_radio_btn import RadioSelect
 from method.base.GUI.set_action_btn import ActionBtn
-from method.base.GUI.set_status_display import StatusManager
+from installer.src.method.base.Archive.set_status_display import StatusManager
 from method.base.time_manager import TimeManager
 from method.base.path import BaseToPath
 from method.base.spreadsheetRead import GetDataGSSAPI

@@ -8,18 +8,22 @@ from typing import Dict, Callable
 from PySide6.QtWidgets import QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QGroupBox
 
 # 自作モジュール
-from method.base.GUI.set_status_display import StatusManager
-
+from installer.src.method.base.Archive.set_status_display import StatusManager
+from method.base.event.update_label import UpdateLabel
 
 # ----------------------------------------------------------------------------------
 # **********************************************************************************
 
 
 class ActionBtn(QGroupBox):
-    def __init__(self, gui_info: Dict, status_label: StatusManager, process_func: Callable, cancel_func: Callable):
+    def __init__(self, label: QLabel, gui_info: Dict, process_func: Callable, cancel_func: Callable):
         super().__init__()
 
-        self.status_label = status_label
+        # instance
+        self.update_label = UpdateLabel()
+
+        # ラベル
+        self.label = label
 
         # 処理関数をここで所持
         self.process_func = process_func
@@ -70,7 +74,7 @@ class ActionBtn(QGroupBox):
 
     def _start_processing(self):
         # ラベルにコメントを追記
-        self.status_label.update_status("出品処理中...", color="blue")
+        self.update_label._update_label(label=self.label, comment="出品処理中...")
 
         self.process_btn.setEnabled(False)  # 開始ボタンを押せないSTS変更
         self.cancel_btn.setEnabled(True)  # キャンセルボタンを押せるSTS変更
@@ -91,6 +95,7 @@ class ActionBtn(QGroupBox):
         self.cancel_func()
 
         # キャンセル処理完了後に「待機中」に戻す
-        self.status_label.update_status("待機中...", color="black")
+        self.update_label._update_label(label=self.label, comment="待機中...")
+
 
     # ----------------------------------------------------------------------------------

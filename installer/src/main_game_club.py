@@ -20,7 +20,7 @@ from method.base.GUI.set_interval_time import IntervalTimeForm
 from method.base.GUI.set_uptime import SetUptime
 from method.base.GUI.set_radio_btn import RadioSelect
 from method.base.GUI.set_action_btn import ActionBtn
-from method.base.GUI.set_status_display import StatusManager
+from installer.src.method.base.Archive.set_status_display import StatusManager
 
 from method.base.event.update_event import UpdateEvent
 
@@ -67,8 +67,9 @@ class MainGamaClubApp(QWidget):
 
         self.setLayout(self.layout)
 
-        # ステータスラベルを定義
-        self.status_label = StatusManager()
+
+        # カウントダウン用ラベルを追加
+        self.process_label = QLabel("待機中...")
 
         # 各GUIパーツを追加
         self.user_info_form = UserInfoForm(gui_info=gui_info)
@@ -76,11 +77,7 @@ class MainGamaClubApp(QWidget):
         self.interval_form = IntervalTimeForm(gui_info=gui_info)
         self.uptime_form = SetUptime(gui_info=gui_info)
         self.radio_btn_form = RadioSelect(gui_info=gui_info)
-        self.action_btn_form = ActionBtn(gui_info=gui_info, status_label=self.status_label, process_func=self.entry_event, cancel_func=self.cancel_event)
-
-        # カウントダウン用ラベルを追加
-        self.process_label = QLabel("カウントダウン待機中...")
-        # self.process_label_two = QLabel('処理ステータス')
+        self.action_btn_form = ActionBtn(label=self.process_label, gui_info=gui_info, process_func=self.entry_event, cancel_func=self.cancel_event)
 
 
         # レイアウトに追加
@@ -90,9 +87,7 @@ class MainGamaClubApp(QWidget):
         self.layout.addWidget(self.uptime_form)
         self.layout.addWidget(self.radio_btn_form)
         self.layout.addWidget(self.action_btn_form)
-        self.layout.addWidget(self.status_label)
         self.layout.addWidget(self.process_label)
-        # self.layout.addWidget(self.process_label_two)
 
 
         # フラグをセット（フラグを立てる場合には self.stop_event.set() を実施）
