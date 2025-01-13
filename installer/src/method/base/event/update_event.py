@@ -57,7 +57,11 @@ class UpdateEvent(QObject):
 
         # 更新作業完了フラグを立てる
         update_complete_event.set()
-        self.logger.debug(f'更新処理が完了したのでフラグ立て: {__name__}')
+        if update_complete_event.is_set:
+            self.logger.debug(f'更新処理が完了したのでフラグ立て: {__name__}')
+        else:
+            self.logger.error(f"フラグ立てに失敗")
+            return
 
         comp_comment = "更新処理が完了しました。"
         self.update_label._update_label(label=label, comment=comp_comment)
