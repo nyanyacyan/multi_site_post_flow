@@ -8,7 +8,6 @@ from typing import Dict, Callable
 from PySide6.QtWidgets import QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QGroupBox
 
 # 自作モジュール
-from installer.src.method.base.Archive.set_status_display import StatusManager
 from method.base.event.update_label import UpdateLabel
 
 # ----------------------------------------------------------------------------------
@@ -87,7 +86,7 @@ class ActionBtn(QGroupBox):
 
     def _cancel_processing(self):
 
-        self.status_label.update_status("処理を中断してます...", color="red")
+        self.update_label._update_label(label=self.label, comment="処理を中断してます...")
 
         self.process_btn.setEnabled(True)  # 開始ボタンを押せる状態にSTS変更
         self.cancel_btn.setEnabled(False)  # キャンセルボタンを押せないSTS変更

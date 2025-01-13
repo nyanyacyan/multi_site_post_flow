@@ -101,6 +101,9 @@ class CountDownQTimer(QObject):
 class CheckFlag(QObject):
     def __init__(self):
         super().__init__()
+
+        self.check_timer = None  # 初期化
+
         # logger
         self.getLogger = Logger()
         self.logger = self.getLogger.getLogger()
@@ -109,12 +112,18 @@ class CheckFlag(QObject):
     ####################################################################################
     # QTimerでフラグを監視
 
-    def _check_flag(self, flag: threading.Event, event_func: Callable, interval: int = 2000):
-        check_timer = QTimer()
-        check_timer.setInterval(interval)
-        check_timer.timeout.connect(lambda: self._check_flag_and_start(flag, event_func, check_timer))
-        check_timer.start()
-        return check_timer
+    def _check_flag(self, flag: threading.Event, event_func: Callable, interval: int = 500):
+
+        if hasattr(self, "check_timer") and self.check_timer and self.check_timer.isActive():
+            self.logger.warning("既存のタイマーが動作中です。新しいタイマーを作成しません")
+            return
+
+        self.check_timer = QTimer()
+        self.logger.debug(f"タイマー作成: {id(self.check_timer)}")
+
+        self.check_timer.setInterval(interval)
+        self.check_timer.timeout.connect(lambda: self._check_flag_and_start(flag, event_func, self.check_timer))
+        self.check_timer.start()
 
 
     # ----------------------------------------------------------------------------------
@@ -123,10 +132,16 @@ class CheckFlag(QObject):
     def _check_flag_and_start(self, flag: threading.Event, event_func: Callable, check_timer: QTimer):
         if flag.is_set():
             self.logger.info("フラグが立ちました！指定の関数を実行します")
-            check_timer.stop()
+
+            # そのまま動いていることを検知してTimerのtaskを消去してメモリを開放
+            if check_timer.isActive():  # Timerがまだ動いているのか確認
+                check_timer.stop()  # 動いていたら止める
+                check_timer.deleteLater()  # ストップする予約
+            del self.check_timer  # check_timerのtaskを消去
+
+            # 処理開始
             event_func()
         else:
-            self.logger.debug("フラグはまだ立っていません")
-
+            self.logger.warning("フラグはまだ立っていません")
 
     # ----------------------------------------------------------------------------------

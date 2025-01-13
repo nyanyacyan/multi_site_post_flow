@@ -10,7 +10,6 @@ from typing import Dict, Callable
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QApplication, QLabel
 from PySide6.QtGui import QIcon
 from PySide6.QtGui import QGuiApplication
-from PySide6.QtCore import QTimer
 
 
 # 自作モジュール
@@ -20,7 +19,6 @@ from method.base.GUI.set_interval_time import IntervalTimeForm
 from method.base.GUI.set_uptime import SetUptime
 from method.base.GUI.set_radio_btn import RadioSelect
 from method.base.GUI.set_action_btn import ActionBtn
-from installer.src.method.base.Archive.set_status_display import StatusManager
 
 from method.base.event.update_event import UpdateEvent
 
@@ -117,6 +115,7 @@ class MainGamaClubApp(QWidget):
 
     def entry_event(self):
         try:
+            # 開始時間と終了時間を取得
             self.uptime_info = self.uptime_form.get_uptime_info()
             print(self.uptime_info)
 
@@ -132,19 +131,6 @@ class MainGamaClubApp(QWidget):
 
         except Exception as e:
             print(f"エラーです{e}")
-
-
-    # ----------------------------------------------------------------------------------
-
-
-    def _check_flag_and_start(self):
-        """フラグを監視し、立ったらstart_eventを実行"""
-        if self.start_event_flag.is_set():
-            print("[DEBUG] フラグが立ちました！start_eventを開始します")
-            self.check_timer.stop()  # タイマーを停止
-            self.start_event()
-        else:
-            print("[DEBUG] フラグはまだ立っていません")
 
 
     # ----------------------------------------------------------------------------------

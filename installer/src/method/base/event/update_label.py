@@ -49,7 +49,7 @@ class UpdateLabel(QObject):
         label_text = label.text()
         print(f"label_text: {label_text}")
         if label_text != comment:
-            self.logger.error(f"ラベル更新に失敗しました: {comment}")
+            self.logger.error(f"\n【ラベル更新に失敗しました】\n変更したいコメント: {comment}\n変更前コメント: {label_text}")
             return
 
 
