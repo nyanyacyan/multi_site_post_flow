@@ -51,9 +51,14 @@ class CountDownQTimer(QObject):
             return
 
         self.logger.debug(f"カウントダウン開始: {wait_seconds} 秒")
-        self.countdown_timer.timeout.disconnect()  # 古い接続を解除してリセット
-        # self.countdown_timer.setInterval(1000)  # 1秒ごとに発火
-        self.countdown_timer.setInterval(10)  # テスト用
+
+        try:
+            self.countdown_timer.timeout.disconnect()  # 古い接続を解除してリセット
+            # self.countdown_timer.setInterval(1000)  # 1秒ごとに発火
+            self.countdown_timer.setInterval(10)  # テスト用
+
+        except RuntimeError:
+            self.logger.debug(f'タイマー接続なしのためスキップ')
 
         self.countdown_timer.timeout.connect(self.update_label)
         self.countdown_timer.start()
