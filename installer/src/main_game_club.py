@@ -80,7 +80,7 @@ class MainGamaClubApp(QWidget):
 
         # カウントダウン用ラベルを追加
         self.process_label = QLabel("カウントダウン待機中...")
-        self.process_label_two = QLabel('処理ステータス')
+        # self.process_label_two = QLabel('処理ステータス')
 
 
         # レイアウトに追加
@@ -92,7 +92,7 @@ class MainGamaClubApp(QWidget):
         self.layout.addWidget(self.action_btn_form)
         self.layout.addWidget(self.status_label)
         self.layout.addWidget(self.process_label)
-        self.layout.addWidget(self.process_label_two)
+        # self.layout.addWidget(self.process_label_two)
 
 
         # フラグをセット（フラグを立てる場合には self.stop_event.set() を実施）
@@ -173,10 +173,15 @@ class MainGamaClubApp(QWidget):
 
             # 更新処理がある場合には実施
             if self.update_bool:
-                if self.process_label is None:
-                    print(f"[DEBUG] ラベルが初期化されていません {self.process_label}")
-                print(f"ラベルの中身 {self.process_label}")
-                self.update_event._update_task(stop_event=self.stop_event, update_complete_event=self.update_complete_event, update_func=self.update_func, label=self.process_label_two, user_info=user_info)
+                # if self.process_label_two is None:
+                #     print(f"[DEBUG] ラベルが初期化されていません {self.process_label_two}")
+                # print(f"ラベルの中身 {self.process_label_two}")
+
+                # print(f"[DEBUG] 呼び出し元のラベルID: {id(self.process_label_two)}")
+
+                self.update_event._update_task(stop_event=self.stop_event, update_complete_event=self.update_complete_event, update_func=self.update_func, label=self.process_label, user_info=user_info)
+
+
 
             # 終了時間の監視taskをスタート
             threading.Thread(target=self._monitor_end_time, args=(uptime_info,), daemon=True).start()
