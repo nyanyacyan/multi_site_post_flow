@@ -7,7 +7,7 @@
 # import
 import threading
 from datetime import timedelta
-from typing import Dict
+from typing import Dict, Callable
 from PySide6.QtWidgets import QLabel
 from PySide6.QtCore import QObject, QTimer, Signal
 
@@ -92,6 +92,41 @@ class CountDownQTimer(QObject):
     def update_uptime_info(self, uptime_info: Dict[str, timedelta]):
         self.logger.debug(f"uptime_info を更新: {uptime_info}")
         self.uptime_info = uptime_info
+
+
+    # ----------------------------------------------------------------------------------
+# **********************************************************************************
+
+
+class CheckFlag(QObject):
+    def __init__(self):
+        super().__init__()
+        # logger
+        self.getLogger = Logger()
+        self.logger = self.getLogger.getLogger()
+
+
+    ####################################################################################
+    # QTimerでフラグを監視
+
+    def _check_flag(self, flag: threading.Event, event_func: Callable, interval: int = 2000):
+        check_timer = QTimer()
+        check_timer.setInterval(interval)
+        check_timer.timeout.connect(lambda: self._check_flag_and_start(flag, event_func, check_timer))
+        check_timer.start()
+        return check_timer
+
+
+    # ----------------------------------------------------------------------------------
+
+
+    def _check_flag_and_start(self, flag: threading.Event, event_func: Callable, check_timer: QTimer):
+        if flag.is_set():
+            self.logger.info("フラグが立ちました！指定の関数を実行します")
+            check_timer.stop()
+            event_func()
+        else:
+            self.logger.debug("フラグはまだ立っていません")
 
 
     # ----------------------------------------------------------------------------------

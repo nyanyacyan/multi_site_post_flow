@@ -28,7 +28,7 @@ from method.base.time_manager import TimeManager
 from method.base.path import BaseToPath
 from method.flow_game_club_new_item import FlowGameClubNewItem
 from method.flow_gc_update import FlowGameClubUpdate
-from method.base.GUI.Qtimer_content import CountDownQTimer
+from method.base.GUI.Qtimer_content import CountDownQTimer, CheckFlag
 
 
 # const
@@ -110,6 +110,7 @@ class MainGamaClubApp(QWidget):
         # インスタンス
         self.time_manager = TimeManager()
         self.update_event = UpdateEvent()
+        self.check_flag = CheckFlag()
 
         # タイマーの設定
         self.uptime_info = {}  # 初期化
@@ -131,20 +132,12 @@ class MainGamaClubApp(QWidget):
             print("Entry Event 完了")
 
             # QTimerでフラグを監視
-            self.check_timer = QTimer()
-            self.check_timer.setInterval(500)  # 500msごとに監視
-            self.check_timer.timeout.connect(self._check_flag_and_start)
-            self.check_timer.start()
+            self.check_flag._check_flag(flag=self.start_event_flag, event_func=self.start_event)
+
 
         except Exception as e:
             print(f"エラーです{e}")
 
-        # if not self.start_event_flag.is_set():
-        #     print("フラグはまだ立ってません。")
-        # else:
-        #     print("フラグが立ちました")
-        #     # フラグを監視しながら処理を進める
-        #     threading.Thread(target=self._check_flag_and_start, daemon=True).start()
 
     # ----------------------------------------------------------------------------------
 
