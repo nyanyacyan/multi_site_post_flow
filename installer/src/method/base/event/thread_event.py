@@ -5,11 +5,11 @@
 
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 # import
-import threading, time
+import threading
 from datetime import timedelta, datetime
 from typing import Dict, Callable
-from PySide6.QtWidgets import QLabel, QApplication
-from PySide6.QtCore import QObject, QMetaObject, Qt, QTimer, Q_ARG, QCoreApplication, QThread
+from PySide6.QtWidgets import QLabel
+from PySide6.QtCore import QObject, QTimer
 
 
 # 自作モジュール
@@ -61,7 +61,7 @@ class ThreadEvent(QObject):
     def _end_time_task(self, stop_event: threading.Event, label: QLabel):
             # 処理を停止
             stop_event.set()
-            if stop_event.is_set:
+            if stop_event.is_set():
                 comment = "終了時間に達したため処理を停止しました。"
                 self.update_label._update_label(label=label, comment=comment)
                 self.logger.info("終了タスクが正常に実行されました。")

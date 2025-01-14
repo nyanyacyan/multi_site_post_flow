@@ -20,6 +20,7 @@ from method.base.GUI.set_uptime import SetUptime
 from method.base.GUI.set_radio_btn import RadioSelect
 from method.base.GUI.set_action_btn import ActionBtn
 
+from method.base.event.countdown_event import CountdownEvent
 from method.base.event.update_event import UpdateEvent
 from method.base.event.cancel_event import CancelEvent
 from method.base.event.thread_event import ThreadEvent
@@ -106,6 +107,7 @@ class MainGamaClubApp(QWidget):
 
         # インスタンス
         self.time_manager = TimeManager()
+        self.countdown_event = CountdownEvent()
         self.update_event = UpdateEvent()
         self.check_flag = CheckFlag()
         self.cancel_event = CancelEvent()
@@ -118,26 +120,12 @@ class MainGamaClubApp(QWidget):
 
 
     ####################################################################################
-
+    # エントリー
 
     def entry_event(self):
-        try:
-            # 開始時間と終了時間を取得
-            self.uptime_info = self.uptime_form.get_uptime_info()
-            print(self.uptime_info)
-
-            self.timer.update_uptime_info(self.uptime_info)  # 最新の数値に実行するMethod側の数値を更新する
-
-            print("Entry Event 開始")
-            self.timer.countdown_event()  # SingleShotTestのタイマーを起動
-            print("Entry Event 完了")
-
-            # QTimerでフラグを監視
-            self.check_flag._check_flag(flag=self.start_event_flag, event_func=self.start_event)
-
-
-        except Exception as e:
-            print(f"エラーです{e}")
+        # 開始時間と終了時間を取得
+        self.uptime_info = self.uptime_form.get_uptime_info()
+        self.countdown_event.entry_event(uptime_info=self.uptime_info, label=self.process_label, start_event_flag=self.start_event_flag, event_func=self.start_event)
 
 
     # ----------------------------------------------------------------------------------

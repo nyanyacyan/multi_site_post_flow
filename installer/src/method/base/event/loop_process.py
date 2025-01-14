@@ -65,7 +65,7 @@ class LoopProcess(QObject):
                 # 処理時間計測
                 end_time = datetime.now()
                 diff_time = end_time - start_time
-                minutes, seconds = divmod(diff_time.total_seconds())
+                minutes, seconds = divmod(diff_time.total_seconds(), 60)
                 diff_time_str = f"{minutes} 分 {seconds} 秒" if minutes > 0 else f"{seconds} 秒"
 
                 self.logger.info(f"【complete】実行処理完了: ({count}回目) [処理時間: {diff_time_str}]")
