@@ -22,12 +22,15 @@ from method.base.GUI.set_action_btn import ActionBtn
 
 from method.base.event.update_event import UpdateEvent
 from method.base.event.cancel_event import CancelEvent
+from method.base.event.thread_event import ThreadEvent
+from method.base.event.loop_process import LoopProcess
 
 from method.base.time_manager import TimeManager
 from method.base.path import BaseToPath
 from method.flow_game_club_new_item import FlowGameClubNewItem
 from method.flow_gc_update import FlowGameClubUpdate
 from method.base.GUI.Qtimer_content import CountDownQTimer, CheckFlag
+
 
 
 # const
@@ -90,8 +93,8 @@ class MainGamaClubApp(QWidget):
 
 
         # フラグをセット（フラグを立てる場合には self.stop_event.set() を実施）
-        self.stop_event = threading.Event()
-        self.update_complete_event = threading.Event()
+        self.stop_flag = threading.Event()
+        self.update_flag = threading.Event()
         self.start_event_flag = threading.Event()
 
         # メインの処理を受け取る
@@ -106,6 +109,8 @@ class MainGamaClubApp(QWidget):
         self.update_event = UpdateEvent()
         self.check_flag = CheckFlag()
         self.cancel_event = CancelEvent()
+        self.thread_event = ThreadEvent()
+        self.main_event = LoopProcess()
 
         # タイマーの設定
         self.uptime_info = {}  # 初期化
@@ -140,40 +145,22 @@ class MainGamaClubApp(QWidget):
 
     def start_event(self):
         try:
-            user_info = self.user_info_form.get_user_info()
-            interval_info = self.interval_form.get_interval_info()
-            uptime_info = self.uptime_form.get_uptime_info()
-
-            # STARTボタンを押下したときのradio_btnを取得
+            self.user_info = self.user_info_form.get_user_info()
+            self.interval_info = self.interval_form.get_interval_info()
             self.update_bool = self.radio_btn_form.get_radio_info()
 
-            # 更新処理がある場合には実施
-            if self.update_bool:
-                self.update_event._update_task(stop_event=self.stop_event, update_complete_event=self.update_complete_event, update_func=self.update_func, label=self.process_label, user_info=user_info)
+            # 終了時間の監視taskをスタート
+            self.end_time_thread = threading.Thread(target=self._monitor_end_time, daemon=True)
 
             # 終了時間の監視taskをスタート
-            self.end_time_thread = threading.Thread(target=self._monitor_end_time, args=(uptime_info,), daemon=True)
-
-            # 終了時間の監視taskをスタート
-            self.date_change_thread = threading.Thread(target=self._monitor_date_change, args=(user_info,), daemon=True)
+            self.date_change_thread = threading.Thread(target=self._monitor_date_change, daemon=True)
 
             # 各スレッドスタート
             self.end_time_thread.start()
             self.date_change_thread.start()
 
-            # スレッドの状態確認
-            if self.end_time_thread.is_alive():
-                print("終了時間の監視タスクが実行中です")
-            else:
-                print("終了時間の監視タスクは終了しています")
-
-            if self.date_change_thread.is_alive():
-                print("日付変更の監視タスクが実行中です")
-            else:
-                print("日付変更の監視タスクは終了しています")
-
             # メイン処理実施
-            self.loop_process(user_info=user_info, interval_info=interval_info, uptime_info=uptime_info)
+            self.main_event.main_task(update_bool=self.update_bool, stop_event=self.update_flag, label=self.process_label, update_event=self.update_event, update_func=self.update_func, user_info=self.user_info, interval_info=self.interval_info)
 
         except Exception as e:
             print(f"処理中にエラーが発生: {e}")
@@ -183,74 +170,21 @@ class MainGamaClubApp(QWidget):
     # キャンセル処理
 
     def cancel_process(self):
-        self.cancel_event._cancel_event(label=self.process_label, timer=self.timer, stop_flag=self.stop_event, update_flag=self.update_complete_event)
+        self.cancel_event._cancel_event(label=self.process_label, timer=self.timer, stop_flag=self.stop_flag, update_flag=self.update_flag)
 
 
     # ----------------------------------------------------------------------------------
     # 日付が変わるまでの時間を算出して待機する
 
-    def _monitor_date_change(self, user_info: Dict):
-        # ストップフラグがis_setされるまでループ処理
-        while not self.stop_event.is_set():
-            now = datetime.now()
-            next_day = (now + timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
-
-            total_sleep_time = (next_day - now).total_seconds()
-
-            time.sleep(total_sleep_time)
-
-            if self.update_bool:
-                self._update_task(user_info=user_info)
+    def _monitor_date_change(self):
+        self.thread_event._monitor_date_change(stop_event=self.stop_flag, label=self.process_label, update_event=self.update_flag, update_bool=self.update_bool, user_info=self.user_info, interval_info=self.interval_info)
 
 
     # ----------------------------------------------------------------------------------
     # 設定している時間になったら設定したtaskを実行
 
-    def _monitor_end_time(self, uptime_info: Dict[str, timedelta]):
-        try:
-            self.logger.debug(f"現在のスレッドID: {threading.get_ident()}")
-            end_diff = uptime_info['end_diff']
-
-            if end_diff > 0:
-                self.logger.debug(f"終了時間まで {end_diff} 秒待機します (threading.Timer を使用)")
-                # 終了時間まで待機
-                threading.Timer(end_diff, self._end_time_task).start()
-
-        except Exception as e:
-            self.status_label.update_status(msg=f"終了時間の設定などによるエラー: {e}", color="red")
-
-
-    # ----------------------------------------------------------------------------------
-    # 終了時に行うtask
-
-    def _end_time_task(self):
-            # 処理を停止
-            self.stop_event.set()
-            self.status_label.update_status(msg="終了時間に達したため処理を停止しました。", color="red")
-
-
-    # ----------------------------------------------------------------------------------
-    # 出品処理
-
-    def loop_process(self, user_info: Dict, interval_info: Dict):
-        # ストップフラグがis_setされるまでループ処理
-        count = 0
-        while not self.stop_event.is_set():
-
-            if self.stop_event.is_set():
-                self.status_label.update_status(msg="出品処理処理を停止...", color="blue")
-                print("ストップイベントフラグを確認。出品処理を停止")
-                break
-
-            count += 1
-            self.status_label.update_status(msg=f"実行処理中({count}回目)...", color="blue")
-            print(f"実行処理中({count}回目)")
-
-            # 処理を実施
-            self.process_func(id_text=user_info['id'], pass_text=user_info['pass'], worksheet_name=user_info['worksheet'])
-
-            # 設定した待機をランダムで実行
-            self.time_manager._random_sleep(random_info=interval_info)
+    def _monitor_end_time(self):
+        self.thread_event._monitor_end_time(uptime_info=self.uptime_info, stop_event=self.stop_flag, label=self.process_label)
 
 
     # ----------------------------------------------------------------------------------

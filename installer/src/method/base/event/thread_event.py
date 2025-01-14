@@ -16,6 +16,7 @@ from PySide6.QtCore import QObject, QMetaObject, Qt, QTimer, Q_ARG, QCoreApplica
 from method.base.utils import Logger
 from method.base.event.update_label import UpdateLabel
 from method.base.event.update_event import UpdateEvent
+from method.base.event.loop_process import LoopProcess
 
 # ----------------------------------------------------------------------------------
 # **********************************************************************************
@@ -31,6 +32,7 @@ class ThreadEvent(QObject):
         # インスタンス
         self.update_label = UpdateLabel()
         self.update_event = UpdateEvent()
+        self.loop_process = LoopProcess()
 
 
     ####################################################################################
@@ -72,7 +74,7 @@ class ThreadEvent(QObject):
     ####################################################################################
     # 日付が変わるまで秒数待機（GCとMAのみ）
 
-    def _monitor_date_change(self, stop_event: threading.Event, label: QLabel, update_event: threading.Event, update_bool: bool, user_info: Dict):
+    def _monitor_date_change(self, stop_event: threading.Event, label: QLabel, update_event: threading.Event, update_bool: bool, user_info: Dict, interval_info: Dict):
         try:
             self.logger.debug(f"_monitor_date_change のスレッドID: {threading.get_ident()}")
 
@@ -83,7 +85,7 @@ class ThreadEvent(QObject):
             self.logger.info(f'\n現時刻: {now}\n翌日の時刻（24時換算): {next_day}\n日付が変わるまでの秒数: {next_day_total_time}')
 
             # 日付が変わるまで秒数待機
-            threading.Timer(next_day_total_time, lambda: self._date_end_time_task(stop_event=stop_event, label=label, update_event=update_event, update_bool=update_bool, user_info=user_info)).start()
+            threading.Timer(next_day_total_time, lambda: self._date_end_time_task(stop_event=stop_event, label=label, update_event=update_event, update_bool=update_bool, user_info=user_info, interval_info=interval_info)).start()
 
         except Exception as e:
             comment = f"処理中にエラーが発生: {e}"
@@ -95,12 +97,15 @@ class ThreadEvent(QObject):
     # ----------------------------------------------------------------------------------
     # 終了時に行うtask
 
-    def _date_end_time_task(self, update_bool: bool, stop_event: threading.Event, label: QLabel, update_event: threading.Event, update_func: Callable, user_info: Dict):
+    def _date_end_time_task(self, update_bool: bool, stop_event: threading.Event, label: QLabel, update_event: threading.Event, update_func: Callable, user_info: Dict, interval_info: Dict):
         # 更新処理がありの場合に処理
         if update_bool:
             self.update_event._update_task(stop_event=stop_event, label=label, update_event=update_event, update_func=update_func, user_info=user_info)
         else:
             self.logger.info("更新処理「なし」のため更新処理なし")
+
+        # メイン処理の再実行
+        self.loop_process.loop_process(stop_event=stop_event, label=label, user_info=user_info, interval_info=interval_info)
 
 
     # ----------------------------------------------------------------------------------

@@ -6,15 +6,16 @@
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 # import
 import threading
-from datetime import timedelta, datetime
+from datetime import datetime
 from typing import Dict, Callable
-from PySide6.QtWidgets import QLabel, QApplication
-from PySide6.QtCore import QObject, QMetaObject, Qt, QTimer, Q_ARG, QCoreApplication, QThread
+from PySide6.QtWidgets import QLabel
+from PySide6.QtCore import QObject
 
 
 # 自作モジュール
 from method.base.utils import Logger
 from method.base.event.update_label import UpdateLabel
+from method.base.event.update_event import UpdateEvent
 
 # ----------------------------------------------------------------------------------
 # **********************************************************************************
@@ -29,6 +30,7 @@ class LoopProcess(QObject):
 
         # インスタンス
         self.update_label = UpdateLabel()
+        self.update_event = UpdateEvent()
 
 
     ####################################################################################
@@ -87,4 +89,20 @@ class LoopProcess(QObject):
             self.logger.error(comment)
 
 
-    # ----------------------------------------------------------------------------------
+    ####################################################################################
+
+    ####################################################################################
+    # start_eventに使用するmain処理
+
+    def main_task(self, update_bool: bool, stop_event: threading.Event, label: QLabel, update_event: threading.Event, update_func: Callable, user_info: Dict, interval_info: Dict):
+        # 更新処理がありの場合に処理
+        if update_bool:
+            self.update_event._update_task(stop_event=stop_event, label=label, update_event=update_event, update_func=update_func, user_info=user_info)
+        else:
+            self.logger.info("更新処理「なし」のため更新処理なし")
+
+        self.loop_process(stop_event=stop_event, label=label, user_info=user_info, interval_info=interval_info)
+
+
+    ####################################################################################
+
