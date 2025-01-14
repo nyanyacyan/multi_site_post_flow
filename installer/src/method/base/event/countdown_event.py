@@ -66,7 +66,7 @@ class CountdownEvent(QObject):
         self.logger.debug(f"カウントダウン開始: {self.wait_seconds} ")
 
         # start_event_flagを監視
-        self.check_flag._check_flag(flag=self.start_event_flag, event_func=event_func)
+        self.check_flag._check_flag(flag=start_event_flag, event_func=event_func)
 
         try:
             self.countdown_timer.timeout.disconnect()  # 古い接続を解除してリセット
