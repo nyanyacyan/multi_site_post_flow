@@ -208,9 +208,11 @@ class MainGamaClubApp(QWidget):
 
     def _monitor_end_time(self, uptime_info: Dict[str, timedelta]):
         try:
+            self.logger.debug(f"現在のスレッドID: {threading.get_ident()}")
             end_diff = uptime_info['end_diff']
 
             if end_diff > 0:
+                self.logger.debug(f"終了時間まで {end_diff} 秒待機します (threading.Timer を使用)")
                 # 終了時間まで待機
                 threading.Timer(end_diff, self._end_time_task).start()
 
