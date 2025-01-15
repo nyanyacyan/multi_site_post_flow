@@ -148,7 +148,7 @@ class MainGamaClubApp(QWidget):
             self.date_change_thread.start()
 
             # メイン処理実施
-            self.main_event.main_task(update_bool=self.update_bool, stop_event=self.update_flag, label=self.process_label, update_event=self.update_event, update_func=self.update_func, user_info=self.user_info, interval_info=self.interval_info)
+            self.main_event.main_task(update_bool=self.update_bool, stop_event=self.update_flag, label=self.process_label, update_event=self.update_flag, update_func=self.update_func, user_info=self.user_info, interval_info=self.interval_info)
 
         except Exception as e:
             print(f"処理中にエラーが発生: {e}")
