@@ -39,6 +39,8 @@ class LoopProcess(QObject):
 
     def loop_process(self, stop_event: threading.Event, label: QLabel, user_info: Dict, interval_info: Dict):
         try:
+            self.logger.info(f"stop_eventの状態: {stop_event.is_set()}")
+
             # ストップフラグがis_setされるまでループ処理
             count = 0
             while not stop_event.is_set():
@@ -73,6 +75,8 @@ class LoopProcess(QObject):
                 # 設定した待機をランダムで実行
                 self.time_manager._random_sleep(random_info=interval_info)
 
+            self.logger.info(f"stop_eventの状態: {stop_event.is_set()}")
+
         except KeyError as e:
             comment = f"KeyError: {count}回目処理中 必須情報が不足しています: {e}"
             self.update_label._update_label(label=label, comment=comment)
@@ -101,6 +105,7 @@ class LoopProcess(QObject):
         else:
             self.logger.info("更新処理「なし」のため更新処理なし")
 
+        self.logger.info("これからmainloop処理を開始")
         self.loop_process(stop_event=stop_event, label=label, user_info=user_info, interval_info=interval_info)
 
 
