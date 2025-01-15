@@ -29,22 +29,92 @@ deco = Decorators()
 # 一連の流れ
 
 
-class FlowGameClubNewItem:
+class FlowGameClubProcess:
     def __init__(self):
         # logger
         self.getLogger = Logger()
         self.logger = self.getLogger.getLogger()
 
+        # 必要info
+        self.gss_info = GssInfo.GAME_CLUB.value
+
+
+    ####################################################################################
+    # ----------------------------------------------------------------------------------
+    # 各メソッドをまとめる
+
+    async def process(self, worksheet_name: str, id_text: str, pass_text: str):
+        # 新しいブラウザを立ち上げ
+        chrome_manager = ChromeManager()
+        chrome = chrome_manager.flowSetupChrome()
+
+        gss_read = GetDataGSSAPI()
+
+        try:
+            # スプシの読み込み（辞書でoutput）
+            df = gss_read._get_df_in_gui(
+                gss_info=self.gss_info, worksheet_name=worksheet_name
+            )
+
+            # dfの中からチェックがあるものだけ抽出
+            process_df = df[df["チェック"] == "TRUE"].reset_index(drop=True)
+            df_row_num = len(process_df)
+            df_columns = process_df.shape[1]
+            self.logger.debug(process_df.head)
+            self.logger.debug(
+                f"スプシの全行数: {df_row_num}行\nスプシの全column数: {df_columns}"
+            )
+
+            # インスタンス
+            item_processor = FlowGameClubNewItem(chrome=chrome)
+
+            # DFの各行に対して処理を行う
+            for i, row in process_df.iterrows():
+                # rowの情報を辞書化
+                sell_data = row.to_dict()
+                self.logger.debug(f"sell_data: {sell_data}")
+                self.logger.info(
+                    f"{i + 1}/{df_row_num} タイトル: {sell_data['ゲームタイトル']}"
+                )
+                self.logger.info(
+                    f"{i + 1}/{df_row_num} タイトル: {sell_data['出品タイトル']}"
+                )
+                self.logger.info(f"{i + 1}/{df_row_num} タイトル: {sell_data['商品説明']}")
+                self.logger.info(f"{i + 1}/{df_row_num} タイトル: {sell_data['商品価格']}")
+                self.logger.info(f"{i + 1}/{df_row_num} 処理開始")
+
+                # ログイン〜処理実施まで
+                item_processor.row_process(
+                    index=i, id_text=id_text, pass_text=pass_text, sell_data=sell_data
+                )
+                self.logger.info(f"{i + 1}/{df_row_num} 処理完了")
+
+            self.logger.info(f"すべての処理完了")
+
+        finally:
+                chrome.close()
+
+
+    # ----------------------------------------------------------------------------------
+# **********************************************************************************
+# 一連の流れ
+
+
+class FlowGameClubNewItem:
+    def __init__(self, chrome):
+        # logger
+        self.getLogger = Logger()
+        self.logger = self.getLogger.getLogger()
+
         # chrome
-        self.chromeManager = ChromeManager()
-        self.chrome = self.chromeManager.flowSetupChrome()
+        self.chrome = chrome
 
         # インスタンス
         self.login = SingleSiteIDLogin(chrome=self.chrome)
         self.random_sleep = SeleniumBasicOperations(
             chrome=self.chrome,
         )
-        self.gss_read = GetDataGSSAPI()
+
         self.element = ElementManager(chrome=self.chrome)
         self.jump_target_page = JumpTargetPage(chrome=self.chrome)
         self.time_manager = TimeManager()
@@ -57,48 +127,7 @@ class FlowGameClubNewItem:
 
 
     ####################################################################################
-    # ----------------------------------------------------------------------------------
-    # 各メソッドをまとめる
 
-    async def process(self, worksheet_name: str, id_text: str, pass_text: str):
-        # スプシの読み込み（辞書でoutput）
-        df = self.gss_read._get_df_in_gui(
-            gss_info=self.gss_info, worksheet_name=worksheet_name
-        )
-
-        # dfの中からチェックがあるものだけ抽出
-        process_df = df[df["チェック"] == "TRUE"].reset_index(drop=True)
-        df_row_num = len(process_df)
-        df_columns = process_df.shape[1]
-        self.logger.debug(process_df.head)
-        self.logger.debug(
-            f"スプシの全行数: {df_row_num}行\nスプシの全column数: {df_columns}"
-        )
-
-        # DFの各行に対して処理を行う
-        for i, row in process_df.iterrows():
-            # rowの情報を辞書化
-            sell_data = row.to_dict()
-            self.logger.debug(f"sell_data: {sell_data}")
-            self.logger.info(
-                f"{i + 1}/{df_row_num} タイトル: {sell_data['ゲームタイトル']}"
-            )
-            self.logger.info(
-                f"{i + 1}/{df_row_num} タイトル: {sell_data['出品タイトル']}"
-            )
-            self.logger.info(f"{i + 1}/{df_row_num} タイトル: {sell_data['商品説明']}")
-            self.logger.info(f"{i + 1}/{df_row_num} タイトル: {sell_data['商品価格']}")
-            self.logger.info(f"{i + 1}/{df_row_num} 処理開始")
-
-            # ログイン〜処理実施まで
-            self.row_process(
-                index=i, id_text=id_text, pass_text=pass_text, sell_data=sell_data
-            )
-            self.logger.info(f"{i + 1}/{df_row_num} 処理完了")
-
-        self.logger.info(f"{self.login_info['SITE_NAME']}すべての処理完了")
-
-    # ----------------------------------------------------------------------------------
     # ログイン〜出品処理
 
     @deco.funcBase

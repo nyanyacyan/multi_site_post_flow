@@ -116,32 +116,6 @@ class UserInfoForm(QGroupBox):
         # グループにPassレイアウトを追加
         group_layout.addLayout(pass_layout)
 
-        # # gss_url入力
-        # gss_url_label = QLabel(gui_info["GSS_URL_LABEL"])
-        # self.gss_url_input = self._create_input_field(
-        #     gui_info["INPUT_EXAMPLE_GSS_URL"], fixed_width=250
-        # )
-
-        # # gss_urlのレイアウト作成
-        # gss_url_layout = QHBoxLayout()  # 横レイアウト
-        # gss_url_layout.addWidget(gss_url_label)
-        # gss_url_layout.addWidget(self.gss_url_input)
-
-        # # グループにgss_urlレイアウトを追加
-        # group_layout.addLayout(gss_url_layout)
-
-        # # Worksheetを選択
-        # dropdown_label = QLabel(gui_info["DROPDOWN_LABEL"])
-        # self.dropdown_input = self._dropdown_menu(dropdown_menu_list=worksheet_info)
-
-        # # worksheetのレイアウト作成
-        # dropdown_layout = QHBoxLayout()  # 横レイアウト
-        # dropdown_layout.addWidget(dropdown_label)
-        # dropdown_layout.addWidget(self.dropdown_input)
-
-        # # グループにworksheetレイアウトを追加
-        # group_layout.addLayout(dropdown_layout)
-
         # errorラベルを追加
         self.error_label = self._error_label()
         group_layout.addWidget(self.error_label)
@@ -169,19 +143,6 @@ class UserInfoForm(QGroupBox):
         input_field.setFixedWidth(fixed_width)
 
         return input_field
-
-    # ----------------------------------------------------------------------------------
-    # スプシからのデータを受けたドロップダウンメニュー
-
-    def _dropdown_menu(self, dropdown_menu_list: List, fixed_width: int = 250):
-        dropdown_menu = QComboBox()
-        dropdown_menu.addItem("--選択してください--")  # 初期値を設定
-        dropdown_menu.addItems(dropdown_menu_list)
-
-        # 入力幅の調整
-        dropdown_menu.setFixedWidth(fixed_width)
-
-        return dropdown_menu
 
     # ----------------------------------------------------------------------------------
     # エラーラベル（通常時は非表示）

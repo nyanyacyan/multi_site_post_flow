@@ -49,6 +49,16 @@ class GSSInfoForm(QGroupBox):
 
 
     ####################################################################################
+    # ドロップダウンメニューで選択した値を返す
+
+    def get_gss_info(self):
+        select_value = self.dropdown_menu.currentText()
+        if select_value == "--選択してください--":
+            return None
+        return select_value
+
+
+    ####################################################################################
     # ユーザー入力欄のグループ
 
     def _create_user_info_layout(self, gui_info: Dict):

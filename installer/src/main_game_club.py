@@ -28,7 +28,7 @@ from method.base.event.loop_process import LoopProcess
 
 from method.base.time_manager import TimeManager
 from method.base.path import BaseToPath
-from method.flow_game_club_new_item import FlowGameClubNewItem
+from method.flow_game_club_new_item import FlowGameClubProcess
 from method.flow_gc_update import FlowGameClubUpdate
 from method.base.GUI.Qtimer_content import CountDownQTimer, CheckFlag
 
@@ -134,6 +134,7 @@ class MainGamaClubApp(QWidget):
     def start_event(self):
         try:
             self.user_info = self.user_info_form.get_user_info()
+            self.gss_info = self.gss_info_form.get_gss_info()
             self.interval_info = self.interval_form.get_interval_info()
             self.update_bool = self.radio_btn_form.get_radio_info()
 
@@ -148,7 +149,7 @@ class MainGamaClubApp(QWidget):
             self.date_change_thread.start()
 
             # メイン処理実施
-            self.main_event.main_task(update_bool=self.update_bool, stop_event=self.update_flag, label=self.process_label, update_event=self.update_flag, update_func=self.update_func, user_info=self.user_info, interval_info=self.interval_info)
+            self.main_event.main_task(update_bool=self.update_bool, stop_event=self.update_flag, label=self.process_label, update_event=self.update_flag, update_func=self.update_func, process_func=self.process_func, user_info=self.user_info, gss_info=self.gss_info, interval_info=self.interval_info)
 
         except Exception as e:
             print(f"処理中にエラーが発生: {e}")
@@ -165,7 +166,7 @@ class MainGamaClubApp(QWidget):
     # 日付が変わるまでの時間を算出して待機する
 
     def _monitor_date_change(self):
-        self.thread_event._monitor_date_change(stop_event=self.stop_flag, label=self.process_label, update_event=self.update_flag, update_bool=self.update_bool, user_info=self.user_info, interval_info=self.interval_info)
+        self.thread_event._monitor_date_change(stop_event=self.stop_flag, label=self.process_label, update_event=self.update_flag, update_func=self.update_func, process_func=self.process_func, update_bool=self.update_bool, user_info=self.user_info, gss_info=self.gss_info, interval_info=self.interval_info)
 
 
     # ----------------------------------------------------------------------------------
@@ -190,7 +191,7 @@ if __name__ == "__main__":
 
     def process_func(*args, **kwargs):
         if not hasattr(process_func, "instance"):
-            process_func.instance = FlowGameClubNewItem()
+            process_func.instance = FlowGameClubProcess()
         return process_func.instance.process(*args, **kwargs)
 
 
