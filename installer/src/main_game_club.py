@@ -4,8 +4,7 @@
 
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 # import
-import threading, time, asyncio, sys
-from datetime import datetime, timedelta
+import threading, sys
 from typing import Dict, Callable
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QApplication, QLabel
 from PySide6.QtGui import QIcon
@@ -29,7 +28,7 @@ from method.base.event.loop_process import LoopProcess
 from method.base.time_manager import TimeManager
 from method.base.path import BaseToPath
 from method.flow_game_club_new_item import FlowGameClubProcess
-from method.flow_gc_update import FlowGameClubUpdate
+from installer.src.method.flow_game_club_update import FlowGameClubUpdate
 from method.base.GUI.Qtimer_content import CountDownQTimer, CheckFlag
 
 

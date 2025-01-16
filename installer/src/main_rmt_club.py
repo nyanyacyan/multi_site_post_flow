@@ -25,7 +25,7 @@ from method.base.spreadsheetRead import GetDataGSSAPI
 from method.flow_game_club_new_item import FlowGameClubNewItem
 from method.flow_RMT_club_new_item import FlowRMTClubNewItem
 from method.flow_MA_club_new_item import FlowMAClubNewItem
-from method.flow_gc_update import FlowGameClubUpdate
+from installer.src.method.flow_game_club_update import FlowGameClubUpdate
 from PySide6.QtGui import QGuiApplication
 
 # const
