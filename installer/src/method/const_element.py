@@ -321,7 +321,7 @@ class GuiInfo(Enum):
         "GSS_INPUT_TITLE": "Spreadsheet 情報",
         "MAIN_WINDOW_TITLE": "MA_CLUB Automation Tool",
         "BACKGROUND_COLOR": "#FFFFFF",
-        "LOGO_NAME": "gc_logo",
+        "LOGO_NAME": "ma_logo",
         "USER_INPUT_TITLE": "USER情報",
         "INPUT_EXAMPLE_ID": "対象のIDを入力",
         "INPUT_EXAMPLE_PASS": "対象のPassを入力",
@@ -392,7 +392,7 @@ class UpdateInfo(Enum):
 ##########
 
     MA_CLUB = {
-        "SELL_ITEM_BTN_VALUE": "//div[@class='side-mypage-menu']//a[@href='/mypage/products' and contains(text(), '出品した商品')]",
+        "SELL_ITEM_BTN_VALUE": "//div[@class='side-mypage-menu']//a[@href='/mypage/products' and contains(text(), '売却登録した案件')]",
         "ITEM_SORT_BTN_VALUE": "//select[@name='sort_index']",
         "SELECT_VALUE": "1",
         "DISABLE_ELEMENT_VALUE": "//a[@class='btn btn-boost btn-disabled' and @href='javascript:void(0)']",
