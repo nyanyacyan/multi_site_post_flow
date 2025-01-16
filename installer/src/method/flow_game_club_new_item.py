@@ -43,7 +43,7 @@ class FlowGameClubProcess:
     # ----------------------------------------------------------------------------------
     # 各メソッドをまとめる
 
-    async def process(self, worksheet_name: str, id_text: str, pass_text: str):
+    def process(self, worksheet_name: str, id_text: str, pass_text: str):
         # 新しいブラウザを立ち上げ
         chrome_manager = ChromeManager()
         chrome = chrome_manager.flowSetupChrome()

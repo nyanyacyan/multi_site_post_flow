@@ -5,7 +5,10 @@
 
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 # import
-import threading, asyncio
+from queue import Queue, Empty
+import threading, asyncio, time
+from functools import partial
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 from typing import Dict, Callable
 from PySide6.QtWidgets import QLabel
@@ -30,111 +33,12 @@ class LoopProcess(QObject):
         self.getLogger = Logger()
         self.logger = self.getLogger.getLogger()
 
+
         # インスタンス
         self.update_label = UpdateLabel()
         self.update_event = UpdateEvent()
         self.time_manager = TimeManager()
 
-
-    ####################################################################################
-    # ----------------------------------------------------------------------------------
-    # 出品処理
-
-    async def loop_process(self, stop_event: threading.Event, label: QLabel, process_func: Callable, user_info: Dict, gss_info: str, interval_info: Dict):
-        try:
-            self.logger.info(f"stop_eventの状態: {stop_event.is_set()}")
-
-            # ストップフラグがis_setされるまでループ処理
-            count = 0
-            tasks = []
-
-            async def repeat_task(task_id):
-                nonlocal count  # 外側の関数の変数を使うための宣言
-
-                count += 1
-                await asyncio.sleep(1)
-
-                comment = f"新規出品 処理中({count}回目)..."
-                self.update_label._update_label(label=label, comment=comment)
-
-                # 開始時刻
-                start_time = datetime.now()
-                start_time_str = start_time.strftime("%Y-%m-%d %H:%M:%S")
-                self.logger.info(f"【start】, タスクID: {task_id}) 実行処理開始: ({count}回目) [{start_time_str}]")
-
-                self.logger.debug(f"\nid: {user_info['id']}\npass: {user_info['pass']}\nworksheet_name: {gss_info}")
-
-                try:
-                    # 処理を実施
-                    await process_func(id_text=user_info['id'], pass_text=user_info['pass'], worksheet_name=gss_info)
-                except Exception as e:
-                    self.logger.error(f"タスク実行中にエラーが発生 この処理をスキップ: {e}")
-
-                # 処理時間計測
-                end_time = datetime.now()
-                self.logger.debug(f"start_timeの型: {type(start_time)}, end_timeの型: {type(end_time)}")
-
-                diff_time = end_time - start_time
-                minutes, seconds = divmod(diff_time.total_seconds(), 60)
-                diff_time_str = f"{int(minutes)} 分 {int(seconds)} 秒" if minutes > 0 else f"{int(seconds)} 秒"
-
-                self.logger.info(f"【complete】実行処理完了: ({count}回目) [処理時間: {diff_time_str}]")
-
-            # stop_eventが入るまでtaskを追加し続ける
-            add_task_count = 0
-            while not stop_event.is_set():
-                self.logger.debug(f'add_task_count: {add_task_count}')
-                random_wait = self.time_manager._random_sleep(random_info=interval_info)
-                self.logger.info(f"{int(random_wait)} 秒待機して次のタスクを生成...")
-
-                if add_task_count >= 1:
-
-                    #! テスト用
-                    half_time = random_wait / 2
-                    await asyncio.sleep(half_time)
-                    # await asyncio.sleep(random_wait)
-                    self.logger.debug(f'次回までのtask待ち時間: {half_time}')
-
-                # task生成して実行
-                add_task_count += 1
-                task_id = len(tasks) + 1
-                task = asyncio.create_task(repeat_task(task_id))  # 非同期でtaskに追加
-                tasks.append(task)
-
-                # イベントループに制御を戻す
-                await asyncio.sleep(0)
-                self.logger.warning(f'{task_id} をtasksに追加しました')
-
-            self.logger.info(f"ループ処理がストップしたのでタスク完了までお待ちください\n残りtask: {len(tasks)}個")
-
-            # 残ったtaskのキャンセル
-            for task in tasks:
-                if not task.done():
-                    task.cancel()
-
-            # 残りのtaskが完了するのを待つ→制御
-            all_tasks = await asyncio.gather(*tasks, return_exceptions=True)
-            self.logger.info(f'all_tasks: {all_tasks}')
-
-            self.logger.info(f"stop_eventの状態: {stop_event.is_set()}")
-
-        except KeyError as e:
-            comment = f"KeyError: {count}回目処理中 必須情報が正しく渡されなかった: {e}"
-            self.update_label._update_label(label=label, comment=comment)
-            self.logger.error(comment)
-
-        except ConnectionError as e:
-            comment = f"ConnectionError: {count}回目処理中 ネットワーク接続エラー: {e}"
-            self.update_label._update_label(label=label, comment=comment)
-            self.logger.error(comment)
-
-        except Exception as e:
-            comment = f"{count}回目処理中 処理中にエラーが発生: {e}"
-            self.update_label._update_label(label=label, comment=comment)
-            self.logger.error(comment)
-
-
-    ####################################################################################
 
     ####################################################################################
     # start_eventに使用するmain処理
@@ -147,26 +51,134 @@ class LoopProcess(QObject):
             self.logger.info("更新処理「なし」のため更新処理なし")
 
         self.logger.info("これからmainloop処理を開始")
-        loop = asyncio.get_event_loop()
-        if not loop.is_running():
-            loop.run_until_complete(self.loop_process(
-                stop_event=stop_event,
-                label=label,
-                process_func=process_func,
-                user_info=user_info,
-                gss_info=gss_info,
-                interval_info=interval_info,
-            ))
-        else:
-            # イベントループが既に動作している場合
-            asyncio.create_task(self.loop_process(
-                stop_event=stop_event,
-                label=label,
-                process_func=process_func,
-                user_info=user_info,
-                gss_info=gss_info,
-                interval_info=interval_info,
-            ))
+        self.process(stop_event=stop_event, process_func=process_func, user_info=user_info, gss_info=gss_info, label=label, interval_info=interval_info)
+
 
     ####################################################################################
+    # ----------------------------------------------------------------------------------
 
+
+    def process(self, stop_event: threading.Event, process_func: Callable, user_info: Dict, gss_info: str, label: QLabel, interval_info: Dict, max_workers: int =3):
+        executor = ThreadPoolExecutor(max_workers=max_workers)
+        task_que = Queue()
+
+        self._start_parallel_process(stop_event=stop_event, executor=executor, task_que=task_que, process_func=process_func, user_info=user_info, gss_info=gss_info, label=label, interval_info=interval_info)
+
+
+    # ----------------------------------------------------------------------------------
+    # 並列処理の実行
+    # Queを管理するツールを起動→Queを作り続ける→監視ツールがQueを確認次第処理を開始→並列処理
+
+
+    def _start_parallel_process(self, stop_event: threading.Event, executor: ThreadPoolExecutor, task_que: Queue, process_func: Callable, user_info: Dict, gss_info: str, label: QLabel, interval_info: Dict):
+        # 並列処理ロジックスタート（dispatcherはtaskを受取、ThreadPoolに割り当てる）
+        dispatcher_thread = threading.Thread(
+            target=self._task_manager,
+            kwargs={
+                'stop_event': stop_event,
+                'executor' : executor,
+                'task_que' : task_que,
+                'process_func' : process_func,
+                'user_info' : user_info,
+                'gss_info' : gss_info,
+                'label' : label,
+            }
+        )
+        dispatcher_thread.start()
+
+        task_id = 1
+        try:
+            # queを作成し続ける
+            while not stop_event.is_set():
+                self._add_que_task(task_id=task_id, task_queue=task_que)
+                self.logger.info(f'【{task_id} 個目】Queを追加')
+                task_id += 1
+
+                # 指定しているランダム待機
+                random_wait = self.time_manager._random_sleep(random_info=interval_info)
+                self.logger.info(f"{int(random_wait)} 秒待機して次のタスクを生成...")
+                time.sleep(random_wait)
+
+        except KeyboardInterrupt:
+            self.logger.info("停止要求を受け付けました")
+
+        finally:
+            # 停止処理
+            self.stop(executor=executor)
+            dispatcher_thread.join()
+
+
+    # ----------------------------------------------------------------------------------
+    # Queを追加
+
+    def _add_que_task(self, task_id: int, task_queue: Queue):
+        self.logger.info(f"タスク {task_id} を追加しました")
+        task_queue.put(task_id)  # Queを追加
+
+
+    # ----------------------------------------------------------------------------------
+    # Queがないかを監視
+
+
+    def _task_manager(self, stop_event: threading.Event, executor: ThreadPoolExecutor, task_que: Queue, process_func: Callable, user_info: Dict, gss_info: str, label: QLabel, delay: int=1):
+        task_count = 0
+        while not stop_event.is_set():
+            try:
+                # Queを取得
+                task_id = task_que.get(timeout=1)
+                self.logger.info(f"task_id: {task_id}")
+
+                #! ここでメインのループ処理を実行する
+                task = partial(self._task_contents, count=task_count, label=label, process_func=process_func, user_info=user_info, gss_info=gss_info)
+                # 処理を実施
+                executor.submit(task)
+                task_count += 1
+                task_que.task_done()  # タスクの完了を通知
+
+            # Queが殻になったら待機
+            except Empty:
+                time.sleep(delay)
+
+        self.logger.info(f"タスクディスパッチャーを停止します (新規出品数: {task_count})")
+
+
+    # ----------------------------------------------------------------------------------
+    # taskの中身（実際に処理する内容）
+
+    def _task_contents(self, count: int, label: QLabel, process_func: Callable, user_info: Dict, gss_info: Dict):
+        comment = f"新規出品 処理中({count}回目)..."
+        self.update_label._update_label(label=label, comment=comment)
+
+        # 開始時刻
+        start_time = datetime.now()
+        start_time_str = start_time.strftime("%Y-%m-%d %H:%M:%S")
+        self.logger.info(f"【start】実行処理開始: ({count}回目) [{start_time_str}]")
+
+        self.logger.debug(f"\nid: {user_info['id']}\npass: {user_info['pass']}\nworksheet_name: {gss_info}")
+
+        try:
+            # 処理を実施
+            process_func(id_text=user_info['id'], pass_text=user_info['pass'], worksheet_name=gss_info)
+        except Exception as e:
+            self.logger.error(f"タスク実行中にエラーが発生 この処理をスキップ: {e}")
+
+        # 処理時間計測
+        end_time = datetime.now()
+        self.logger.debug(f"start_timeの型: {type(start_time)}, end_timeの型: {type(end_time)}")
+
+        diff_time = end_time - start_time
+        minutes, seconds = divmod(diff_time.total_seconds(), 60)
+        diff_time_str = f"{int(minutes)} 分 {int(seconds)} 秒" if minutes > 0 else f"{int(seconds)} 秒"
+
+        self.logger.info(f"【complete】実行処理完了: ({count}回目) [処理時間: {diff_time_str}]")
+
+
+    # ----------------------------------------------------------------------------------
+    # ストップ処理
+
+    def stop(self, executor: ThreadPoolExecutor):
+        executor.shutdown(wait=True)  # 並列処理の機械をシャットダウンする
+        self.logger.info("すべてのタスクが完了しました")
+
+
+    # ----------------------------------------------------------------------------------
