@@ -6,6 +6,7 @@
 # import
 import asyncio
 from typing import Dict
+from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import NoSuchElementException
 
@@ -99,7 +100,7 @@ class FlowMAClubProcess:
 
 
 class FlowMAClubNewItem:
-    def __init__(self, chrome):
+    def __init__(self, chrome: webdriver):
         # logger
         self.getLogger = Logger()
         self.logger = self.getLogger.getLogger()
@@ -117,9 +118,7 @@ class FlowMAClubNewItem:
         self.jump_target_page = JumpTargetPage(chrome=self.chrome)
         self.time_manager = TimeManager()
 
-
         # 必要info
-
         self.login_info = LoginInfo.SITE_PATTERNS.value["MA_CLUB"]
         self.sell_info = SellInfo.MA_CLUB.value
 

@@ -73,12 +73,8 @@ class FlowGameClubProcess:
                 # rowの情報を辞書化
                 sell_data = row.to_dict()
                 self.logger.debug(f"sell_data: {sell_data}")
-                self.logger.info(
-                    f"{i + 1}/{df_row_num} タイトル: {sell_data['ゲームタイトル']}"
-                )
-                self.logger.info(
-                    f"{i + 1}/{df_row_num} タイトル: {sell_data['出品タイトル']}"
-                )
+                self.logger.info(f"{i + 1}/{df_row_num} タイトル: {sell_data['ゲームタイトル']}")
+                self.logger.info(f"{i + 1}/{df_row_num} タイトル: {sell_data['出品タイトル']}")
                 self.logger.info(f"{i + 1}/{df_row_num} タイトル: {sell_data['商品説明']}")
                 self.logger.info(f"{i + 1}/{df_row_num} タイトル: {sell_data['商品価格']}")
                 self.logger.info(f"{i + 1}/{df_row_num} 処理開始")

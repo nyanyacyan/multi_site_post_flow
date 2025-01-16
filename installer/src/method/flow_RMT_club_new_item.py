@@ -7,20 +7,22 @@
 # import
 import asyncio
 from typing import Dict
+from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 
 # 自作モジュール
-from base.utils import Logger
-from base.chrome import ChromeManager
-from base.loginWithId import SingleSiteIDLogin
-from base.seleniumBase import SeleniumBasicOperations
-from base.spreadsheetRead import GetDataGSSAPI
-from base.elementManager import ElementManager
-from base.popup import Popup
-from base.decorators import Decorators
+from method.base.utils import Logger
+from method.base.chrome import ChromeManager
+from method.base.loginWithId import SingleSiteIDLogin
+from method.base.seleniumBase import SeleniumBasicOperations
+from method.base.spreadsheetRead import GetDataGSSAPI
+from method.base.elementManager import ElementManager
+from method.base.decorators import Decorators
+from method.base.jumpTargetPage import JumpTargetPage
+from method.base.time_manager import TimeManager
 
 # const
-from const_element import LoginInfo, GssInfo, SellInfo
+from method.const_element import LoginInfo, GssInfo, SellInfo
 
 deco = Decorators()
 
@@ -28,78 +30,116 @@ deco = Decorators()
 # **********************************************************************************
 # 一連の流れ
 
-class FlowRMTClubNewItem:
+
+class FlowRMTProcess:
     def __init__(self):
         # logger
         self.getLogger = Logger()
         self.logger = self.getLogger.getLogger()
 
-        # chrome
-        self.chromeManager = ChromeManager()
-        self.chrome = self.chromeManager.flowSetupChrome()
-
-        # インスタンス
-        self.login = SingleSiteIDLogin(chrome=self.chrome, )
-        self.random_sleep = SeleniumBasicOperations(chrome=self.chrome, )
-        self.gss_read = GetDataGSSAPI()
-        self.element = ElementManager(chrome=self.chrome)
-        self.popup = Popup()
-
-        # ランダム待機
-        self.random_sleep = self.random_sleep._random_sleep()
-
         # 必要info
         self.gss_info = GssInfo.RMT_CLUB.value
+
+
+    ####################################################################################
+    # ----------------------------------------------------------------------------------
+    # 各メソッドをまとめる
+
+    def process(self, worksheet_name: str, id_text: str, pass_text: str):
+        # 新しいブラウザを立ち上げ
+        chrome_manager = ChromeManager()
+        chrome = chrome_manager.flowSetupChrome()
+
+        gss_read = GetDataGSSAPI()
+
+        try:
+            # スプシの読み込み（辞書でoutput）
+            df = gss_read._get_df_in_gui(
+                gss_info=self.gss_info, worksheet_name=worksheet_name
+            )
+
+            # dfの中からチェックがあるものだけ抽出
+            process_df = df[df["チェック"] == "TRUE"].reset_index(drop=True)
+            df_row_num = len(process_df)
+            df_columns = process_df.shape[1]
+            self.logger.debug(process_df.head)
+            self.logger.debug(
+                f"スプシの全行数: {df_row_num}行\nスプシの全column数: {df_columns}"
+            )
+
+            # インスタンス
+            item_processor = FlowRMTClubNewItem(chrome=chrome)
+
+            # DFの各行に対して処理を行う
+            for i, row in process_df.iterrows():
+                # rowの情報を辞書化
+                sell_data = row.to_dict()
+                self.logger.debug(f"sell_data: {sell_data}")
+                self.logger.info(f"{i + 1}/{df_row_num} タイトル: {sell_data['ゲーム名']}")
+                self.logger.info(f"{i + 1}/{df_row_num} タイトル: {sell_data['掲載タイトル']}")
+                self.logger.info(f"{i + 1}/{df_row_num} タイトル: {sell_data['詳細内容']}")
+                self.logger.info(f"{i + 1}/{df_row_num} タイトル: {sell_data['取引価格']}")
+                self.logger.info(f"{i + 1}/{df_row_num} 処理開始")
+
+                # ログイン〜処理実施まで
+                item_processor.row_process(
+                    index=i, id_text=id_text, pass_text=pass_text, sell_data=sell_data
+                )
+                self.logger.info(f"{i + 1}/{df_row_num} 処理完了")
+
+            self.logger.info(f"すべての処理完了")
+
+        finally:
+                chrome.close()
+
+
+# **********************************************************************************
+# 一連の流れ
+
+class FlowRMTClubNewItem:
+    def __init__(self, chrome: webdriver):
+        # logger
+        self.getLogger = Logger()
+        self.logger = self.getLogger.getLogger()
+
+        # chrome
+        self.chrome = chrome
+
+        # インスタンス
+        self.login = SingleSiteIDLogin(chrome=self.chrome)
+        self.random_sleep = SeleniumBasicOperations(
+            chrome=self.chrome,
+        )
+
+        self.element = ElementManager(chrome=self.chrome)
+        self.jump_target_page = JumpTargetPage(chrome=self.chrome)
+        self.time_manager = TimeManager()
+
+        # 必要info
         self.login_info = LoginInfo.SITE_PATTERNS.value['RMT_CLUB']
         self.sell_info = SellInfo.RMT_CLUB.value
 
 
 ####################################################################################
 # ----------------------------------------------------------------------------------
-#todo 各メソッドをまとめる
-
-    async def process(self):
-        # スプシの読み込み（辞書でoutput）
-        df = self.gss_read.getDataFrameFromGss(gss_info=self.gss_info)
-
-        # dfの中からチェックがあるものだけ抽出
-        process_df = df[df['チェック'] == 'TRUE'].reset_index(drop=True)
-        df_row_num = len(process_df)
-        df_columns = process_df.shape[1]
-        self.logger.debug(process_df.head)
-        self.logger.debug(f"スプシの全行数: {df_row_num}行\nスプシの全column数: {df_columns}")
-
-        # 各行に対して処理を行う
-        for i, row in process_df.iterrows():
-            self.logger.info(f'{i + 1}/{df_row_num} 目の処理 開始')
-
-            # rowの情報を辞書化
-            sell_data = row.to_dict()
-            self.logger.debug(f'sell_data: {sell_data}')
-
-            self.logger.info(f"{i + 1}/{df_row_num} タイトル: {sell_data['ゲームタイトル']}")
-            self.logger.info(f"{i + 1}/{df_row_num} タイトル: {sell_data['出品タイトル']}")
-            self.logger.info(f"{i + 1}/{df_row_num} タイトル: {sell_data['商品説明']}")
-            self.logger.info(f"{i + 1}/{df_row_num} タイトル: {sell_data['商品価格']}")
-
-
-            # ログイン〜処理実施まで
-            self.logger.info(f'{i + 1}/{df_row_num} 目の処理 START')
-
-            self.row_process(sell_data=sell_data)
-
-            self.logger.info(f'{i + 1}/{df_row_num} 目の処理 END')
-
-        self.logger.info(f"{self.login_info['site_name']}すべての処理完了: {sell_data['管理コード']}")
-
-
-# ----------------------------------------------------------------------------------
 # ログイン〜出品処理
 
     @deco.funcBase
-    def row_process(self, sell_data: Dict):
-        # IDログイン
-        self.login.flowLoginID(login_info=self.login_info, timeout=120)
+    def row_process(self, index: int, id_text: str, pass_text: str, sell_data: Dict):
+        self.logger.debug(f"index: {index}")
+        if index == 0:
+            # IDログイン
+            self.login.flow_login_id_input_gui(
+                login_info=self.login_info,
+                id_text=id_text,
+                pass_text=pass_text,
+                timeout=120,
+            )
+        else:
+            # Sessionを維持したままログインの手順を端折る
+            self.jump_target_page.flowJumpTargetPage(
+                targetUrl=self.login_info["HOME_URL"]
+            )
 
         # 出品処理
         self.sell_process(sell_data=sell_data)
@@ -156,7 +196,7 @@ class FlowRMTClubNewItem:
 # 出品ボタンをクリック
 
     def _sell_btn_click(self):
-        self.element.clickElement(value=self.sell_info['SELL_BTN'], wait_by=)
+        self.element.clickElement(value=self.sell_info['SELL_BTN'])
 
 
 # ----------------------------------------------------------------------------------
@@ -302,5 +342,12 @@ class FlowRMTClubNewItem:
 # テスト実施
 
 if __name__ == '__main__':
-    test_flow = FlowRMTClubNewItem()
-    asyncio.run(test_flow.process())
+    worksheet_name = LoginInfo.SITE_PATTERNS.value["RMT_CLUB"]["SITE_NAME"]
+    id_text = LoginInfo.SITE_PATTERNS.value["RMT_CLUB"]["ID_TEXT"]
+    pass_text = LoginInfo.SITE_PATTERNS.value["RMT_CLUB"]["PASS_TEXT"]
+    print(
+        f"worksheet_name: {worksheet_name}\nid_text: {id_text}\npass_text: {pass_text}"
+    )
+    test_flow = FlowRMTProcess()
+    test_flow.process(worksheet_name=worksheet_name, id_text=id_text, pass_text=pass_text)
+
