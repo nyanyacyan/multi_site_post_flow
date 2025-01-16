@@ -30,7 +30,7 @@ class GssInfo(Enum):
         "jsonKeyName": "sns-auto-430920-08274ad68b41.json",
         "spreadsheetId": "11hUzuGZaXmM070E8Gl5YA5ydUcWGDcjV0MkGQEpzLx8",
         "workSheetName": "MA_CLUB",
-        "SORT_WORD_LIST": ["M&A", "MA", "エムアンドエー"],
+        "SORT_WORD_LIST": ["M&A", "MA", "エムアンドエー", "MA_CLUB", "M&A_CLUB"],
     }
 
     RMT_CLUB = {
@@ -316,14 +316,19 @@ class GuiInfo(Enum):
     }
 
     MA_CLUB = {
+        "JSON_KEY_NAME": "sns-auto-430920-08274ad68b41.json",
+        "SORT_WORD_LIST": ["M&A", "MA", "エムアンドエー", "MA_CLUB", "M&A_CLUB"],
+        "GSS_INPUT_TITLE": "Spreadsheet 情報",
         "MAIN_WINDOW_TITLE": "MA_CLUB Automation Tool",
-        "BACKGROUND_COLOR": "#F0F0F0",
-        "LOGO_NAME": "ma_logo",
+        "BACKGROUND_COLOR": "#FFFFFF",
+        "LOGO_NAME": "gc_logo",
         "USER_INPUT_TITLE": "USER情報",
         "INPUT_EXAMPLE_ID": "対象のIDを入力",
         "INPUT_EXAMPLE_PASS": "対象のPassを入力",
+        "INPUT_EXAMPLE_GSS_URL": "対象のスプレッドシートのURLを入力",
         "ID_LABEL": "USER ID",
         "PASS_LABEL": "PASSWORD",
+        "GSS_URL_LABEL": "URL",
         "DROPDOWN_LABEL": "Worksheet",
         "INTERVAL_TIME_GROUP_TITLE": "出品間隔",
         "INPUT_EXAMPLE_INTERVAL_MIN": "下限",
@@ -340,6 +345,7 @@ class GuiInfo(Enum):
         "RADIO_BTN_FALSE_TITLE": "なし",
         "PROCESS_BTN_NAME": "START",
         "CANCEL_BTN_NAME": "STOP",
+        "GSS_URL_BTN": "取得",
     }
 
     RMT_CLUB = {

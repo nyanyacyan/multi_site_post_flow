@@ -41,7 +41,7 @@ from method.const_element import GssInfo, GuiInfo
 # **********************************************************************************
 
 
-class MainGamaClubApp(QWidget):
+class MainMAClubApp(QWidget):
     def __init__(self, gui_info: Dict, process_func: Callable, update_func: Callable):
         super().__init__()
 
@@ -202,6 +202,6 @@ if __name__ == "__main__":
 
 
     app = QApplication(sys.argv)
-    main_app = MainGamaClubApp(gui_info=gui_info, process_func=process_func, update_func=update_func)
+    main_app = MainMAClubApp(gui_info=gui_info, process_func=process_func, update_func=update_func)
     main_app.show()
     sys.exit(app.exec())
