@@ -4,7 +4,6 @@
 
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 # import
-import asyncio
 from typing import Dict
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
@@ -391,8 +390,6 @@ if __name__ == "__main__":
     )
 
     test_flow = FlowMAClubProcess()
-    asyncio.run(
-        test_flow.process(
-            worksheet_name=worksheet_name, id_text=id_text, pass_text=pass_text
-        )
+    test_flow.process(
+        worksheet_name=worksheet_name, id_text=id_text, pass_text=pass_text
     )

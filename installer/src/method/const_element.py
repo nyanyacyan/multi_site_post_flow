@@ -235,8 +235,8 @@ class SellInfo(Enum):
     RMT_CLUB = {
         "INPUT_PHOTO_FOLDER_NAME": "03_RMT_CLUB",
         # 売りたいをクリック
-        "SELL_BTN": "//a[@href='/deals/add']",
-        "SELL_SELECT_BTN": "//label[text()='売りたい']",
+        "SELL_BTN_ONE": "//div[@class='footer_contents fbox']//a[@href='/deals/add']",
+        "SELL_SELECT_BTN": "//label[@for='DealRequest0']",
         # タイトル入力
         "SELL_TITLE_INPUT_BY": "id",
         "SELL_TITLE_INPUT_VALUE": "suggest_title",

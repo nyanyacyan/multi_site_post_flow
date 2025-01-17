@@ -5,7 +5,6 @@
 
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 # import
-import asyncio
 from typing import Dict
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
@@ -196,7 +195,7 @@ class FlowRMTClubNewItem:
 # 出品ボタンをクリック
 
     def _sell_btn_click(self):
-        self.element.clickElement(value=self.sell_info['SELL_BTN'])
+        self.element.clickElement(value=self.sell_info['SELL_BTN_ONE'])
 
 
 # ----------------------------------------------------------------------------------
@@ -211,9 +210,9 @@ class FlowRMTClubNewItem:
 # EnterKeyが必要かも→アカウント種別などが変わる
 
     def _input_game_title(self, sell_data: Dict):
-        input_game_title = sell_data['ゲームタイトル']
+        input_game_title = sell_data['ゲーム名']
         self.logger.debug(f'input_game_title: {input_game_title}')
-        element = self.element.clickClearInput(value=self.sell_info['GAME_TITLE_INPUT_VALUE'], inputText=input_game_title)
+        element = self.element.clickClearInput(by=self.sell_info['SELL_TITLE_INPUT_BY'], value=self.sell_info['SELL_TITLE_INPUT_VALUE'], inputText=input_game_title)
         element.send_keys(Keys.RETURN)
 
 
@@ -221,15 +220,15 @@ class FlowRMTClubNewItem:
 # カテゴリ選択
 
     def _category_select(self, sell_data: Dict):
-        if sell_data['カテゴリ'] == 'アイテム・通貨':
+        if sell_data['アカウントの種別'] == 'アイテム・通貨':
             element = self.element.clickElement(value=self.sell_info['CATEGORY_ITEM_SELECT_VALUE'])
             self.logger.debug(f'「アイテム・通貨」を選択: {element}')
             self.random_sleep
-        elif sell_data['カテゴリ'] == 'リセマラ':
+        elif sell_data['アカウントの種別'] == 'リセマラ':
             element = self.element.clickElement(value=self.sell_info['CATEGORY_ITEM_SELECT_VALUE'])
             self.logger.debug(f'「リセマラ」を選択: {element}')
             self.random_sleep
-        elif sell_data['カテゴリ'] == '代行':
+        elif sell_data['アカウントの種別'] == '代行':
             element = self.element.clickElement(value=self.sell_info['CATEGORY_DAIKO_SELECT_VALUE'])
             self.logger.debug(f'「代行」を選択: {element}')
             self.random_sleep
@@ -245,7 +244,7 @@ class FlowRMTClubNewItem:
     def _input_comment_title(self, sell_data: Dict):
         input_comment_title = sell_data['掲載タイトル']
         self.logger.debug(f'input_comment_title: {input_comment_title}')
-        self.element.clickClearInput(by=self.sell_info['COMMENT_TITLE_BY'], value=self.sell_info['COMMENT_TITLE_VALUE'], inputText=input_comment_title)
+        self.element.clickClearJsInput(by=self.sell_info['COMMENT_TITLE_BY'], value=self.sell_info['COMMENT_TITLE_VALUE'], inputText=input_comment_title)
         self.random_sleep
 
 
@@ -269,7 +268,7 @@ class FlowRMTClubNewItem:
     def _input_sell_explanation(self, sell_data: Dict):
         input_sell_explanation = sell_data['詳細内容']
         self.logger.debug(f'input_sell_explanation: {input_sell_explanation}')
-        self.element.clickClearInput(by=self.sell_info['SELL_EXPLANATION_INPUT_BY'], value=self.sell_info['SELL_EXPLANATION_INPUT_VALUE'], inputText=input_sell_explanation)
+        self.element.clickClearJsInput(by=self.sell_info['SELL_EXPLANATION_INPUT_BY'], value=self.sell_info['SELL_EXPLANATION_INPUT_VALUE'], inputText=input_sell_explanation)
         self.random_sleep
 
 
