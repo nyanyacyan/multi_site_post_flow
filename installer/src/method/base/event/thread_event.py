@@ -5,7 +5,7 @@
 
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 # import
-import threading, asyncio
+import threading
 from datetime import timedelta, datetime
 from typing import Dict, Callable
 from PySide6.QtWidgets import QLabel

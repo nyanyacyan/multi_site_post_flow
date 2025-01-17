@@ -6,10 +6,9 @@
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 # import
 import threading
-from datetime import timedelta
 from typing import Dict, Callable
-from PySide6.QtWidgets import QLabel, QApplication
-from PySide6.QtCore import QObject, QMetaObject, Qt, QTimer, Q_ARG, QCoreApplication, QThread
+from PySide6.QtWidgets import QLabel
+from PySide6.QtCore import QObject
 
 
 # 自作モジュール

@@ -6,7 +6,7 @@
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 # import
 from queue import Queue, Empty
-import threading, asyncio, time
+import threading, time
 from functools import partial
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime

@@ -16,11 +16,9 @@ from method.base.GUI.set_user_info import UserInfoForm
 from method.base.GUI.set_gss_info import GSSInfoForm
 from method.base.GUI.set_interval_time import IntervalTimeForm
 from method.base.GUI.set_uptime import SetUptime
-# from method.base.GUI.set_radio_btn import RadioSelect
 from method.base.GUI.set_action_btn import ActionBtn
 
 from method.base.event.countdown_event import CountdownEvent
-# from method.base.event.update_event import UpdateEvent
 from method.base.event.cancel_event import CancelEventNoUpdate
 from method.base.event.thread_event import ThreadEventNoUpdate
 from method.base.event.loop_process import LoopProcessNoUpdate
@@ -49,9 +47,6 @@ class MainRMTClubApp(QWidget):
         # メインタイトル
         self.setWindowTitle(gui_info['MAIN_WINDOW_TITLE'])
 
-        # バックグラウンドカラー
-        # self.setStyleSheet(f"background-color: {gui_info['BACKGROUND_COLOR']};")
-
         # logo
         self.path =BaseToPath()
         logo_path = self.path.getInputLogoFilePath(fileName=gui_info['LOGO_NAME'])
@@ -77,7 +72,6 @@ class MainRMTClubApp(QWidget):
         self.gss_info_form = GSSInfoForm(gui_info=gui_info)
         self.interval_form = IntervalTimeForm(gui_info=gui_info)
         self.uptime_form = SetUptime(gui_info=gui_info)
-        # self.radio_btn_form = RadioSelect(gui_info=gui_info)
         self.action_btn_form = ActionBtn(label=self.process_label, gui_info=gui_info, process_func=self.entry_event, cancel_func=self.cancel_process)
 
 
@@ -93,7 +87,6 @@ class MainRMTClubApp(QWidget):
 
         # フラグをセット（フラグを立てる場合には self.stop_event.set() を実施）
         self.stop_flag = threading.Event()
-        # self.update_flag = threading.Event()
         self.start_event_flag = threading.Event()
 
         # メインの処理を受け取る
@@ -106,7 +99,6 @@ class MainRMTClubApp(QWidget):
         # インスタンス
         self.time_manager = TimeManager()
         self.countdown_event = CountdownEvent()
-        # self.update_event = UpdateEvent()
         self.check_flag = CheckFlag()
         self.cancel_event = CancelEventNoUpdate()
         self.thread_event = ThreadEventNoUpdate()
