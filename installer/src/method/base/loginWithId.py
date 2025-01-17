@@ -196,6 +196,25 @@ class SingleSiteIDLogin:
 
     # ----------------------------------------------------------------------------------
 
+
+    def _login_element_check(self, by: str, value: str, timeout: int, retry: int = 3):
+        max_retry = 0
+        while max_retry < retry:
+            try:
+                self.wait.loadPageWait(by=by, value=value, timeout=timeout)
+                self.logger.info(f"{__name__}: ログインに成功")
+                return True
+
+            except TimeoutException:
+                self.logger.error(f"{__name__}: reCAPTCHAの処理時間に {timeout} 秒以上 かかってしまいましたためtimeout")
+
+
+
+
+
+    # ----------------------------------------------------------------------------------
+
+
     def actionBeforeLogin(
         self, url: str, login_info: dict, delay: int = 2, maxRetries: int = 3
     ):

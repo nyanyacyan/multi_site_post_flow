@@ -50,12 +50,12 @@ class Wait:
     # ----------------------------------------------------------------------------------
     # ページが完全に開くまで待機
 
-    def loadPageWait(self, by: str, value: str, timeout: int = 10):
-        if WebDriverWait(self.chrome, timeout).until(
+    def loadPageWait(self, by: str, value: str, timeout: int = 5):
+        element = WebDriverWait(self.chrome, timeout).until(
             EC.visibility_of_element_located((by, value))
-        ):
-            self.logger.info(f"指定の要素が見つかりました")
-        return
+        )
+        self.logger.info(f"指定の要素が見つかりました")
+        return element
 
 
     # ----------------------------------------------------------------------------------
