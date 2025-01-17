@@ -90,7 +90,7 @@ class LoginInfo(Enum):
         "RMT_CLUB": {
             "SITE_NAME": "RMT_CLUB",
             "LOGIN_URL": "https://rmt.club/user-login",
-            "HOME_URL": "https://www.xdomain.ne.jp/",
+            "HOME_URL": "https://rmt.club/mypage",
             "TABLE_NAME": "RMT_CLUB",
             "ID_BY": "xpath",
             "ID_VALUE": "//input[@id='UserMail']",
@@ -256,7 +256,7 @@ class SellInfo(Enum):
         "SELL_EXPLANATION_INPUT_VALUE": "DealInfo",
         # 画像取り込み
         "FILE_INPUT_BY": "id",
-        "FILE_INPUT_VALUE": "upload_file_input_section0",
+        "FILE_INPUT_VALUE": "//label[@id='add_upload_file']/input[@type='file']",
         # DOMで確認する箇所
         "CHECK_BY": "css",
         "CHECK_VALUE": "#sortableArea .upimages-item",
@@ -265,7 +265,7 @@ class SellInfo(Enum):
         "USER_NOTIFY_VALUE": "DealUserName",
         # 取引価格
         "PRICE_BY": "id",
-        "PRICE_VALUE": '//input[@name="price"]',
+        "PRICE_VALUE": 'kakaku',
         # 確認ボタン
         "CHECK_VALUE": "//input[@type='submit' and @value='確認']",
         # 同意するにクリック

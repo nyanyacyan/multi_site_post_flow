@@ -144,7 +144,7 @@ class ElementManager:
 
     @decoInstance.funcBase
     def files_input(
-        self, by: str, value: str, file_path_list: str, check_by: str, check_value: str
+        self, value: str, file_path_list: str, check_by: str, check_value: str, by: str='xpath'
     ):
 
         # アップロード場所の特定

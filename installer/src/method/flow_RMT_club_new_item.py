@@ -5,6 +5,7 @@
 
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 # import
+import time
 from typing import Dict
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
@@ -185,7 +186,7 @@ class FlowRMTClubNewItem:
         self._click_agree()
 
         # 出品するをクリック
-        self._sell_btn_click()
+        self._click_sell_finish_btn()
 
         # マイページへ戻る
         self._my_page_click()
@@ -196,6 +197,7 @@ class FlowRMTClubNewItem:
 
     def _sell_btn_click(self):
         self.element.clickElement(value=self.sell_info['SELL_BTN_ONE'])
+        self._random_sleep()
 
 
 # ----------------------------------------------------------------------------------
@@ -203,6 +205,7 @@ class FlowRMTClubNewItem:
 
     def _sell_select_btn_click(self):
         self.element.clickElement(value=self.sell_info['SELL_SELECT_BTN'])
+        self._random_sleep()
 
 
 # ----------------------------------------------------------------------------------
@@ -214,6 +217,7 @@ class FlowRMTClubNewItem:
         self.logger.debug(f'input_game_title: {input_game_title}')
         element = self.element.clickClearInput(by=self.sell_info['SELL_TITLE_INPUT_BY'], value=self.sell_info['SELL_TITLE_INPUT_VALUE'], inputText=input_game_title)
         element.send_keys(Keys.RETURN)
+        self._random_sleep()
 
 
 # ----------------------------------------------------------------------------------
@@ -223,19 +227,19 @@ class FlowRMTClubNewItem:
         if sell_data['アカウントの種別'] == 'アイテム・通貨':
             element = self.element.clickElement(value=self.sell_info['CATEGORY_ITEM_SELECT_VALUE'])
             self.logger.debug(f'「アイテム・通貨」を選択: {element}')
-            self.random_sleep
+            self._random_sleep()
         elif sell_data['アカウントの種別'] == 'リセマラ':
             element = self.element.clickElement(value=self.sell_info['CATEGORY_ITEM_SELECT_VALUE'])
             self.logger.debug(f'「リセマラ」を選択: {element}')
-            self.random_sleep
+            self._random_sleep()
         elif sell_data['アカウントの種別'] == '代行':
             element = self.element.clickElement(value=self.sell_info['CATEGORY_DAIKO_SELECT_VALUE'])
             self.logger.debug(f'「代行」を選択: {element}')
-            self.random_sleep
+            self._random_sleep()
         else:
             element = self.element.clickElement(value=self.sell_info['CATEGORY_ACCOUNT_SELECT_VALUE'])
             self.logger.debug(f'「アカウント」を選択: {element}')
-            self.random_sleep
+            self._random_sleep()
 
 
 # ----------------------------------------------------------------------------------
@@ -245,7 +249,7 @@ class FlowRMTClubNewItem:
         input_comment_title = sell_data['掲載タイトル']
         self.logger.debug(f'input_comment_title: {input_comment_title}')
         self.element.clickClearJsInput(by=self.sell_info['COMMENT_TITLE_BY'], value=self.sell_info['COMMENT_TITLE_VALUE'], inputText=input_comment_title)
-        self.random_sleep
+        self._random_sleep()
 
 
 # ----------------------------------------------------------------------------------
@@ -259,7 +263,7 @@ class FlowRMTClubNewItem:
 
         self.logger.debug(f'input_tag: {input_tag}')
         self.element.clickClearInput(by=self.sell_info['TAG_BY'], value=self.sell_info['TAG_VALUE'], inputText=input_tag)
-        self.random_sleep
+        self._random_sleep()
 
 
 # ----------------------------------------------------------------------------------
@@ -269,7 +273,7 @@ class FlowRMTClubNewItem:
         input_sell_explanation = sell_data['詳細内容']
         self.logger.debug(f'input_sell_explanation: {input_sell_explanation}')
         self.element.clickClearJsInput(by=self.sell_info['SELL_EXPLANATION_INPUT_BY'], value=self.sell_info['SELL_EXPLANATION_INPUT_VALUE'], inputText=input_sell_explanation)
-        self.random_sleep
+        self._random_sleep()
 
 
 # ----------------------------------------------------------------------------------
@@ -277,7 +281,8 @@ class FlowRMTClubNewItem:
 
     def _photo_files_input(self, sell_data: Dict):
         file_path_list = self.element._get_all_files_path_list(subDirName=self.sell_info['INPUT_PHOTO_FOLDER_NAME'], subSubDirName=sell_data['画像フォルダ'])
-        self.element.files_input(by=self.sell_info['FILE_INPUT_BY'], value=self.sell_info['FILE_INPUT_VALUE'], check_by=self.sell_info['CHECK_BY'], check_value=self.sell_info['CHECK_VALUE'], file_path_list=file_path_list)
+        self.element.files_input(value=self.sell_info['FILE_INPUT_VALUE'], check_by=self.sell_info['CHECK_BY'], check_value=self.sell_info['CHECK_VALUE'], file_path_list=file_path_list)
+        self._random_sleep()
 
 
 # ----------------------------------------------------------------------------------
@@ -291,7 +296,7 @@ class FlowRMTClubNewItem:
 
         self.logger.debug(f'user_notify: {user_notify}')
         self.element.clickClearInput(by=self.sell_info['USER_NOTIFY_BY'], value=self.sell_info['USER_NOTIFY_VALUE'], inputText=user_notify)
-        self.random_sleep
+        self._random_sleep()
 
 
 # ----------------------------------------------------------------------------------
@@ -301,7 +306,7 @@ class FlowRMTClubNewItem:
         input_price = sell_data['取引価格']
         self.logger.debug(f'input_price: {input_price}')
         self.element.clickClearInput(by=self.sell_info['PRICE_BY'], value=self.sell_info['PRICE_VALUE'], inputText=input_price)
-        self.random_sleep
+        self._random_sleep()
 
 
 # ----------------------------------------------------------------------------------
@@ -309,7 +314,7 @@ class FlowRMTClubNewItem:
 
     def _click_check(self):
         self.element.clickElement(value=self.sell_info['CHECK_VALUE'])
-        self.random_sleep
+        self._random_sleep()
 
 
 # ----------------------------------------------------------------------------------
@@ -317,15 +322,15 @@ class FlowRMTClubNewItem:
 
     def _click_agree(self):
         self.element.clickElement(value=self.sell_info['AGREE_VALUE'])
-        self.random_sleep
+        self._random_sleep()
 
 
 # ----------------------------------------------------------------------------------
 # 出品するをクリック
 
-    def _click_sell_btn(self):
+    def _click_sell_finish_btn(self):
         self.element.clickElement(value=self.sell_info['SELL_BTN'])
-        self.random_sleep
+        self._random_sleep()
 
 
 # ----------------------------------------------------------------------------------
@@ -333,7 +338,14 @@ class FlowRMTClubNewItem:
 
     def _my_page_click(self):
         self.element.clickElement(value=self.sell_info['MY_PAGE_VALUE'])
-        self.random_sleep
+        self._random_sleep()
+
+
+# ----------------------------------------------------------------------------------
+    # ランダムSleep
+
+    def _random_sleep(self, min_num: int = 1, max_num: int = 3):
+        self.random_sleep._random_sleep(min_num=min_num, max_num=max_num)
 
 
 # ----------------------------------------------------------------------------------
