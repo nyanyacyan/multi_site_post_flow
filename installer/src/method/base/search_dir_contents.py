@@ -4,6 +4,7 @@
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 # import
 import time, re
+import pandas as pd
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support.ui import Select
@@ -59,16 +60,20 @@ class IsFileInDf:
         pass
 
     # ----------------------------------------------------------------------------------
-    # スプシからDFを取得
-
-    def _get_df_gss(self):
-        pass
-
-    # ----------------------------------------------------------------------------------
     # 特定のディレクトリにあるディレクトリのリストの整合する
+
+    def _match_dir_list(self):
+        pass
 
 
     # ----------------------------------------------------------------------------------
     # 各ディレクトリにファイルがあるかどうかを確認する
 
+    def _is_file_in_dir(self):
+        pass
+
     # ----------------------------------------------------------------------------------
+    # データフレームを受け取って特定の値のリストを返す
+
+    def _get_list_in_df(self, df: pd.DataFrame):
+        pass
