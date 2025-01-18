@@ -9,7 +9,7 @@ from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support.ui import Select
 from datetime import datetime
 from typing import Dict, Any, List, Tuple
-from selenium.common.exceptions import ElementClickInterceptedException, ElementNotInteractableException, NoSuchElementException
+from selenium.common.exceptions import ElementClickInterceptedException, ElementNotInteractableException, NoSuchElementException, TimeoutException
 
 from pathlib import Path
 
@@ -265,7 +265,7 @@ class ElementManager:
     # ----------------------------------------------------------------------------------
 
     def recaptcha_click_element(
-        self, by: str, value: str, max_retry: int = 40, delay: int = 5
+        self, by: str, value: str, home_url: str, check_element_by: str, check_element_value: str, max_retry: int = 40, delay: int = 5
     ):
         self.clickWait.canWaitClick(chrome=self.chrome, by=by, value=value, timeout=3)
         element = self.getElement(by=by, value=value)
@@ -273,9 +273,23 @@ class ElementManager:
         retry_count = 0
         while retry_count < max_retry:
             try:
-                element.click()
-                self.logger.debug(f"クリック完了しました: {value}")
-                break
+                if element:
+                    element.click()
+                    self.logger.debug(f"クリック完了しました: {value}")
+                else:
+                    # クリックしてページを移動したけど移動しきれてない例外処理
+                    self.logger.warning(f'ログインボタンがありません: {value}')
+                    self.chrome.get(home_url)
+                    return
+
+                try:
+                    # 次のページに移動してるかを確認してるかを確認する例外処理
+                    check_element = self.wait.loadPageWait(by=check_element_by, value=check_element_value)
+                    if check_element:
+                        self.logger.info(f'新しいページに移行しました: {check_element_value}')
+                        return self.clickWait.jsPageChecker(chrome=self.chrome)
+                except TimeoutException:
+                    self.logger.warning("クリックした後に新しいページへの移行できてません。再度クリックします。")
 
             except ElementClickInterceptedException:
                 retry_count += 1
@@ -285,7 +299,8 @@ class ElementManager:
                 time.sleep(delay)
                 continue
 
-        return self.clickWait.jsPageChecker(chrome=self.chrome)
+        self.logger.error(f'reCAPTCHA処理が{delay * max_retry}秒を超えましたため終了')
+
 
     # ----------------------------------------------------------------------------------
     # 絞り込んだ要素にあるテキストを取得

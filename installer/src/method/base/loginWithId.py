@@ -110,7 +110,11 @@ class SingleSiteIDLogin:
 
         # クリックを繰り返しPOPUPがなくなるまで繰り返す
         self.click_login_btn_in_recaptcha(
-            by=login_info["BTN_BY"], value=login_info["BTN_VALUE"]
+            by=login_info["BTN_BY"],
+            value=login_info["BTN_VALUE"],
+            home_url=login_info["HOME_URL"],
+            check_element_by=login_info["LOGIN_AFTER_ELEMENT_BY"],
+            check_element_value=login_info["LOGIN_AFTER_ELEMENT_VALUE"],
         )
 
         # 検索ページなどが出てくる対策
@@ -164,10 +168,10 @@ class SingleSiteIDLogin:
     # ログインボタン押下
     # reCAPTCHA
 
-    def click_login_btn_in_recaptcha(self, by: str, value: str):
+    def click_login_btn_in_recaptcha(self, by: str, value: str, home_url:str, check_element_by: str, check_element_value: str):
         self.logger.debug(f"value: {value}")
-        return self.element.recaptcha_click_element(by=by, value=value)
 
+        return self.element.recaptcha_click_element(by=by, value=value, home_url=home_url, check_element_by=check_element_by, check_element_value=check_element_value)
     # ----------------------------------------------------------------------------------
 
     def loginUrlCheck(self, url: str):
@@ -193,24 +197,6 @@ class SingleSiteIDLogin:
                 f"{__name__}: reCAPTCHAの処理時間に {timeout} 秒以上 かかってしまいましたためtimeout"
             )
             return False
-
-    # ----------------------------------------------------------------------------------
-
-
-    def _login_element_check(self, by: str, value: str, timeout: int, retry: int = 3):
-        max_retry = 0
-        while max_retry < retry:
-            try:
-                self.wait.loadPageWait(by=by, value=value, timeout=timeout)
-                self.logger.info(f"{__name__}: ログインに成功")
-                return True
-
-            except TimeoutException:
-                self.logger.error(f"{__name__}: reCAPTCHAの処理時間に {timeout} 秒以上 かかってしまいましたためtimeout")
-
-
-
-
 
     # ----------------------------------------------------------------------------------
 
