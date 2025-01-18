@@ -216,14 +216,16 @@ class FlowGameClubNewItem:
 
         file_path_sort_list = self.element._list_sort_photo_data(all_photos_all_path_list=file_path_list)
 
-        self.element.files_input(
-            by=self.sell_info["FILE_INPUT_BY"],
-            value=self.sell_info["FILE_INPUT_VALUE"],
-            check_by=self.sell_info["CHECK_BY"],
-            check_value=self.sell_info["CHECK_VALUE"],
-            file_path_list=file_path_sort_list,
-        )
-        self._random_sleep()
+        if file_path_sort_list:
+
+            self.element.files_input(
+                by=self.sell_info["FILE_INPUT_BY"],
+                value=self.sell_info["FILE_INPUT_VALUE"],
+                check_by=self.sell_info["CHECK_BY"],
+                check_value=self.sell_info["CHECK_VALUE"],
+                file_path_list=file_path_sort_list,
+            )
+            self._random_sleep()
 
     # ----------------------------------------------------------------------------------
     # ゲームタイトルクリック
