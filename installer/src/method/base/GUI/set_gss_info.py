@@ -58,11 +58,6 @@ class GSSInfoForm(QGroupBox):
         if select_worksheet == "--選択してください--":
             return None
 
-        error_msg = self._folder_check(worksheet_name=select_worksheet)
-        if error_msg:
-            self._set_error_msg(error_msg)
-            return None
-
         self._set_error_msg(None)
         return select_worksheet
 
@@ -180,7 +175,7 @@ class GSSInfoForm(QGroupBox):
             self.error_label.hide()
 
     # ----------------------------------------------------------------------------------
-
+    # Worksheetのリストを取得
 
     def _get_worksheet_list(self, sheet_url: str):
         gss_read = GetDataGSSAPI()

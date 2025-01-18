@@ -5,7 +5,7 @@
 
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 # import
-import threading
+import threading, os, sys
 from PySide6.QtWidgets import QLabel
 from PySide6.QtCore import QObject, QMetaObject, Qt, QTimer, Q_ARG, QCoreApplication, QThread
 
@@ -33,29 +33,27 @@ class CancelEvent(QObject):
     # ----------------------------------------------------------------------------------
     # キャンセル処理
 
-    def _cancel_event(self, label: QLabel, timer: QTimer, stop_flag: threading.Event, update_flag: threading.Event):
-        # メインスレッドかを確認
-        if QThread.currentThread() != QCoreApplication.instance().thread():
-            self.update_label._update_label(label=label, comment="出品処理を停止中です...")
-            # メインスレッドに指定の関数を割り込み
-            QMetaObject.invokeMethod(self, "_stop_timer_and_update_gui", Qt.QueuedConnection, Q_ARG(QLabel, label), Q_ARG(QTimer, timer))
+    def _cancel_event(self, label: QLabel):
+        self.update_label._update_label(label=label, comment="アプリケーションを終了しています...")
 
-        # タイマーが設定されてればストップ
-        else:
-            self._stop_timer_and_update_gui(label=label, timer=timer)
+        # メインスレッドで終了をスケジュール
+        QMetaObject.invokeMethod(QCoreApplication.instance(), "quit", Qt.QueuedConnection)
 
-        # 出品処理を停止
-        stop_flag.set()
-
-        # 更新完了されたフラグもリセット
-        update_flag.clear()
-
-        # キャンセル処理完了したため、待機中に変更
-        self.update_label._update_label(label=label, comment="待機中...")
+        # 再起動処理を実行
+        QTimer.singleShot(100, self._restart_app)
 
 
     # ----------------------------------------------------------------------------------
 
+
+    def _restart_app(self):
+        """アプリケーションを再起動する"""
+        python = sys.executable
+        os.execl(python, python, *sys.argv)
+
+
+    # ----------------------------------------------------------------------------------
+    # GUIを更新
 
     def _stop_timer_and_update_gui(self, label: QLabel, timer: QTimer):
         if timer.isActive():
