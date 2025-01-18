@@ -287,6 +287,11 @@ class GuiInfo(Enum):
         "SORT_WORD_LIST": ["GAME_CLUB", "GC", "ゲームクラブ", "GAME", 'game_club', "game", "game club"],
         "GSS_INPUT_TITLE": "Spreadsheet 情報",
         "MAIN_WINDOW_TITLE": "GAME_CLUB Automation Tool",
+
+        "FOLDER_NAME": "01_GAME_CLUB",
+        "COL_NAME": "画像フォルダ",
+
+
         "BACKGROUND_COLOR": "#FFFFFF",
         "LOGO_NAME": "gc_logo",
         "USER_INPUT_TITLE": "USER情報",
@@ -313,6 +318,7 @@ class GuiInfo(Enum):
         "PROCESS_BTN_NAME": "START",
         "CANCEL_BTN_NAME": "STOP",
         "GSS_URL_BTN": "取得",
+        "GSS_FOLDER_CHECK_BTN": "確認",
     }
 
     MA_CLUB = {

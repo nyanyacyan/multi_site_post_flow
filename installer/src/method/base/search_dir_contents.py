@@ -32,7 +32,6 @@ class FolderChecker:
     def folder_error_check(self, sub_dir_name: str, df: pd.DataFrame, col_name: str):
         unmatched_folders = self._check_unmatched_folders(sub_dir_name=sub_dir_name, df=df, col_name=col_name)
         if unmatched_folders:
-            self.logger.warning(unmatched_folders)
             return unmatched_folders
 
         self.logger.info(f"画像フォルダOK")
@@ -76,7 +75,7 @@ class FolderChecker:
 
         # 対象のフォルダにファイルが無かった場合にエラーメッセージを返す
         if file_error_msg_list:
-            file_error_comment = '\n'.join(file_error_msg)
+            file_error_comment = '\n'.join(file_error_msg_list)
             self.logger.error(f"file_error_msg: {file_error_comment}")
             return file_error_comment
         # エラーなし

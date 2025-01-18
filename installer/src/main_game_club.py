@@ -28,9 +28,8 @@ from method.base.event.loop_process import LoopProcess
 from method.base.time_manager import TimeManager
 from method.base.path import BaseToPath
 from method.flow_game_club_new_item import FlowGameClubProcess
-from installer.src.method.flow_game_club_update import FlowGameClubUpdate
+from method.flow_game_club_update import FlowGameClubUpdate
 from method.base.GUI.Qtimer_content import CountDownQTimer, CheckFlag
-
 
 
 # const
@@ -136,6 +135,7 @@ class MainGamaClubApp(QWidget):
             self.gss_info = self.gss_info_form.get_gss_info()  # ドロップダウンメニューから選択された値
             self.interval_info = self.interval_form.get_interval_info()  # 処理の実施間隔の値
             self.update_bool = self.radio_btn_form.get_radio_info()  # 選択した値
+
 
             # 終了時間の監視taskをスタート
             self.end_time_thread = threading.Thread(target=self._monitor_end_time, daemon=True)

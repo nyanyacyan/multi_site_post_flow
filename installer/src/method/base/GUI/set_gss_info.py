@@ -20,6 +20,7 @@ from PySide6.QtGui import QRegularExpressionValidator
 
 # 自作モジュール
 from method.base.spreadsheetRead import GetDataGSSAPI
+from method.base.search_dir_contents import FolderChecker
 
 
 # ----------------------------------------------------------------------------------
@@ -48,23 +49,33 @@ class GSSInfoForm(QGroupBox):
         self.setLayout(self._create_user_info_layout(gui_info=gui_info))
 
 
+
     ####################################################################################
     # ドロップダウンメニューで選択した値を返す
 
     def get_gss_info(self):
-        select_value = self.dropdown_menu.currentText()
-        if select_value == "--選択してください--":
+        select_worksheet = self.dropdown_menu.currentText()
+        if select_worksheet == "--選択してください--":
             return None
-        return select_value
 
+        error_msg = self._folder_check(worksheet_name=select_worksheet)
+        if error_msg:
+            self._set_error_msg(error_msg)
+            return None
 
-    ####################################################################################
-    # ディレクトリに特定のフォルダにファイルがあるのかを確認
+        self._set_error_msg(None)
+        return select_worksheet
 
-    def _is_file_check(self):
-        selected_worksheet = self.get_gss_info()
+    # ----------------------------------------------------------------------------------
+    # ここにWorksheetの値を受けて、フォルダーチェックをする
 
-
+    def _folder_check(self, worksheet_name: str):
+        sub_dir_name = self.gui_info["FOLDER_NAME"]
+        df = self._get_gss_df(worksheet_name=worksheet_name)
+        col_name = self.gui_info["COL_NAME"]
+        folder_checker = FolderChecker()
+        error_msg = folder_checker.folder_error_check(sub_dir_name=sub_dir_name, df=df, col_name=col_name)
+        return error_msg
 
 
     ####################################################################################
@@ -94,12 +105,15 @@ class GSSInfoForm(QGroupBox):
         # Worksheetを選択
         dropdown_label = QLabel(gui_info["DROPDOWN_LABEL"])
         self.dropdown_input = self._dropdown_menu()
+        gss_worksheet_btn = self._action_btn(name_in_btn=gui_info["GSS_FOLDER_CHECK_BTN"], action_func=self._on_folder_check)
 
 
         # worksheetのレイアウト作成
         dropdown_layout = QHBoxLayout()  # 横レイアウト
         dropdown_layout.addWidget(dropdown_label)
         dropdown_layout.addWidget(self.dropdown_input)
+        dropdown_layout.addWidget(gss_worksheet_btn)
+
 
         # グループにworksheetレイアウトを追加
         group_layout.addLayout(dropdown_layout)
@@ -132,7 +146,7 @@ class GSSInfoForm(QGroupBox):
     # ----------------------------------------------------------------------------------
     # スプシからのデータを受けたドロップダウンメニュー
 
-    def _dropdown_menu(self, fixed_width: int = 250):
+    def _dropdown_menu(self, fixed_width: int = 150):
         self.dropdown_menu = QComboBox()
         self.dropdown_menu.setEnabled(False)
         self.dropdown_menu.addItem("--選択してください--")  # 初期値を設定
@@ -220,3 +234,27 @@ class GSSInfoForm(QGroupBox):
     # ----------------------------------------------------------------------------------
 
 
+    def _get_gss_df(self, worksheet_name: str):
+        gss_read = GetDataGSSAPI()
+        sheet_url = self.gss_url_input.text()
+        gss_df = gss_read._get_gss_df_to_gui(gui_info=self.gui_info, sheet_url=sheet_url, worksheet_name=worksheet_name)
+        return gss_df
+
+
+    # ----------------------------------------------------------------------------------
+    # ドロップダウンメニューで選択した値を返す
+
+    def _on_folder_check(self):
+        select_worksheet = self.dropdown_menu.currentText()
+        if select_worksheet == "--選択してください--":
+            return None
+
+        error_msg = self._folder_check(worksheet_name=select_worksheet)
+        if error_msg:
+            self._set_error_msg(error_msg)
+            return None
+
+        self._set_error_msg(None)
+        return select_worksheet
+
+    # ----------------------------------------------------------------------------------
