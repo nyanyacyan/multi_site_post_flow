@@ -56,8 +56,17 @@ class IsFileInDf:
     # ----------------------------------------------------------------------------------
     # ディレクトリを指定
 
-    def _get_path(self, sub_dir_name: str):
-        pass
+    def _get_photo_folder_path(self, sub_dir_name: str):
+        dir_path = self.path._get_input_photo_subdir_path(subDirName=sub_dir_name)
+        self.logger.debug(f'dir_path: {dir_path}')
+        return dir_path
+
+
+    # ----------------------------------------------------------------------------------
+    # input_photoにあるフォルダ名を取得
+
+    def _get_dir_all_folder(self):
+
 
     # ----------------------------------------------------------------------------------
     # 特定のディレクトリにあるディレクトリのリストの整合する

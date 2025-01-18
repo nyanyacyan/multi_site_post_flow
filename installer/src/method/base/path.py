@@ -167,6 +167,17 @@ class BaseToPath:
     # ----------------------------------------------------------------------------------
     # Input > input_photo > SubDir
 
+    def _get_input_photo_subdir_path(self, subDirName: str, input_photo: str = SubDir.INPUT_PHOTO.value):
+        inputDataPath = self.getInputDataPath()
+        dirPath = inputDataPath / input_photo / subDirName
+        self.logger.warning(f"dirPath: {dirPath}")
+        self.logger.debug(f"dirPathの型: {type(dirPath)}")
+        self.isDirExists(path=dirPath)
+        return dirPath
+
+    # ----------------------------------------------------------------------------------
+    # Input > input_photo > SubDir > SubSubDir
+
     def getInputPhotoDirPath(self, subDirName: str, subSubDirName: str, input_photo: str = SubDir.INPUT_PHOTO.value):
         inputDataPath = self.getInputDataPath()
         dirPath = inputDataPath / input_photo / subDirName / subSubDirName
