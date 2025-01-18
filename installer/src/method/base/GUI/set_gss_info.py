@@ -146,7 +146,7 @@ class GSSInfoForm(QGroupBox):
     # ----------------------------------------------------------------------------------
     # スプシからのデータを受けたドロップダウンメニュー
 
-    def _dropdown_menu(self, fixed_width: int = 150):
+    def _dropdown_menu(self, fixed_width: int = 160):
         self.dropdown_menu = QComboBox()
         self.dropdown_menu.setEnabled(False)
         self.dropdown_menu.addItem("--選択してください--")  # 初期値を設定

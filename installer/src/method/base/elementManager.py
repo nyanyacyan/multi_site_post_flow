@@ -3,7 +3,7 @@
 
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 # import
-import time, re
+import time, re, os
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support.ui import Select
@@ -188,16 +188,29 @@ class ElementManager:
     # 最後の数字を拾ってSortする
 
     def _list_sort_photo_data(self, all_photos_all_path_list: List[str]):
-        sorted_list = sorted(all_photos_all_path_list, key=self._extract_num)  # オブジェクトとして渡してSort
-        self.logger.debug(f'Sorted list: {sorted_list}')
+        # 有効な拡張子を定義
+        valid_extensions = {".jpeg", ".jpg", ".png"}
+
+        # 拡張子をフィルタリング
+        filtered_list = [
+            path for path in all_photos_all_path_list
+            if any(path.lower().endswith(ext) for ext in valid_extensions)
+        ]
+        self.logger.debug(f'filtered_list: {filtered_list}')
+
+        # 数値でソート
+        sorted_list = sorted(filtered_list, key=self._extract_num)
+
+        self.logger.debug(f'sorted_list: {sorted_list}')
         return sorted_list
 
 
     # ----------------------------------------------------------------------------------
     # 文字列から数値を抽出する→A_Folder1→１
 
-    def _extract_num(self, text: str):
-        match = re.search(r'\d+$', text)  # 名前の末尾にある数値を探す
+    def _extract_num(self, file_path: str):
+        file_name = os.path.basename(file_path)
+        match = re.search(r'\d+', file_name)   # ファイル名から数字を抽出
         extract_num = int(match.group()) if match else float('inf')  # 数値がない場合は優先度低めに設定
         self.logger.debug(f'extract_num: {extract_num}')
         return extract_num
