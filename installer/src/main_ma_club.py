@@ -158,7 +158,7 @@ class MainMAClubApp(QWidget):
     # キャンセル処理
 
     def cancel_process(self):
-        self.cancel_event._cancel_event(label=self.process_label, timer=self.timer, stop_flag=self.stop_flag, update_flag=self.update_flag)
+        self.cancel_event._cancel_event(label=self.process_label)
 
 
     # ----------------------------------------------------------------------------------

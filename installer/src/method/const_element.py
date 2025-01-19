@@ -326,6 +326,11 @@ class GuiInfo(Enum):
         "SORT_WORD_LIST": ["M&A", "MA", "エムアンドエー", "MA_CLUB", "M&A_CLUB"],
         "GSS_INPUT_TITLE": "Spreadsheet 情報",
         "MAIN_WINDOW_TITLE": "M&A_CLUB Automation Tool",
+
+        "FOLDER_NAME": "02_MA_CLUB",
+        "COL_NAME": "画像フォルダ",
+
+
         "BACKGROUND_COLOR": "#FFFFFF",
         "LOGO_NAME": "ma_logo",
         "USER_INPUT_TITLE": "USER情報",
@@ -352,6 +357,7 @@ class GuiInfo(Enum):
         "PROCESS_BTN_NAME": "START",
         "CANCEL_BTN_NAME": "STOP",
         "GSS_URL_BTN": "取得",
+        "GSS_FOLDER_CHECK_BTN": "確認",
     }
 
     RMT_CLUB = {
@@ -359,6 +365,12 @@ class GuiInfo(Enum):
         "SORT_WORD_LIST": ["RMT", "rmt", "アールエムティ", "RMT_CLUB", "rmt_club"],
         "GSS_INPUT_TITLE": "Spreadsheet 情報",
         "MAIN_WINDOW_TITLE": "RMT_CLUB Automation Tool",
+
+
+        "FOLDER_NAME": "02_MA_CLUB",
+        "COL_NAME": "画像フォルダ",
+
+
         "BACKGROUND_COLOR": "#FFFFFF",
         "LOGO_NAME": "ma_logo",
         "USER_INPUT_TITLE": "USER情報",
@@ -385,6 +397,7 @@ class GuiInfo(Enum):
         "PROCESS_BTN_NAME": "START",
         "CANCEL_BTN_NAME": "STOP",
         "GSS_URL_BTN": "取得",
+        "GSS_FOLDER_CHECK_BTN": "確認",
     }
 
 

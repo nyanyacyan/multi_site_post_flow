@@ -17,10 +17,8 @@ from method.base.GUI.set_gss_info import GSSInfoForm
 from method.base.GUI.set_interval_time import IntervalTimeForm
 from method.base.GUI.set_uptime import SetUptime
 from method.base.GUI.set_action_btn import ActionBtn
-from method.base.search_dir_contents import FolderChecker
-
 from method.base.event.countdown_event import CountdownEvent
-from method.base.event.cancel_event import CancelEventNoUpdate
+from method.base.event.cancel_event import CancelEvent
 from method.base.event.thread_event import ThreadEventNoUpdate
 from method.base.event.loop_process import LoopProcessNoUpdate
 
@@ -81,7 +79,6 @@ class MainRMTClubApp(QWidget):
         self.layout.addWidget(self.gss_info_form)
         self.layout.addWidget(self.interval_form)
         self.layout.addWidget(self.uptime_form)
-        # self.layout.addWidget(self.radio_btn_form)
         self.layout.addWidget(self.action_btn_form)
         self.layout.addWidget(self.process_label)
 
@@ -101,7 +98,7 @@ class MainRMTClubApp(QWidget):
         self.time_manager = TimeManager()
         self.countdown_event = CountdownEvent()
         self.check_flag = CheckFlag()
-        self.cancel_event = CancelEventNoUpdate()
+        self.cancel_event = CancelEvent()
         self.thread_event = ThreadEventNoUpdate()
         self.main_event = LoopProcessNoUpdate()
 
@@ -150,7 +147,7 @@ class MainRMTClubApp(QWidget):
     # キャンセル処理
 
     def cancel_process(self):
-        self.cancel_event._cancel_event(label=self.process_label, timer=self.timer, stop_flag=self.stop_flag)
+        self.cancel_event._cancel_event(label=self.process_label)
 
 
     # ----------------------------------------------------------------------------------
