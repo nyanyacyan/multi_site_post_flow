@@ -81,7 +81,7 @@ class MainGamaClubApp(QWidget):
         self.layout.setContentsMargins(15, 30, 15, 15)
 
         # 各レイアウト間の幅
-        self.layout.setSpacing(30)
+        self.layout.setSpacing(15)
 
         self.setLayout(self.layout)
 
