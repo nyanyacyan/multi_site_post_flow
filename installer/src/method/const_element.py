@@ -265,7 +265,7 @@ class SellInfo(Enum):
         "USER_NOTIFY_VALUE": "DealUserName",
         # 取引価格
         "PRICE_BY": "id",
-        "PRICE_VALUE": 'kakaku',
+        "PRICE_VALUE": "kakaku",
         # 確認ボタン
         "CHECK_VALUE": "//input[@type='submit' and @value='確認']",
         # 同意するにクリック
@@ -284,19 +284,23 @@ class SellInfo(Enum):
 class GuiInfo(Enum):
     GAME_CLUB = {
         "JSON_KEY_NAME": "sns-auto-430920-08274ad68b41.json",
-        "SORT_WORD_LIST": ["GAME_CLUB", "GC", "ゲームクラブ", "GAME", 'game_club', "game", "game club"],
+        "SORT_WORD_LIST": [
+            "GAME_CLUB",
+            "GC",
+            "ゲームクラブ",
+            "GAME",
+            "game_club",
+            "game",
+            "game club",
+        ],
         "GSS_INPUT_TITLE": "Spreadsheet 情報",
         "MAIN_WINDOW_TITLE": "GAME_CLUB Automation Tool",
-
         "FOLDER_NAME": "01_GAME_CLUB",
         "COL_NAME": "画像フォルダ",
-
         "GUI_WIDTH": 300,
         "GUI_HEIGHT": 600,
-
         "X_RATIO": 0.94,
         "Y_RATIO": 0.55,
-
         "BACKGROUND_COLOR": "#FFFFFF",
         "LOGO_NAME": "gc_logo",
         "USER_INPUT_TITLE": "USER情報",
@@ -331,16 +335,12 @@ class GuiInfo(Enum):
         "SORT_WORD_LIST": ["M&A", "MA", "エムアンドエー", "MA_CLUB", "M&A_CLUB"],
         "GSS_INPUT_TITLE": "Spreadsheet 情報",
         "MAIN_WINDOW_TITLE": "M&A_CLUB Automation Tool",
-
         "FOLDER_NAME": "02_MA_CLUB",
         "COL_NAME": "画像フォルダ",
-
         "GUI_WIDTH": 300,
         "GUI_HEIGHT": 600,
-
-        "X_RATIO": 0.94,
+        "X_RATIO": 0.72,
         "Y_RATIO": 0.55,
-
         "BACKGROUND_COLOR": "#FFFFFF",
         "LOGO_NAME": "ma_logo",
         "USER_INPUT_TITLE": "USER情報",
@@ -375,17 +375,12 @@ class GuiInfo(Enum):
         "SORT_WORD_LIST": ["RMT", "rmt", "アールエムティ", "RMT_CLUB", "rmt_club"],
         "GSS_INPUT_TITLE": "Spreadsheet 情報",
         "MAIN_WINDOW_TITLE": "RMT_CLUB Automation Tool",
-
-
         "FOLDER_NAME": "02_MA_CLUB",
         "COL_NAME": "画像フォルダ",
-
         "GUI_WIDTH": 300,
         "GUI_HEIGHT": 600,
-
-        "X_RATIO": 0.94,
+        "X_RATIO": 0.5,
         "Y_RATIO": 0.55,
-
         "BACKGROUND_COLOR": "#FFFFFF",
         "LOGO_NAME": "ma_logo",
         "USER_INPUT_TITLE": "USER情報",
@@ -429,7 +424,7 @@ class UpdateInfo(Enum):
         "": "",
     }
 
-##########
+    ##########
 
     MA_CLUB = {
         "SELL_ITEM_BTN_VALUE": "//div[@class='side-mypage-menu']//a[@href='/mypage/products' and contains(text(), '売却登録した案件')]",
