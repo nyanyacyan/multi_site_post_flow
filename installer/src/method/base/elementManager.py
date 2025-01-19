@@ -9,6 +9,7 @@ from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support.ui import Select
 from datetime import datetime
 from typing import Dict, Any, List, Tuple
+from selenium.webdriver.common.by import By
 from selenium.common.exceptions import ElementClickInterceptedException, ElementNotInteractableException, NoSuchElementException, TimeoutException
 
 from pathlib import Path
@@ -54,19 +55,19 @@ class ElementManager:
     def getElement(self, value: str, by: str = "xpath"):
         self.clickWait.jsPageChecker(chrome=self.chrome)
         if by == "id":
-            return self.chrome.find_element_by_id(value)
+            return self.chrome.find_element(By.ID, value)
         elif by == "css":
-            return self.chrome.find_element_by_css_selector(value)
+            return self.chrome.find_element(By.CSS_SELECTOR, value)
         elif by == "xpath":
-            return self.chrome.find_element_by_xpath(value)
+            return self.chrome.find_element(By.XPATH, value)
         elif by == "tag":
-            return self.chrome.find_element_by_tag_name(value)
+            return self.chrome.find_element(By.TAG_NAME, value)
         elif by == "link":
-            return self.chrome.find_element_by_link_text(value)
+            return self.chrome.find_element(By.LINK_TEXT, value)
         elif by == "name":
-            return self.chrome.find_element_by_name(value)
+            return self.chrome.find_element(By.NAME, value)
         elif by == "class":
-            return self.chrome.find_element_by_class_name(value)
+            return self.chrome.find_element(By.CLASS_NAME, value)
         else:
             raise ValueError("定義してるもの以外のものを指定してます")
 
@@ -99,19 +100,19 @@ class ElementManager:
         self.clickWait.jsPageChecker(chrome=self.chrome)
 
         if by == "id":
-            return parentElement.find_element_by_id(value)
+            return self.chrome.find_elements(By.ID, value)
         elif by == "css":
-            return parentElement.find_element_by_css_selector(value)
+            return self.chrome.find_elements(By.CSS_SELECTOR, value)
         elif by == "xpath":
-            return parentElement.find_element_by_xpath(value)
+            return self.chrome.find_elements(By.XPATH, value)
         elif by == "tag":
-            return parentElement.find_element_by_tag_name(value)
+            return self.chrome.find_elements(By.TAG_NAME, value)
         elif by == "link":
-            return parentElement.find_element_by_link_text(value)
+            return self.chrome.find_elements(By.LINK_TEXT, value)
         elif by == "name":
-            return parentElement.find_element_by_name(value)
+            return self.chrome.find_elements(By.NAME, value)
         elif by == "class":
-            return parentElement.find_element_by_class_name(value)
+            return self.chrome.find_elements(By.CLASS_NAME, value)
         else:
             raise ValueError("定義しているもの以外のものを指定しています")
 

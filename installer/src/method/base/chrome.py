@@ -55,7 +55,8 @@ class ChromeManager:
     @decoInstance.chromeSetup
     def flowSetupChrome(self):
         self.clear_cache()
-        service = Service(self.getChromeDriverPath)
+        # service = Service(self.getChromeDriverPath)
+        service = Service()
         chrome = webdriver.Chrome(service=service, options=self.setupChromeOption)
 
         # selenium-stealth を適用してWebDriverを偽装（日本語に設定）
@@ -76,17 +77,19 @@ class ChromeManager:
     @property
     def getChromeDriverPath(self):
         # ChromeDriverManagerでインストールされたChromeDriverのパスを取得
-        return ChromeDriverManager().install()
+        # return ChromeDriverManager().install()
+        return None
 
     # ----------------------------------------------------------------------------------
 
     @property
     def getChromeDriverVersion(self):
         # ChromeDriverのバージョンはsubprocessを使って取得が必要
-        ChromeDriverPath = self.getChromeDriverPath
-        result = subprocess.run([ChromeDriverPath, "--version"], stdout=subprocess.PIPE)
-        version = result.stdout.decode("utf-8").strip()
-        return version
+        # ChromeDriverPath = self.getChromeDriverPath
+        # result = subprocess.run([ChromeDriverPath, "--version"], stdout=subprocess.PIPE)
+        # version = result.stdout.decode("utf-8").strip()
+        # return version
+        return "Selenium Manager is managing the ChromeDriver."
 
     # ----------------------------------------------------------------------------------
     # Chromeのバージョン管理＋拡張機能
