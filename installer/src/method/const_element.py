@@ -291,6 +291,11 @@ class GuiInfo(Enum):
         "FOLDER_NAME": "01_GAME_CLUB",
         "COL_NAME": "画像フォルダ",
 
+        "GUI_WIDTH": 300,
+        "GUI_HEIGHT": 600,
+
+        "X_RATIO": 0.94,
+        "Y_RATIO": 0.55,
 
         "BACKGROUND_COLOR": "#FFFFFF",
         "LOGO_NAME": "gc_logo",
@@ -330,6 +335,11 @@ class GuiInfo(Enum):
         "FOLDER_NAME": "02_MA_CLUB",
         "COL_NAME": "画像フォルダ",
 
+        "GUI_WIDTH": 300,
+        "GUI_HEIGHT": 600,
+
+        "X_RATIO": 0.94,
+        "Y_RATIO": 0.55,
 
         "BACKGROUND_COLOR": "#FFFFFF",
         "LOGO_NAME": "ma_logo",
@@ -370,6 +380,11 @@ class GuiInfo(Enum):
         "FOLDER_NAME": "02_MA_CLUB",
         "COL_NAME": "画像フォルダ",
 
+        "GUI_WIDTH": 300,
+        "GUI_HEIGHT": 600,
+
+        "X_RATIO": 0.94,
+        "Y_RATIO": 0.55,
 
         "BACKGROUND_COLOR": "#FFFFFF",
         "LOGO_NAME": "ma_logo",

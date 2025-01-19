@@ -84,7 +84,7 @@ class GSSInfoForm(QGroupBox):
 
         # gss_url入力
         gss_url_label = QLabel(gui_info["GSS_URL_LABEL"])
-        self.gss_url_input = self._create_input_field(gui_info["INPUT_EXAMPLE_GSS_URL"], fixed_width=150)
+        self.gss_url_input = self._create_input_field(gui_info["INPUT_EXAMPLE_GSS_URL"], fixed_width=160)
         gss_url_btn = self._action_btn(name_in_btn=gui_info["GSS_URL_BTN"], action_func=self._on_url_input_finished)
 
         # gss_urlのレイアウト作成
@@ -139,7 +139,7 @@ class GSSInfoForm(QGroupBox):
     # ----------------------------------------------------------------------------------
     # スプシからのデータを受けたドロップダウンメニュー
 
-    def _dropdown_menu(self, fixed_width: int = 160):
+    def _dropdown_menu(self, fixed_width: int = 150):
         self.dropdown_menu = QComboBox()
         self.dropdown_menu.setEnabled(False)
         self.dropdown_menu.addItem("--選択してください--")  # 初期値を設定

@@ -129,7 +129,7 @@ class FlowGameClubUpdate:
                     self.logger.info(f'更新の上限に達しました: 実施回数 {count}回、Update実施')
                 self.chrome.close()
                 break
-
+        self.chrome.close()
 
     # ----------------------------------------------------------------------------------
     # 更新処理

@@ -3,15 +3,12 @@
 # testOK
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 # import
-import os, subprocess, shutil
+import os, shutil
+from typing import Dict
 from selenium_stealth import stealth
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import (
-    ChromeDriverManager,
-)  # pip install webdriver-manager
-
 
 # 自作モジュール
 from .utils import Logger
@@ -39,6 +36,24 @@ class ChromeManager:
         # インスタンス
         self.path = BaseToPath()
 
+        # デフォルト画面サイズ（必要なら外部から設定可能にする）
+        self.screen_width = 720  # 画面の幅
+        self.screen_height = 600  # 画面の高さ
+
+        # フラグと倍率設定
+        self.flags = {
+            "A": False,
+            "B": False,
+            "C": False,
+            "D": False,
+        }
+        self.positions = {
+            "A": (0.1, 0.1),  # 画面幅の10%右、画面高さの10%下
+            "B": (0.5, 0.1),  # 画面幅の50%右、画面高さの10%下
+            "C": (0.7, 0.5),  # 画面幅の70%右、画面高さの50%下
+            "D": (0.9, 0.8),  # 画面幅の90%右、画面高さの80%下
+        }
+
     # ----------------------------------------------------------------------------------
 
     def clear_cache(self):
@@ -56,6 +71,12 @@ class ChromeManager:
     def flowSetupChrome(self):
         self.clear_cache()
         # service = Service(self.getChromeDriverPath)
+
+        # 今のフラグを確認する
+        # flag_name = self._check_flag_status()
+
+        # self._flag_on(flag_name=flag_name)
+
         service = Service()
         chrome = webdriver.Chrome(service=service, options=self.setupChromeOption)
 
@@ -76,19 +97,12 @@ class ChromeManager:
 
     @property
     def getChromeDriverPath(self):
-        # ChromeDriverManagerでインストールされたChromeDriverのパスを取得
-        # return ChromeDriverManager().install()
         return None
 
     # ----------------------------------------------------------------------------------
 
     @property
     def getChromeDriverVersion(self):
-        # ChromeDriverのバージョンはsubprocessを使って取得が必要
-        # ChromeDriverPath = self.getChromeDriverPath
-        # result = subprocess.run([ChromeDriverPath, "--version"], stdout=subprocess.PIPE)
-        # version = result.stdout.decode("utf-8").strip()
-        # return version
         return "Selenium Manager is managing the ChromeDriver."
 
     # ----------------------------------------------------------------------------------
@@ -98,14 +112,14 @@ class ChromeManager:
     def setupChromeOption(self):
 
         chromeDriverVersion = self.getChromeDriverVersion
-        self.logger.warning(
-            f"インストールされた ChromeDriver バージョン: {chromeDriverVersion}"
-        )
+        self.logger.warning(f"インストールされた ChromeDriver バージョン: {chromeDriverVersion}")
 
         chromeOptions = Options()
+
         # chromeOptions.add_argument("--headless=new")  # ヘッドレスモードで実行
-        chromeOptions.add_argument(f"--window-position=0,0")
-        # chromeOptions.add_argument("--window-size=1440,900")  # ウィンドウサイズの指定
+        # chromeOptions.add_argument(f"--window-position=0,0")
+        chromeOptions.add_argument(f"--window-position={self.x},{self.y}")
+        chromeOptions.add_argument("--window-size=600,600")  # ウィンドウサイズの指定
         chromeOptions.add_argument("start-maximized")
         chromeOptions.add_argument("--no-sandbox")
         # chromeOptions.add_argument("--disable-dev-shm-usage")
@@ -153,4 +167,33 @@ class ChromeManager:
         return chromeOptions
 
 
-# ----------------------------------------------------------------------------------
+    # ----------------------------------------------------------------------------------
+    # 空いてるフラグ状況を確認
+
+    def _check_flag_status(self):
+        false_status_list = [key for key, value in self.flags.items() if not value]
+        self.logger.debug(f'false_status_list: {false_status_list}')
+        return false_status_list[0]  # 最初の値を取得
+
+    # ----------------------------------------------------------------------------------
+    # フラグをONにする
+
+    def _flag_on(self, flag_name: str):
+        self.flags[flag_name] = True
+        self.logger.info(f"{flag_name} のフラグを立てました。\npositions: {self.positions[flag_name]}")
+
+        ratio_x, ratio_y = self.positions[flag_name]
+        self.x = self.screen_width * ratio_x
+        self.y = self.screen_height * ratio_y
+
+
+    # ----------------------------------------------------------------------------------
+    # browserを閉じてフラグをOFFにする
+
+    def close_browser(self, chrome: webdriver, flag_name: str):
+        chrome.quit()
+        self.flags[flag_name] = False
+        self.logger.info(f"{flag_name} のbrowserを閉じました。")
+
+    # ----------------------------------------------------------------------------------
+

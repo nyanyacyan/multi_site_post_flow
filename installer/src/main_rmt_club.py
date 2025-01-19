@@ -43,6 +43,26 @@ class MainRMTClubApp(QWidget):
 
         self.countdown_timer = None  # クラスの属性として初期化
 
+        # 画面サイズを取得
+        screen_geometry = QGuiApplication.primaryScreen().geometry()
+        screen_width = screen_geometry.width()
+        screen_height = screen_geometry.height()
+
+        # ウィンドウサイズ
+        window_width = gui_info["GUI_WIDTH"]
+        window_height = gui_info["GUI_HEIGHT"]
+
+        # 配置の割合
+        x_ratio = gui_info["X_RATIO"]
+        y_ratio = gui_info["Y_RATIO"]
+
+        # 割合から座標を計算
+        window_x = int(screen_width * x_ratio) - window_width
+        window_y = int(screen_height * y_ratio) - int(window_height / 2)
+
+        # サイズと位置を設定
+        self.setGeometry(window_x, window_y, window_width, window_height)
+
         # メインタイトル
         self.setWindowTitle(gui_info['MAIN_WINDOW_TITLE'])
 
