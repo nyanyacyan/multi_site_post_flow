@@ -48,6 +48,7 @@ class FolderChecker:
     # フォルダのアンマッチを確認
 
     def _check_unmatched_folders(self, sub_dir_name: str, df: pd.DataFrame, col_name: str):
+        # それぞれのリストを生成
         dir_name_list = self._get_dir_all_folder(sub_dir_name=sub_dir_name)
         gss_dir_name_list = self._get_dir_name_list_in_gss(df=df, col_name=col_name)
 
@@ -82,7 +83,7 @@ class FolderChecker:
         return None
 
     # ----------------------------------------------------------------------------------
-    # ディレクトリを指定
+    # input_photoディレクトリを指定
 
     def _get_photo_folder_path(self, sub_dir_name: str):
         dir_path = self.path._get_input_photo_subdir_path(subDirName=sub_dir_name)
@@ -135,3 +136,5 @@ class FolderChecker:
         sub_dir_path = photo_dir / sub_sub_dir_name
         self.logger.debug(f'sub_dir_path: {sub_dir_path}')
         return sub_dir_path
+
+    # ----------------------------------------------------------------------------------

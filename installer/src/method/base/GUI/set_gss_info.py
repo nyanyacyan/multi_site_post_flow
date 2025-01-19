@@ -96,7 +96,6 @@ class GSSInfoForm(QGroupBox):
         # グループにgss_urlレイアウトを追加
         group_layout.addLayout(gss_url_layout)
 
-
         # Worksheetを選択
         dropdown_label = QLabel(gui_info["DROPDOWN_LABEL"])
         self.dropdown_input = self._dropdown_menu()
@@ -124,8 +123,7 @@ class GSSInfoForm(QGroupBox):
     # ID入力欄→passwordを渡せば非表示
 
     def _create_input_field(
-        self, input_example: str, fixed_width: int = 200
-    ):
+        self, input_example: str, fixed_width: int = 200):
         input_field = QLineEdit()
         input_field.setPlaceholderText(input_example)  # input_exampleは入力例
 
@@ -155,7 +153,7 @@ class GSSInfoForm(QGroupBox):
     # エラーラベル（通常時は非表示）
 
     def _error_label(self):
-        error_label = QLabel("")
+        error_label = QLabel("")  # 最初は空に設定
         error_label.setStyleSheet("color: red;")
         error_label.hide()
         return error_label
@@ -227,11 +225,11 @@ class GSSInfoForm(QGroupBox):
 
 
     # ----------------------------------------------------------------------------------
-
+    # スプシデータをdf
 
     def _get_gss_df(self, worksheet_name: str):
         gss_read = GetDataGSSAPI()
-        sheet_url = self.gss_url_input.text()
+        sheet_url = self.gss_url_input.text()  # 今のスプシの入力された値
         gss_df = gss_read._get_gss_df_to_gui(gui_info=self.gui_info, sheet_url=sheet_url, worksheet_name=worksheet_name)
         return gss_df
 

@@ -39,7 +39,7 @@ class CountdownEvent(QObject):
 
 
     ####################################################################################
-
+    # 開始時間までの待機イベント
 
     def entry_event(self, uptime_info: Dict, label: QLabel, start_event_flag: threading.Event, event_func: Callable):
         self.logger.info(f'開始ボタンが押されました!\nuptime_info: {uptime_info}')
@@ -73,13 +73,14 @@ class CountdownEvent(QObject):
         except RuntimeError:
             self.logger.debug(f'タイマー接続なしのためスキップ')
 
+        # カウントダウンのイベントをセット
         self.countdown_timer.timeout.connect(lambda: self._countdown_event(label=label, start_event_flag=start_event_flag))
         self.countdown_timer.start()
 
     ####################################################################################
 
     # ----------------------------------------------------------------------------------
-
+    # Qtimerを使ったカウントダウン
 
     def _countdown_event(self, label: QLabel, start_event_flag: threading.Event):
         self.logger.debug(f'wait_seconds: {self.wait_seconds}')
