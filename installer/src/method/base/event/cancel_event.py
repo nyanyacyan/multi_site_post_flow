@@ -36,12 +36,11 @@ class CancelEvent(QObject):
     def _cancel_event(self, label: QLabel):
         self.update_label._update_label(label=label, comment="アプリケーションを終了しています...")
 
-        # メインスレッドで終了をスケジュール
-        QMetaObject.invokeMethod(QCoreApplication.instance(), "quit", Qt.QueuedConnection)
+        threading_process = [f"スレッド名: {t.name}, スレッドID: {t.ident}" for t in threading.enumerate()]
+        self.logger.debug(f'threading_process: {threading_process}')
 
-        # 再起動処理を実行
-        QTimer.singleShot(100, self._restart_app)
-
+        self._restart_app()
+        # sys.exit(0)
 
     # ----------------------------------------------------------------------------------
 
@@ -50,15 +49,6 @@ class CancelEvent(QObject):
         """アプリケーションを再起動する"""
         python = sys.executable
         os.execl(python, python, *sys.argv)
-
-
-    # ----------------------------------------------------------------------------------
-    # GUIを更新
-
-    def _stop_timer_and_update_gui(self, label: QLabel, timer: QTimer):
-        if timer.isActive():
-            timer.stop()
-            self.update_label._update_label(label=label, comment="待機中...")
 
 
     # ----------------------------------------------------------------------------------
