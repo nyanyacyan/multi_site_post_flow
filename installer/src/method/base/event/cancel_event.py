@@ -5,7 +5,7 @@
 
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 # import
-import threading, os, sys
+import threading, os, sys, signal
 from PySide6.QtWidgets import QLabel
 from PySide6.QtCore import QObject
 
@@ -39,16 +39,20 @@ class CancelEvent(QObject):
         threading_process = [f"スレッド名: {t.name}, スレッドID: {t.ident}" for t in threading.enumerate()]
         self.logger.debug(f'threading_process: {threading_process}')
 
-        self._restart_app()
-        # sys.exit(0)
+        os.kill(os.getpid(), signal.SIGKILL)  # 現在のプロセスを強制終了
+        sys.exit(0)
 
     # ----------------------------------------------------------------------------------
 
 
     def _restart_app(self):
         """アプリケーションを再起動する"""
+
+        # プロセスを完全終了して再起動
         python = sys.executable
         os.execl(python, python, *sys.argv)
-
+        os.kill(os.getpid(), signal.SIGKILL)
+        sys.exit(0)
 
     # ----------------------------------------------------------------------------------
+

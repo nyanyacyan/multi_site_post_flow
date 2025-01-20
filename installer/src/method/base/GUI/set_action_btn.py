@@ -75,7 +75,7 @@ class ActionBtn(QGroupBox):
         # ラベルにコメントを追記
         self.update_label._update_label(label=self.label, comment="出品処理中...")
 
-        self.process_btn.setEnabled(False)  # 開始ボタンを押せないSTS変更
+        # self.process_btn.setEnabled(False)  # 開始ボタンを押せないSTS変更
         self.cancel_btn.setEnabled(True)  # キャンセルボタンを押せるSTS変更
 
         self.process_func()

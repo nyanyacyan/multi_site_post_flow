@@ -88,7 +88,7 @@ class FlowGameClubProcess:
             self.logger.info(f"すべての処理完了")
 
         finally:
-                chrome.close()
+                chrome.quit()
 
 
     # ----------------------------------------------------------------------------------

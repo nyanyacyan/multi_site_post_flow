@@ -30,6 +30,7 @@ from method.base.path import BaseToPath
 from method.flow_game_club_new_item import FlowGameClubProcess
 from method.flow_game_club_update import FlowGameClubUpdate
 from method.base.GUI.Qtimer_content import CountDownQTimer, CheckFlag
+from method.base.event.update_label import UpdateLabel
 
 
 # const
@@ -128,6 +129,7 @@ class MainGamaClubApp(QWidget):
         self.cancel_event = CancelEvent()
         self.thread_event = ThreadEvent()
         self.main_event = LoopProcess()
+        self.update_label = UpdateLabel()
 
         # タイマーの設定
         self.uptime_info = {}  # 初期化
@@ -164,8 +166,8 @@ class MainGamaClubApp(QWidget):
             self.end_time_thread.start()
             self.date_change_thread.start()
 
-            # メイン処理実施
-            # self.main_event.main_task(update_bool=self.update_bool, stop_event=self.stop_flag, label=self.process_label, update_event=self.update_flag, update_func=self.update_func, process_func=self.process_func, user_info=self.user_info, gss_info=self.gss_info, interval_info=self.interval_info)
+            comment = "処理中..."
+            self.update_label._update_label(label=self.process_label, comment=comment)
 
             # メイン処理を別スレッドで実行
             self.main_task_thread = threading.Thread(

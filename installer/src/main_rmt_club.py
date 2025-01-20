@@ -156,8 +156,9 @@ class MainRMTClubApp(QWidget):
             self.end_time_thread.start()
             self.date_change_thread.start()
 
-            # メイン処理実施
-            # self.main_event.main_task(stop_event=self.stop_flag, label=self.process_label, process_func=self.process_func, user_info=self.user_info, gss_info=self.gss_info, interval_info=self.interval_info)
+            comment = "処理中..."
+            self.update_label._update_label(label=self.process_label, comment=comment)
+
 
             # メイン処理を別スレッドで実行
             self.main_task_thread = threading.Thread(

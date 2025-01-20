@@ -132,12 +132,17 @@ class LoopProcess(QObject):
                 task = partial(self._task_contents, count=task_count, label=label, process_func=process_func, user_info=user_info, gss_info=gss_info)
                 # 処理を実施
                 executor.submit(task)
+
                 task_count += 1
                 task_que.task_done()  # タスクの完了を通知
 
             # Queが殻になったら待機
             except Empty:
                 time.sleep(delay)
+
+            except RuntimeError:
+                executor.shutdown(wait=True)
+                self.logger.info("シャットダウンをしてます。")
 
         self.logger.info(f"タスクディスパッチャーを停止します (新規出品数: {task_count})")
 

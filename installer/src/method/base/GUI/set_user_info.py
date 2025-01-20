@@ -105,7 +105,7 @@ class UserInfoForm(QGroupBox):
         # Pass入力
         pass_label = QLabel(gui_info["PASS_LABEL"])
         self.pass_input = self._create_input_field(
-            gui_info["INPUT_EXAMPLE_PASS"], is_password=True, fixed_width=250
+            gui_info["INPUT_EXAMPLE_PASS"], fixed_width=250
         )
 
         # Passのレイアウト作成
