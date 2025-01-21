@@ -58,7 +58,9 @@ class CountdownEvent(QObject):
             comment = "待機時間なし"
             self.update_label._update_label(label=label, comment=comment)
             self.logger.info(comment)
-            return  # スキップ
+
+            self.countdown_timer.timeout.connect(lambda: self._countdown_event(label=label, start_event_flag=start_event_flag))
+            self.countdown_timer.start()
 
         self.logger.debug(f"カウントダウン開始: {self.wait_seconds} ")
 
