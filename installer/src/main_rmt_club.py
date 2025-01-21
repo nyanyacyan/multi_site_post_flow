@@ -169,7 +169,6 @@ class MainRMTClubApp(QWidget):
                 target=self.main_event.main_task,
                 kwargs={
                     "stop_event": self.stop_flag,
-                    "label": self.process_label,
                     "process_func": self.process_func,
                     "user_info": self.user_info,
                     "gss_info": self.gss_info,

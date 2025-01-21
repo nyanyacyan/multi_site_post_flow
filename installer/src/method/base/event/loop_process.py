@@ -224,20 +224,20 @@ class LoopProcessNoUpdate(QObject):
     ####################################################################################
     # start_eventに使用するmain処理
 
-    def main_task(self, stop_event: threading.Event, label: QLabel, process_func: Callable, user_info: Dict, gss_info: str, interval_info: Dict):
+    def main_task(self, stop_event: threading.Event, process_func: Callable, user_info: Dict, gss_info: str, interval_info: Dict):
         self.logger.info("これからmainloop処理を開始")
-        self.process(stop_event=stop_event, process_func=process_func, user_info=user_info, gss_info=gss_info, label=label, interval_info=interval_info)
+        self.process(stop_event=stop_event, process_func=process_func, user_info=user_info, gss_info=gss_info, interval_info=interval_info)
 
 
     ####################################################################################
     # ----------------------------------------------------------------------------------
 
 
-    def process(self, stop_event: threading.Event, process_func: Callable, user_info: Dict, gss_info: str, label: QLabel, interval_info: Dict, max_workers: int =3):
+    def process(self, stop_event: threading.Event, process_func: Callable, user_info: Dict, gss_info: str, interval_info: Dict, max_workers: int =3):
         executor = ThreadPoolExecutor(max_workers=max_workers)
         task_que = Queue()
 
-        self._start_parallel_process(stop_event=stop_event, executor=executor, task_que=task_que, process_func=process_func, user_info=user_info, gss_info=gss_info, label=label, interval_info=interval_info)
+        self._start_parallel_process(stop_event=stop_event, executor=executor, task_que=task_que, process_func=process_func, user_info=user_info, gss_info=gss_info, interval_info=interval_info)
 
 
     # ----------------------------------------------------------------------------------
@@ -245,7 +245,7 @@ class LoopProcessNoUpdate(QObject):
     # Queを管理するツールを起動→Queを作り続ける→監視ツールがQueを確認次第処理を開始→並列処理
 
 
-    def _start_parallel_process(self, stop_event: threading.Event, executor: ThreadPoolExecutor, task_que: Queue, process_func: Callable, user_info: Dict, gss_info: str, label: QLabel, interval_info: Dict):
+    def _start_parallel_process(self, stop_event: threading.Event, executor: ThreadPoolExecutor, task_que: Queue, process_func: Callable, user_info: Dict, gss_info: str, interval_info: Dict):
         # 並列処理ロジックスタート（dispatcherはtaskを受取、ThreadPoolに割り当てる）
         dispatcher_thread = threading.Thread(
             target=self._task_manager,
@@ -256,7 +256,6 @@ class LoopProcessNoUpdate(QObject):
                 'process_func' : process_func,
                 'user_info' : user_info,
                 'gss_info' : gss_info,
-                'label' : label,
             }
         )
         dispatcher_thread.start()
@@ -295,7 +294,7 @@ class LoopProcessNoUpdate(QObject):
     # Queがないかを監視
 
 
-    def _task_manager(self, stop_event: threading.Event, executor: ThreadPoolExecutor, task_que: Queue, process_func: Callable, user_info: Dict, gss_info: str, label: QLabel, delay: int=1):
+    def _task_manager(self, stop_event: threading.Event, executor: ThreadPoolExecutor, task_que: Queue, process_func: Callable, user_info: Dict, gss_info: str, delay: int=1):
         task_count = 0
         while not stop_event.is_set():
             try:
@@ -304,7 +303,7 @@ class LoopProcessNoUpdate(QObject):
                 self.logger.info(f"task_id: {task_id}")
 
                 #! ここでメインのループ処理を実行する
-                task = partial(self._task_contents, count=task_count, label=label, process_func=process_func, user_info=user_info, gss_info=gss_info)
+                task = partial(self._task_contents, count=task_count, process_func=process_func, user_info=user_info, gss_info=gss_info)
                 # 処理を実施
                 executor.submit(task)
 
@@ -328,9 +327,8 @@ class LoopProcessNoUpdate(QObject):
     # ----------------------------------------------------------------------------------
     # taskの中身（実際に処理する内容）
 
-    def _task_contents(self, count: int, label: QLabel, process_func: Callable, user_info: Dict, gss_info: Dict):
-        comment = f"新規出品 処理中({count + 1}回目)..."
-        self.update_label._update_label(label=label, comment=comment)
+    def _task_contents(self, count: int, process_func: Callable, user_info: Dict, gss_info: Dict):
+        comment = f"新規出品 処理中 {count + 1} 回目..."
         self.update_label_signal.emit(comment)
 
         # 開始時刻
