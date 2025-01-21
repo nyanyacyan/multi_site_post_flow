@@ -16,7 +16,7 @@ from selenium.webdriver.chrome.webdriver import WebDriver
 # 自作モジュール
 from ..base.utils import Logger
 from ..base.insertSql import InsertSql
-from ..base.textManager import TextManager
+from .Archive.textManager import TextManager
 from ..constSqliteTable import TableSchemas
 from ..base.imageEditor import ImageEditor
 from ..base.fileWrite import LimitSabDirFileWrite

@@ -231,10 +231,6 @@ if __name__ == "__main__":
     gss_info = GssInfo.MA_CLUB.value
     gui_info = GuiInfo.MA_CLUB.value
 
-    # スプシからすべてのWorksheet名を取得
-    # gss_read = GetDataGSSAPI()
-    # worksheet_info = gss_read._get_all_worksheet(gss_info=gss_info, sort_word_list=gss_info['workSheetName'])
-
 
     def process_func(*args, **kwargs):
         if not hasattr(process_func, "instance"):
