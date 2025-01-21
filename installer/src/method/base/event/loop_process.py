@@ -113,6 +113,10 @@ class LoopProcess(QObject):
             dispatcher_thread.join()
 
 
+            next_comment = "処理中..."
+            self.update_label_signal.emit(next_comment)
+
+
     # ----------------------------------------------------------------------------------
     # Queを追加
 
@@ -279,8 +283,13 @@ class LoopProcessNoUpdate(QObject):
         finally:
             # 停止処理
             self.stop(executor=executor)
+            comment = f"【全 {task_id} 回実施】 処理を停止しました。"
+            self.logger.warning(comment)
+            self.update_label_signal.emit(comment)
             dispatcher_thread.join()
 
+            next_comment = "処理中..."
+            self.update_label_signal.emit(next_comment)
 
     # ----------------------------------------------------------------------------------
     # Queを追加
@@ -343,8 +352,8 @@ class LoopProcessNoUpdate(QObject):
             process_func(id_text=user_info['id'], pass_text=user_info['pass'], worksheet_name=gss_info)
 
         except UnexpectedAlertPresentException as e:
-            alert_comment = f"アラームをキャッチ この処理をスキップ\n{e}"
-            self.logger.error(alert_comment)
+            alert_comment = f"再出品の間隔が短いためを処理中断"
+            self.logger.error(f"再出品の間隔が短いため、エラー 処理中断: {e}")
             self.update_label_signal.emit(alert_comment)
 
 
