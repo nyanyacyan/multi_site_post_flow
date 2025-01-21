@@ -12,8 +12,8 @@ from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 from typing import Dict, Callable
 from PySide6.QtWidgets import QLabel
-from PySide6.QtCore import QObject
-
+from PySide6.QtCore import QObject, Signal
+from selenium.common.exceptions import UnexpectedAlertPresentException, NoAlertPresentException
 
 # 自作モジュール
 from method.base.utils import Logger
@@ -27,6 +27,8 @@ from method.base.time_manager import TimeManager
 
 
 class LoopProcess(QObject):
+    update_label_signal = Signal(str)  # クラス変数
+
     def __init__(self):
         super().__init__()
         # logger
@@ -105,6 +107,9 @@ class LoopProcess(QObject):
         finally:
             # 停止処理
             self.stop(executor=executor)
+            comment = f"【全 {task_id} 回実施】 処理を停止しました。"
+            self.logger.warning(comment)
+            self.update_label_signal.emit(comment)
             dispatcher_thread.join()
 
 
@@ -145,14 +150,18 @@ class LoopProcess(QObject):
                 self.logger.info("シャットダウンをしてます。")
 
         self.logger.info(f"タスクディスパッチャーを停止します (新規出品数: {task_count})")
+        comment = f"【{task_count}回目】新規出品処理 停止しました。"
+        self.update_label_signal.emit(comment)
+        self.logger.warning(comment)
 
 
     # ----------------------------------------------------------------------------------
     # taskの中身（実際に処理する内容）
 
     def _task_contents(self, count: int, label: QLabel, process_func: Callable, user_info: Dict, gss_info: Dict):
-        comment = f"新規出品 処理中({count}回目)..."
+        comment = f"新規出品 処理中 {count + 1}回目 ..."
         self.update_label._update_label(label=label, comment=comment)
+        self.update_label_signal.emit(comment)
 
         # 開始時刻
         start_time = datetime.now()
@@ -164,6 +173,13 @@ class LoopProcess(QObject):
         try:
             # 処理を実施
             process_func(id_text=user_info['id'], pass_text=user_info['pass'], worksheet_name=gss_info)
+
+        except UnexpectedAlertPresentException as e:
+            alert_comment = f"アラームをキャッチ この処理をスキップ\n{e}"
+            self.logger.error(alert_comment)
+            self.update_label_signal.emit(alert_comment)
+
+
         except Exception as e:
             self.logger.error(f"タスク実行中にエラーが発生 この処理をスキップ: {e}")
 
@@ -191,6 +207,8 @@ class LoopProcess(QObject):
 
 
 class LoopProcessNoUpdate(QObject):
+    update_label_signal = Signal(str)  # クラス変数
+
     def __init__(self):
         super().__init__()
         # logger
@@ -290,6 +308,7 @@ class LoopProcessNoUpdate(QObject):
                 task = partial(self._task_contents, count=task_count, label=label, process_func=process_func, user_info=user_info, gss_info=gss_info)
                 # 処理を実施
                 executor.submit(task)
+
                 task_count += 1
                 task_que.task_done()  # タスクの完了を通知
 
@@ -297,15 +316,23 @@ class LoopProcessNoUpdate(QObject):
             except Empty:
                 time.sleep(delay)
 
+            except RuntimeError:
+                executor.shutdown(wait=True)
+                self.logger.info("シャットダウンをしてます。")
+
         self.logger.info(f"タスクディスパッチャーを停止します (新規出品数: {task_count})")
+        comment = f"【{task_count}回目】新規出品処理 停止しました。"
+        self.update_label_signal.emit(comment)
+        self.logger.warning(comment)
 
 
     # ----------------------------------------------------------------------------------
     # taskの中身（実際に処理する内容）
 
     def _task_contents(self, count: int, label: QLabel, process_func: Callable, user_info: Dict, gss_info: Dict):
-        comment = f"新規出品 処理中({count}回目)..."
+        comment = f"新規出品 処理中({count + 1}回目)..."
         self.update_label._update_label(label=label, comment=comment)
+        self.update_label_signal.emit(comment)
 
         # 開始時刻
         start_time = datetime.now()
@@ -317,6 +344,13 @@ class LoopProcessNoUpdate(QObject):
         try:
             # 処理を実施
             process_func(id_text=user_info['id'], pass_text=user_info['pass'], worksheet_name=gss_info)
+
+        except UnexpectedAlertPresentException as e:
+            alert_comment = f"アラームをキャッチ この処理をスキップ\n{e}"
+            self.logger.error(alert_comment)
+            self.update_label_signal.emit(alert_comment)
+
+
         except Exception as e:
             self.logger.error(f"タスク実行中にエラーが発生 この処理をスキップ: {e}")
 

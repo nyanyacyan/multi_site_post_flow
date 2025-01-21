@@ -7,6 +7,7 @@
 import threading, sys
 from typing import Dict, Callable
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QApplication, QLabel
+from PySide6.QtCore import Qt
 from PySide6.QtGui import QIcon
 from PySide6.QtGui import QGuiApplication
 
@@ -89,6 +90,8 @@ class MainGamaClubApp(QWidget):
 
         # カウントダウン用ラベルを追加
         self.process_label = QLabel("待機中...")
+        self.process_label.setFixedSize(380, 20)
+
 
         # 各GUIパーツを追加
         self.user_info_form = UserInfoForm(gui_info=gui_info)
@@ -131,6 +134,9 @@ class MainGamaClubApp(QWidget):
         self.main_event = LoopProcess()
         self.update_label = UpdateLabel()
 
+        # シグナル受信
+        self.main_event.update_label_signal.connect(self._update_label)
+
         # タイマーの設定
         self.uptime_info = {}  # 初期化
         self.timer = CountDownQTimer(label=self.process_label, uptime_info=self.uptime_info, start_event_flag=self.start_event_flag)
@@ -142,7 +148,7 @@ class MainGamaClubApp(QWidget):
     def entry_event(self):
         # 開始時間と終了時間を取得
         self.uptime_info = self.uptime_form.get_uptime_info()
-        self.countdown_event.entry_event(uptime_info=self.uptime_info, label=self.process_label, start_event_flag=self.start_event_flag, event_func=self.start_event)
+        self.countdown_event.entry_event(uptime_info=self.uptime_info, start_event_flag=self.start_event_flag, event_func=self.start_event, label=self.process_label)
 
 
     # ----------------------------------------------------------------------------------
@@ -209,8 +215,14 @@ class MainGamaClubApp(QWidget):
     # 設定している時間になったら設定したtaskを実行
 
     def _monitor_end_time(self):
-        self.thread_event._monitor_end_time(uptime_info=self.uptime_info, stop_event=self.stop_flag, label=self.process_label)
+        self.thread_event._monitor_end_time(uptime_info=self.uptime_info, stop_event=self.stop_flag)
 
+
+    # ----------------------------------------------------------------------------------
+    # ラベルをアップデートする
+
+    def _update_label(self, comment: str):
+        self.process_label.setText(comment)
 
     # ----------------------------------------------------------------------------------
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

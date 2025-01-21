@@ -8,7 +8,7 @@
 import threading
 from typing import Dict, Callable
 from PySide6.QtWidgets import QLabel
-from PySide6.QtCore import QObject
+from PySide6.QtCore import QObject, Signal
 
 
 # 自作モジュール
@@ -20,6 +20,8 @@ from method.base.event.update_label import UpdateLabel
 
 
 class UpdateEvent(QObject):
+    update_label_signal = Signal(str)  # クラス変数
+
     def __init__(self):
         super().__init__()
         # logger
@@ -39,7 +41,7 @@ class UpdateEvent(QObject):
         stop_event.set()
         if stop_event.is_set():
             comment = "【complete】メイン処理を停止フラグを実施。"
-            self.update_label._update_label(label=label, comment=comment)
+            self.update_label_signal.emit(comment)
 
         # 更新処理ストップフラグをクリア→更新処理が実施できるようにする
         if update_event.is_set():
@@ -48,7 +50,7 @@ class UpdateEvent(QObject):
             self.logger.info(comment)
 
         comment = "更新処理中..."
-        self.update_label._update_label(label=label, comment=comment)
+        self.update_label_signal.emit(comment)
 
         # 更新処理を実施
         update_func(id_text=user_info['id'], pass_text=user_info['pass'])
@@ -65,7 +67,7 @@ class UpdateEvent(QObject):
         self.logger.info(f"stop_eventフラグをクリア: {stop_event.is_set()}")
 
         comp_comment = "更新処理が完了しました。"
-        self.update_label._update_label(label=label, comment=comp_comment)
+        self.update_label_signal.emit(comment)
         self.logger.debug(comp_comment)
 
 
