@@ -88,7 +88,7 @@ class Logger:
             self.logger.addHandler(consoleHandler)
 
             # Handlerは、ログFileを出力を定義→ログメッセージの配送係みたいなイメージ
-            fileHandler = logging.FileHandler(self.logsFileName)
+            fileHandler = logging.FileHandler(self.logsFileName, encoding="utf-8")
             fileHandler.setLevel(logging.DEBUG)
             fileHandler.setFormatter(logging.Formatter("%(asctime)s - %(levelname)s - %(message)s"))
             self.logger.addHandler(fileHandler)

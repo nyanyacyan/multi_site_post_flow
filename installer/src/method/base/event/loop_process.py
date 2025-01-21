@@ -113,7 +113,7 @@ class LoopProcess(QObject):
             dispatcher_thread.join()
 
 
-            next_comment = "処理中..."
+            next_comment = "待機中..."
             self.update_label_signal.emit(next_comment)
 
 
@@ -288,7 +288,7 @@ class LoopProcessNoUpdate(QObject):
             self.update_label_signal.emit(comment)
             dispatcher_thread.join()
 
-            next_comment = "処理中..."
+            next_comment = "待機中..."
             self.update_label_signal.emit(next_comment)
 
     # ----------------------------------------------------------------------------------
