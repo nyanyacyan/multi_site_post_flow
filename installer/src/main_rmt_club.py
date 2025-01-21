@@ -200,7 +200,7 @@ class MainRMTClubApp(QWidget):
     # 設定している時間になったら設定したtaskを実行
 
     def _monitor_end_time(self):
-        self.thread_event._monitor_end_time(uptime_info=self.uptime_info, stop_event=self.stop_flag, label=self.process_label)
+        self.thread_event._monitor_end_time(uptime_info=self.uptime_info, stop_event=self.stop_flag)
 
 
     # ----------------------------------------------------------------------------------

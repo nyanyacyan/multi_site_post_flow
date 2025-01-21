@@ -154,7 +154,7 @@ class LoopProcess(QObject):
                 self.logger.info("シャットダウンをしてます。")
 
         self.logger.info(f"タスクディスパッチャーを停止します (新規出品数: {task_count})")
-        comment = f"【{task_count}回目】新規出品処理 停止しました。"
+        comment = f"【全 {task_count} 回目】新規出品処理 停止中..."
         self.update_label_signal.emit(comment)
         self.logger.warning(comment)
 
@@ -283,7 +283,7 @@ class LoopProcessNoUpdate(QObject):
         finally:
             # 停止処理
             self.stop(executor=executor)
-            comment = f"【全 {task_id} 回実施】 処理を停止しました。"
+            comment = f"【全 {task_id} 回目】新規出品処理 停止中..."
             self.logger.warning(comment)
             self.update_label_signal.emit(comment)
             dispatcher_thread.join()
