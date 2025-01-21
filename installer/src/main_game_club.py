@@ -7,7 +7,6 @@
 import threading, sys
 from typing import Dict, Callable
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QApplication, QLabel
-from PySide6.QtCore import Qt
 from PySide6.QtGui import QIcon
 from PySide6.QtGui import QGuiApplication
 
@@ -148,7 +147,7 @@ class MainGamaClubApp(QWidget):
     def entry_event(self):
         # 開始時間と終了時間を取得
         self.uptime_info = self.uptime_form.get_uptime_info()
-        self.countdown_event.entry_event(uptime_info=self.uptime_info, start_event_flag=self.start_event_flag, event_func=self.start_event, label=self.process_label)
+        self.countdown_event.entry_event(uptime_info=self.uptime_info, label=self.process_label, start_event_flag=self.start_event_flag, event_func=self.start_event)
 
 
     # ----------------------------------------------------------------------------------

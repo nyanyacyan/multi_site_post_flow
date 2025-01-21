@@ -26,7 +26,7 @@ from method.base.time_manager import TimeManager
 from method.base.path import BaseToPath
 from method.flow_RMT_club_new_item import FlowRMTProcess
 from method.base.GUI.Qtimer_content import CountDownQTimer, CheckFlag
-
+from method.base.event.update_label import UpdateLabel
 
 
 # const
@@ -85,6 +85,8 @@ class MainRMTClubApp(QWidget):
 
         # カウントダウン用ラベルを追加
         self.process_label = QLabel("待機中...")
+        self.process_label.setFixedSize(380, 20)
+
 
         # 各GUIパーツを追加
         self.user_info_form = UserInfoForm(gui_info=gui_info)
@@ -109,7 +111,7 @@ class MainRMTClubApp(QWidget):
 
         # メインの処理を受け取る
         self.process_func = process_func
-        # self.update_func = update_func
+
 
         # ここでupdateの要否を確認→bool
         self.update_bool = True  # 初期値を設定
@@ -121,6 +123,10 @@ class MainRMTClubApp(QWidget):
         self.cancel_event = CancelEvent()
         self.thread_event = ThreadEventNoUpdate()
         self.main_event = LoopProcessNoUpdate()
+        self.update_label = UpdateLabel()
+
+        # シグナル受信
+        self.main_event.update_label_signal.connect(self._update_label)
 
         # タイマーの設定
         self.uptime_info = {}  # 初期化
@@ -144,7 +150,6 @@ class MainRMTClubApp(QWidget):
             self.user_info = self.user_info_form.get_user_info()  # 入力したIDとパス
             self.gss_info = self.gss_info_form.get_gss_info()  # ドロップダウンメニューから選択された値
             self.interval_info = self.interval_form.get_interval_info()  # 処理の実施間隔の値
-            # self.update_bool = self.radio_btn_form.get_radio_info()  # 選択した値
 
             # 終了時間の監視taskをスタート
             self.end_time_thread = threading.Thread(target=self._monitor_end_time, daemon=True)
@@ -158,7 +163,6 @@ class MainRMTClubApp(QWidget):
 
             comment = "処理中..."
             self.update_label._update_label(label=self.process_label, comment=comment)
-
 
             # メイン処理を別スレッドで実行
             self.main_task_thread = threading.Thread(
@@ -199,6 +203,12 @@ class MainRMTClubApp(QWidget):
     def _monitor_end_time(self):
         self.thread_event._monitor_end_time(uptime_info=self.uptime_info, stop_event=self.stop_flag, label=self.process_label)
 
+
+    # ----------------------------------------------------------------------------------
+    # ラベルをアップデートする
+
+    def _update_label(self, comment: str):
+        self.process_label.setText(comment)
 
     # ----------------------------------------------------------------------------------
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

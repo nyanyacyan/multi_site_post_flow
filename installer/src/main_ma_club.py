@@ -30,7 +30,7 @@ from method.base.path import BaseToPath
 from method.flow_ma_club_new_item import FlowMAClubProcess
 from method.flow_ma_club_update import FlowMAClubUpdate
 from method.base.GUI.Qtimer_content import CountDownQTimer, CheckFlag
-
+from method.base.event.update_label import UpdateLabel
 
 
 # const
@@ -70,9 +70,6 @@ class MainMAClubApp(QWidget):
         # メインタイトル
         self.setWindowTitle(gui_info['MAIN_WINDOW_TITLE'])
 
-        # バックグラウンドカラー
-        # self.setStyleSheet(f"background-color: {gui_info['BACKGROUND_COLOR']};")
-
         # logo
         self.path =BaseToPath()
         logo_path = self.path.getInputLogoFilePath(fileName=gui_info['LOGO_NAME'])
@@ -92,6 +89,8 @@ class MainMAClubApp(QWidget):
 
         # カウントダウン用ラベルを追加
         self.process_label = QLabel("待機中...")
+        self.process_label.setFixedSize(380, 20)
+
 
         # 各GUIパーツを追加
         self.user_info_form = UserInfoForm(gui_info=gui_info)
@@ -132,6 +131,10 @@ class MainMAClubApp(QWidget):
         self.cancel_event = CancelEvent()
         self.thread_event = ThreadEvent()
         self.main_event = LoopProcess()
+        self.update_label = UpdateLabel()
+
+        # シグナル受信
+        self.main_event.update_label_signal.connect(self._update_label)
 
         # タイマーの設定
         self.uptime_info = {}  # 初期化
@@ -156,6 +159,7 @@ class MainMAClubApp(QWidget):
             self.gss_info = self.gss_info_form.get_gss_info()  # ドロップダウンメニューから選択された値
             self.interval_info = self.interval_form.get_interval_info()  # 処理の実施間隔の値
             self.update_bool = self.radio_btn_form.get_radio_info()  # 選択した値
+
 
             # 終了時間の監視taskをスタート
             self.end_time_thread = threading.Thread(target=self._monitor_end_time, daemon=True)
@@ -210,8 +214,14 @@ class MainMAClubApp(QWidget):
     # 設定している時間になったら設定したtaskを実行
 
     def _monitor_end_time(self):
-        self.thread_event._monitor_end_time(uptime_info=self.uptime_info, stop_event=self.stop_flag, label=self.process_label)
+        self.thread_event._monitor_end_time(uptime_info=self.uptime_info, stop_event=self.stop_flag)
 
+
+    # ----------------------------------------------------------------------------------
+    # ラベルをアップデートする
+
+    def _update_label(self, comment: str):
+        self.process_label.setText(comment)
 
     # ----------------------------------------------------------------------------------
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
