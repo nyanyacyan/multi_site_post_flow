@@ -175,10 +175,9 @@ class LoopProcess(QObject):
             process_func(id_text=user_info['id'], pass_text=user_info['pass'], worksheet_name=gss_info)
 
         except UnexpectedAlertPresentException as e:
-            alert_comment = f"アラームをキャッチ この処理をスキップ\n{e}"
-            self.logger.error(alert_comment)
+            alert_comment = f"再出品の間隔が短いためを処理中断"
+            self.logger.error(f"再出品の間隔が短いため、エラー 処理中断: {e}")
             self.update_label_signal.emit(alert_comment)
-
 
         except Exception as e:
             self.logger.error(f"タスク実行中にエラーが発生 この処理をスキップ: {e}")
