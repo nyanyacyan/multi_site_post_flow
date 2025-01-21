@@ -248,7 +248,7 @@ class GetDataGSSAPI:
 
     # ----------------------------------------------------------------------------------
     # APIを使ってGSSからデータを取得してDataFrameに変換
-    # TODO ここの3点セットをINFOにして辞書で渡す
+    # ここの3点セットをINFOにして辞書で渡す
 
     @decoInstance.retryAction(maxRetry=3, delay=30)
     def _get_gss_df_to_gui(self, gui_info: Dict, sheet_url: str, worksheet_name: str):

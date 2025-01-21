@@ -9,7 +9,7 @@ import threading, time
 from datetime import timedelta, datetime
 from typing import Dict, Callable
 from PySide6.QtWidgets import QLabel
-from PySide6.QtCore import QObject, QTimer, Signal
+from PySide6.QtCore import QObject, Signal
 
 
 # 自作モジュール
