@@ -15,7 +15,7 @@ from .utils import Logger
 from .driverDeco import jsCompleteWaitDeco
 from .path import BaseToPath
 
-from ..const_str import SubDir, Extension
+from method.const_str import SubDir, Extension
 
 jsComplete = jsCompleteWaitDeco()
 

@@ -27,7 +27,7 @@ from .driverDeco import ClickDeco
 from .driverWait import Wait
 
 # const
-from ..const_str import ErrorComment
+from method.const_str import ErrorComment
 
 decoInstance = Decorators()
 

@@ -14,7 +14,7 @@ from selenium.webdriver.chrome.service import Service
 from .utils import Logger
 from .path import BaseToPath
 from .decorators import Decorators
-from ..const_str import FileName
+from method.const_str import FileName
 
 decoInstance = Decorators()
 
@@ -70,14 +70,38 @@ class ChromeManager:
     @decoInstance.chromeSetup
     def flowSetupChrome(self):
         self.clear_cache()
-        # service = Service(self.getChromeDriverPath)
 
-        # 今のフラグを確認する
-        # flag_name = self._check_flag_status()
 
-        # self._flag_on(flag_name=flag_name)
+        selenium_driver_path = self._get_selenium_driver_path()
 
-        service = Service()
+        os.environ["SE_DRIVER_PATH"] = selenium_driver_path
+        self.logger.info(f"SE_DRIVER_PATH set to: {selenium_driver_path}")
+
+        # service = Service(selenium_driver_path)
+        chrome = webdriver.Chrome(options=self.setupChromeOption)
+
+
+        # selenium-stealth を適用してWebDriverを偽装（日本語に設定）
+        stealth(
+            chrome,
+            languages=["ja-JP", "ja"],
+            vendor="Google Inc.",
+            platform="Win32",
+            webgl_vendor="Intel Inc.",
+            renderer="Intel Iris OpenGL Engine",
+            fix_hairline=True,
+        )
+
+        return chrome
+
+    # ----------------------------------------------------------------------------------
+
+
+    @decoInstance.chromeSetup
+    def flow_setup_chromedriver(self):
+        driver_path = self._get_driver_path()
+
+        service = Service(driver_path)
         chrome = webdriver.Chrome(service=service, options=self.setupChromeOption)
 
         # selenium-stealth を適用してWebDriverを偽装（日本語に設定）
@@ -196,4 +220,14 @@ class ChromeManager:
         self.logger.info(f"{flag_name} のbrowserを閉じました。")
 
     # ----------------------------------------------------------------------------------
+    # ChromePath
 
+    def _get_driver_path(self):
+        file_path = self.path._get_input_chromedriver_path()
+        self.logger.debug(f'ChromeのDriverPath: {file_path}')
+        return file_path
+
+    # ----------------------------------------------------------------------------------
+
+    def _get_selenium_driver_path(self):
+        return self.path._get_selenium_chromedriver_path()

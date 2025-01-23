@@ -19,7 +19,7 @@ from .decorators import Decorators
 from .driverDeco import jsCompleteWaitDeco, InputDeco, ClickDeco
 
 # const
-from ..const_element import LoginInfo
+from method.const_element import LoginInfo
 
 decoInstance = Decorators()
 decoJsInstance = jsCompleteWaitDeco()

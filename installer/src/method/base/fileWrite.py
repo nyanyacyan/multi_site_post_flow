@@ -14,7 +14,7 @@ import aiofiles
 
 # 自作モジュール
 from .utils import Logger
-from ..const_str import Extension, SubDir
+from method.const_str import Extension, SubDir
 from .path import BaseToPath
 from .errorHandlers import FileWriteError
 from .decorators import Decorators

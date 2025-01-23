@@ -5,14 +5,14 @@
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 # import
-import os
+import os, platform
 from pathlib import Path
 from datetime import datetime
 
 # 自作モジュール
 # import const
 from .utils import Logger
-from ..const_str import Dir, SubDir, Extension
+from method.const_str import Dir, SubDir, Extension
 from .errorHandlers import AccessFileNotFoundError
 
 
@@ -208,6 +208,47 @@ class BaseToPath:
         self.isDirExists(path=dirPath)
         self.logger.debug(f"FilePath: {FilePath}")
         return FilePath
+
+
+    # ----------------------------------------------------------------------------------
+    # Input > driver > chrome > mac or win
+
+    def _get_input_chromedriver_path(self):
+        inputDataPath = self.getInputDataPath()
+        chrome_dir_path = inputDataPath / "driver" / "chrome"
+
+        # OSの名称確認
+        os_name = platform.system()
+        architecture = platform.architecture()[0]
+
+        if os_name == "Windows":
+            if architecture == "64bit":
+                win_64_chrome_driver_path = chrome_dir_path / "chromedriver-win64" / "chromedriver.exe"
+                self.isDirExists(path=win_64_chrome_driver_path)
+                self.logger.debug(f'win-64のDriverを選択: {win_64_chrome_driver_path}\nOS: {os_name}, アーキテクチャ: {architecture}')
+                return win_64_chrome_driver_path
+            else:
+                win_32_chrome_driver_path = chrome_dir_path / "chromedriver-win32" / "chromedriver.exe"
+                self.isDirExists(path=win_32_chrome_driver_path)
+                self.logger.debug(f'win-32のDriverを選択: {win_32_chrome_driver_path}\nOS: {os_name}, アーキテクチャ: {architecture}')
+                return win_32_chrome_driver_path
+
+        elif os_name == "Darwin":
+            mac_chrome_driver_path = chrome_dir_path / "chromedriver-mac-arm64" / "chromedriver.exe"
+            self.isDirExists(path=mac_chrome_driver_path)
+            self.logger.debug(f'MacのDriverを選択: {mac_chrome_driver_path}\nOS: {os_name}, アーキテクチャ: {architecture}')
+            return mac_chrome_driver_path
+
+
+    # ----------------------------------------------------------------------------------
+    # Input > driver > chrome > mac or win
+
+    def _get_selenium_chromedriver_path(self):
+        inputDataPath = self.getInputDataPath()
+        chrome_dir_path = inputDataPath / "driver" / "chrome" / "cache"
+        self.isDirExists(path=chrome_dir_path)
+        self.logger.debug(f'MacのDriverを選択: {chrome_dir_path}')
+        return str(chrome_dir_path)
 
 
     # ----------------------------------------------------------------------------------
