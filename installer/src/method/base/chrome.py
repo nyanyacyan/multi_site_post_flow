@@ -71,14 +71,13 @@ class ChromeManager:
     def flowSetupChrome(self):
         self.clear_cache()
 
+        # selenium_driver_path = self._get_selenium_driver_path()
 
-        selenium_driver_path = self._get_selenium_driver_path()
+        # os.environ["SE_DRIVER_PATH"] = selenium_driver_path
+        # self.logger.info(f"SE_DRIVER_PATH set to: {selenium_driver_path}")
 
-        os.environ["SE_DRIVER_PATH"] = selenium_driver_path
-        self.logger.info(f"SE_DRIVER_PATH set to: {selenium_driver_path}")
-
-        # service = Service(selenium_driver_path)
-        chrome = webdriver.Chrome(options=self.setupChromeOption)
+        service = Service()
+        chrome = webdriver.Chrome(service=service, options=self.setupChromeOption)
 
 
         # selenium-stealth を適用してWebDriverを偽装（日本語に設定）
