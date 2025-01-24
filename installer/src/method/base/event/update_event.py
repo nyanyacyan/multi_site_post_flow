@@ -45,9 +45,6 @@ class UpdateEvent(QObject):
             update_flag_comment = "【complete】更新処理未実施のため、フラグクリア処理は未実施"
             self.logger.info(update_flag_comment)
 
-        update_comment = "更新処理中..."
-        self.update_label_signal.emit(update_comment)
-        self.logger.warning(f'update_comment: {update_comment}')
 
         # 更新処理を実施
         update_func(id_text=user_info['id'], pass_text=user_info['pass'])
@@ -62,10 +59,6 @@ class UpdateEvent(QObject):
 
         stop_event.clear()
         self.logger.info(f"stop_eventフラグをクリア: {stop_event.is_set()}")
-
-        comp_comment = "更新処理が完了しました。"
-        self.update_label_signal.emit(comp_comment)
-        self.logger.debug(comp_comment)
 
 
     # ----------------------------------------------------------------------------------

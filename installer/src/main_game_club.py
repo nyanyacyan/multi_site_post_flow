@@ -133,7 +133,7 @@ class MainGamaClubApp(QWidget):
         self.main_event = LoopProcess()
         self.update_label = UpdateLabel()
 
-        # シグナル受信
+        # シグナル受信（ Qt.QueuedConnection 受け取ったときにメインスレッドにする）
         self.main_event.update_label_signal.connect(self._update_label, Qt.QueuedConnection)
 
         # タイマーの設定
