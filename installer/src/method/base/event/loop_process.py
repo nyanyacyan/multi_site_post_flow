@@ -13,7 +13,7 @@ from datetime import datetime
 from typing import Dict, Callable
 from PySide6.QtWidgets import QLabel
 from PySide6.QtCore import QObject, Signal
-from selenium.common.exceptions import UnexpectedAlertPresentException, NoAlertPresentException
+from selenium.common.exceptions import UnexpectedAlertPresentException
 
 # 自作モジュール
 from method.base.utils import Logger
@@ -48,7 +48,13 @@ class LoopProcess(QObject):
     def main_task(self, update_bool: bool, stop_event: threading.Event, label: QLabel, update_event: threading.Event, update_func: Callable, process_func: Callable, user_info: Dict, gss_info: str, interval_info: Dict):
         # 更新処理がありの場合に処理
         if update_bool:
-            self.update_event._update_task(stop_event=stop_event, label=label, update_event=update_event, update_func=update_func, user_info=user_info)
+            update_comment = "更新処理中..."
+            self.update_label_signal.emit(update_comment)
+            self.logger.warning(f'update_comment: {update_comment}')
+            self.update_event._update_task(stop_event=stop_event, update_event=update_event, update_func=update_func, user_info=user_info)
+            comp_comment = "更新処理が完了しました。"
+            self.update_label_signal.emit(comp_comment)
+            self.logger.debug(comp_comment)
         else:
             self.logger.info("更新処理「なし」のため更新処理なし")
 

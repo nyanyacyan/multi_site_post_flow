@@ -7,13 +7,10 @@
 # import
 import threading
 from typing import Dict, Callable
-from PySide6.QtWidgets import QLabel
 from PySide6.QtCore import QObject, Signal
-
 
 # 自作モジュール
 from method.base.utils import Logger
-from method.base.event.update_label import UpdateLabel
 
 # ----------------------------------------------------------------------------------
 # **********************************************************************************
@@ -28,29 +25,29 @@ class UpdateEvent(QObject):
         self.getLogger = Logger()
         self.logger = self.getLogger.getLogger()
 
-        # インスタンス
-        self.update_label = UpdateLabel()
-
 
     ####################################################################################
     # ----------------------------------------------------------------------------------
     # 更新処理
 
-    def _update_task(self, stop_event: threading.Event, update_event: threading.Event, label: QLabel, update_func: Callable, user_info: Dict):
+    def _update_task(self, stop_event: threading.Event, update_event: threading.Event, update_func: Callable, user_info: Dict):
         # 出品処理を停止
         stop_event.set()
         if stop_event.is_set():
-            comment = "【complete】メイン処理を停止フラグを実施。"
-            self.update_label_signal.emit(comment)
+            stop_flag_comment = "【complete】メイン処理を停止フラグを実施。"
+            # self.update_label_signal.emit(stop_flag_comment)
+            self.logger.info(stop_flag_comment)
+
 
         # 更新処理ストップフラグをクリア→更新処理が実施できるようにする
         if update_event.is_set():
             update_event.clear()
-            comment = "【complete】更新処理未実施のため、フラグクリア処理は未実施"
-            self.logger.info(comment)
+            update_flag_comment = "【complete】更新処理未実施のため、フラグクリア処理は未実施"
+            self.logger.info(update_flag_comment)
 
-        comment = "更新処理中..."
-        self.update_label_signal.emit(comment)
+        update_comment = "更新処理中..."
+        self.update_label_signal.emit(update_comment)
+        self.logger.warning(f'update_comment: {update_comment}')
 
         # 更新処理を実施
         update_func(id_text=user_info['id'], pass_text=user_info['pass'])
@@ -67,7 +64,7 @@ class UpdateEvent(QObject):
         self.logger.info(f"stop_eventフラグをクリア: {stop_event.is_set()}")
 
         comp_comment = "更新処理が完了しました。"
-        self.update_label_signal.emit(comment)
+        self.update_label_signal.emit(comp_comment)
         self.logger.debug(comp_comment)
 
 

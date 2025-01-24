@@ -7,7 +7,7 @@
 import threading, sys
 from typing import Dict, Callable
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QApplication, QLabel
-from PySide6.QtGui import QIcon
+from PySide6.QtGui import QIcon, Qt
 from PySide6.QtGui import QGuiApplication
 
 
@@ -134,7 +134,7 @@ class MainGamaClubApp(QWidget):
         self.update_label = UpdateLabel()
 
         # シグナル受信
-        self.main_event.update_label_signal.connect(self._update_label)
+        self.main_event.update_label_signal.connect(self._update_label, Qt.QueuedConnection)
 
         # タイマーの設定
         self.uptime_info = {}  # 初期化
