@@ -145,19 +145,27 @@ class ElementManager:
 
     @decoInstance.funcBase
     def files_input(
-        self, value: str, file_path_list: str, check_by: str, check_value: str, by: str='xpath'
-    ):
+        self, value: str, file_path_list: str, by: str='xpath'):
 
         # アップロード場所の特定
         element = self.getElement(value=value, by=by)
+
+        element_value =  element.get_attribute("value")
+
+        # すでに入力されているものがあればクリア
+        if element_value:
+            self.logger.warning(f'すでに既存で入力されています: {element_value}')
+            try:
+                element.clear()
+            except Exception:
+                self.chrome.execute_script("arguments[0].value = '';", element)
+        else:
+            self.logger.info(f'既存で入力されているファイルPathはありません。')
 
         self.logger.debug(f"file_path_list: {file_path_list}")
 
         # ファイルPathを記入
         element.send_keys("\n".join(file_path_list))
-
-        # 対象の箇所の場所の変化を確認
-        # self.wait.canWaitDom(by=check_by, value=check_value)
 
 
     # ----------------------------------------------------------------------------------

@@ -137,6 +137,7 @@ class FlowGameClubNewItem:
                 timeout=120,
             )
         else:
+            self._random_sleep()
             # Sessionを維持したままログインの手順を端折る
             self.jump_target_page.flowJumpTargetPage(
                 targetUrl=self.login_info["HOME_URL"]
@@ -288,7 +289,7 @@ class FlowGameClubNewItem:
                 value=self.sell_info["CATEGORY_INTAI_SELECT_VALUE"]
             )
             self.logger.debug(f"「引退垢」を選択: {element}")
-            self._random_sleep
+            self._random_sleep()
 
     # ----------------------------------------------------------------------------------
     # 出品タイトル
@@ -431,7 +432,7 @@ class FlowGameClubNewItem:
     # ----------------------------------------------------------------------------------
     # ランダムSleep
 
-    def _random_sleep(self, min_num: int = 1, max_num: int = 3):
+    def _random_sleep(self, min_num: int = 3, max_num: int = 10):
         self.random_sleep._random_sleep(min_num=min_num, max_num=max_num)
 
 

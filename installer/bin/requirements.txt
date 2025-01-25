@@ -44,6 +44,8 @@ PyPDF2==3.0.1
 PySide6==6.7.0
 PySide6_Addons==6.7.0
 PySide6_Essentials==6.7.0
+PySocks==1.7.1
+pytesseract==0.3.13
 python-dateutil==2.9.0.post0
 python-dotenv==1.0.1
 pytz==2024.2
@@ -52,7 +54,7 @@ requests==2.32.3
 requests-oauthlib==2.0.0
 requests-toolbelt==1.0.0
 rsa==4.9
-selenium==4.1.0
+selenium==4.27.1
 selenium-stealth==1.0.6
 shiboken6==6.7.0
 six==1.17.0
@@ -67,5 +69,6 @@ uritemplate==4.1.1
 urllib3==1.26.20
 urllib3-secure-extra==0.1.0
 webdriver-manager==4.0.2
+websocket-client==1.8.0
 wsproto==1.2.0
 yarl==1.15.2
