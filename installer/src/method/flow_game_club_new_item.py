@@ -137,7 +137,7 @@ class FlowGameClubNewItem:
                 timeout=120,
             )
         else:
-            self._random_sleep()
+            self._random_sleep(min_num=5, max_num=10)
             # Sessionを維持したままログインの手順を端折る
             self.jump_target_page.flowJumpTargetPage(
                 targetUrl=self.login_info["HOME_URL"]
@@ -204,7 +204,7 @@ class FlowGameClubNewItem:
         value = self.sell_info["FIRST_SELL_BTN_VALUE"]
         self.logger.debug(f"\nby: {by}\nvalue: {value}")
         self.element.clickElement(by=by, value=value)
-        self._random_sleep()
+        self._random_sleep(3, 10)
 
     # ----------------------------------------------------------------------------------
     # 画像添付
@@ -220,8 +220,6 @@ class FlowGameClubNewItem:
         self.element.files_input(
             by=self.sell_info["FILE_INPUT_BY"],
             value=self.sell_info["FILE_INPUT_VALUE"],
-            check_by=self.sell_info["CHECK_BY"],
-            check_value=self.sell_info["CHECK_VALUE"],
             file_path_list=file_path_sort_list,
         )
         self._random_sleep()
@@ -414,7 +412,7 @@ class FlowGameClubNewItem:
     # ----------------------------------------------------------------------------------
     # ランダムSleep
 
-    def _random_sleep(self, min_num: int = 3, max_num: int = 10):
+    def _random_sleep(self, min_num: int = 1, max_num: int = 3):
         self.random_sleep._random_sleep(min_num=min_num, max_num=max_num)
 
 

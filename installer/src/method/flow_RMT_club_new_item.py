@@ -135,7 +135,7 @@ class FlowRMTClubNewItem:
                 timeout=120,
             )
         else:
-            self._random_sleep()
+            self._random_sleep(5, 10)
             # Sessionを維持したままログインの手順を端折る
             self.jump_target_page.flowJumpTargetPage(
                 targetUrl=self.login_info["HOME_URL"]
@@ -272,7 +272,7 @@ class FlowRMTClubNewItem:
         input_sell_explanation = sell_data['詳細内容']
         self.logger.debug(f'input_sell_explanation: {input_sell_explanation}')
         self.element.clickClearJsInput(by=self.sell_info['SELL_EXPLANATION_INPUT_BY'], value=self.sell_info['SELL_EXPLANATION_INPUT_VALUE'], inputText=input_sell_explanation)
-        self._random_sleep()
+        self._random_sleep(3, 10)
 
 
 # ----------------------------------------------------------------------------------
