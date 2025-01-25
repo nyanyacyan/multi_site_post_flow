@@ -137,7 +137,7 @@ class FlowMAClubNewItem:
                 timeout=120,
             )
         else:
-            self._random_sleep()
+            self._random_sleep(5, 10)
             # Sessionを維持したままログインの手順を端折る
             self.jump_target_page.flowJumpTargetPage(
                 targetUrl=self.login_info["HOME_URL"]
@@ -202,7 +202,7 @@ class FlowMAClubNewItem:
         value = self.sell_info["FIRST_SELL_BTN_VALUE"]
         self.logger.debug(f"\nby: {by}\nvalue: {value}")
         self.element.clickElement(by=by, value=value)
-        self._random_sleep()
+        self._random_sleep(3, 10)
 
     # ----------------------------------------------------------------------------------
     # 画像添付
