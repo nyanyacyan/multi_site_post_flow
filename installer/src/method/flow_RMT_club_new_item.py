@@ -121,7 +121,6 @@ class FlowRMTClubNewItem:
 
 
 ####################################################################################
-# ----------------------------------------------------------------------------------
 # ログイン〜出品処理
 
     @deco.funcBase
@@ -136,6 +135,7 @@ class FlowRMTClubNewItem:
                 timeout=120,
             )
         else:
+            self._random_sleep()
             # Sessionを維持したままログインの手順を端折る
             self.jump_target_page.flowJumpTargetPage(
                 targetUrl=self.login_info["HOME_URL"]
@@ -144,9 +144,8 @@ class FlowRMTClubNewItem:
         # 出品処理
         self.sell_process(sell_data=sell_data)
 
-
-# ----------------------------------------------------------------------------------
-# 出品処理
+    # ----------------------------------------------------------------------------------
+    # 出品処理
 
     def sell_process(self, sell_data: Dict):
         # 出品ボタンをクリック
@@ -344,7 +343,7 @@ class FlowRMTClubNewItem:
 # ----------------------------------------------------------------------------------
     # ランダムSleep
 
-    def _random_sleep(self, min_num: int = 1, max_num: int = 3):
+    def _random_sleep(self, min_num: int = 3, max_num: int = 10):
         self.random_sleep._random_sleep(min_num=min_num, max_num=max_num)
 
 

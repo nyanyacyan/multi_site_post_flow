@@ -6,7 +6,9 @@
 # import
 import asyncio
 from typing import Dict
+from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+from selenium.common.exceptions import NoSuchElementException
 
 # 自作モジュール
 from method.base.utils import Logger
@@ -20,7 +22,7 @@ from method.base.jumpTargetPage import JumpTargetPage
 from method.base.time_manager import TimeManager
 
 # const
-from .const_element import LoginInfo, GssInfo, SellInfo
+from method.const_element import LoginInfo, GssInfo, SellInfo
 
 deco = Decorators()
 
@@ -97,7 +99,7 @@ class FlowGameClubProcess:
 
 
 class FlowGameClubNewItem:
-    def __init__(self, chrome):
+    def __init__(self, chrome: webdriver):
         # logger
         self.getLogger = Logger()
         self.logger = self.getLogger.getLogger()
@@ -115,14 +117,12 @@ class FlowGameClubNewItem:
         self.jump_target_page = JumpTargetPage(chrome=self.chrome)
         self.time_manager = TimeManager()
 
-
         # 必要info
         self.login_info = LoginInfo.SITE_PATTERNS.value["GAME_CLUB"]
         self.sell_info = SellInfo.GAME_CLUB.value
 
 
     ####################################################################################
-
     # ログイン〜出品処理
 
     @deco.funcBase
@@ -217,16 +217,14 @@ class FlowGameClubNewItem:
 
         file_path_sort_list = self.element._list_sort_photo_data(all_photos_all_path_list=file_path_list)
 
-        if file_path_sort_list:
-
-            self.element.files_input(
-                by=self.sell_info["FILE_INPUT_BY"],
-                value=self.sell_info["FILE_INPUT_VALUE"],
-                check_by=self.sell_info["CHECK_BY"],
-                check_value=self.sell_info["CHECK_VALUE"],
-                file_path_list=file_path_sort_list,
-            )
-            self._random_sleep()
+        self.element.files_input(
+            by=self.sell_info["FILE_INPUT_BY"],
+            value=self.sell_info["FILE_INPUT_VALUE"],
+            check_by=self.sell_info["CHECK_BY"],
+            check_value=self.sell_info["CHECK_VALUE"],
+            file_path_list=file_path_sort_list,
+        )
+        self._random_sleep()
 
     # ----------------------------------------------------------------------------------
     # ゲームタイトルクリック
@@ -256,10 +254,7 @@ class FlowGameClubNewItem:
     # タイトルを選択
 
     def _game_title_select(self):
-        self.element.clickElement(
-            by=self.sell_info["GAME_TITLE_SELECT_BY"],
-            value=self.sell_info["GAME_TITLE_SELECT_VALUE"],
-        )
+        self.element.clickElement(by=self.sell_info["GAME_TITLE_SELECT_BY"], value=self.sell_info["GAME_TITLE_SELECT_VALUE"],)
         self._random_sleep()
 
     # ----------------------------------------------------------------------------------
@@ -315,19 +310,6 @@ class FlowGameClubNewItem:
             by=self.sell_info["SELL_EXPLANATION_INPUT_BY"],
             value=self.sell_info["SELL_EXPLANATION_INPUT_VALUE"],
             inputText=input_game_explanation,
-        )
-        self._random_sleep()
-
-    # ----------------------------------------------------------------------------------
-    # 課金総額
-
-    def _input_charge(self, sell_data: Dict):
-        input_charge = sell_data["課金総額"]
-        if not input_charge:
-            self.logger.warning(f"「課金総額」入力なし: {input_charge}")
-        self.logger.debug(f"input_game_explanation: {input_charge}")
-        self.element.clickClearInput(
-            value=self.sell_info["CHARGE_VALUE"], inputText=input_charge
         )
         self._random_sleep()
 

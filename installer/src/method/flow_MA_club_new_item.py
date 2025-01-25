@@ -80,7 +80,6 @@ class FlowMAClubProcess:
                 self.logger.info(f"{i + 1}/{df_row_num} タイトル: {sell_data['売却価格']}")
                 self.logger.info(f"{i + 1}/{df_row_num} 処理開始")
 
-
                 # ログイン〜処理実施まで
                 item_processor.row_process(
                     index=i, id_text=id_text, pass_text=pass_text, sell_data=sell_data
@@ -138,6 +137,7 @@ class FlowMAClubNewItem:
                 timeout=120,
             )
         else:
+            self._random_sleep()
             # Sessionを維持したままログインの手順を端折る
             self.jump_target_page.flowJumpTargetPage(
                 targetUrl=self.login_info["HOME_URL"]
@@ -246,7 +246,6 @@ class FlowMAClubNewItem:
     # ----------------------------------------------------------------------------------
     # 案件タイトルを選択
 
-    @deco.funcBase
     def _case_title_select(self):
         self.element.clickElement(by=self.sell_info['CASE_TITLE_SELECT_BY'], value=self.sell_info['CASE_TITLE_SELECT_VALUE'])
         self._random_sleep()
@@ -373,7 +372,7 @@ class FlowMAClubNewItem:
     # ----------------------------------------------------------------------------------
     # ランダムSleep
 
-    def _random_sleep(self, min_num: int = 1, max_num: int = 3):
+    def _random_sleep(self, min_num: int = 3, max_num: int = 10):
         self.random_sleep._random_sleep(min_num=min_num, max_num=max_num)
 
 
