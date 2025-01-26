@@ -434,7 +434,14 @@ class UpdateInfo(Enum):
     ##########
 
     MA_CLUB = {
-        "SELL_ITEM_BTN_VALUE": "//div[@class='side-mypage-menu']//a[@href='/mypage/products' and contains(text(), '売却登録した案件')]",
+        "WATCH_LIST_VALUE": "//a[contains(text(), 'ウォッチリスト')]",
+        "ITEM_ROWS_BY": "css",
+        "ITEM_ROWS_VALUE": ".item-row",
+        "ITEM_ROW_BY": "css",
+        "ITEM_ROW_VALUE": ".item-row-top .dealing",
+        "TITLE_LINK_BY": "css",
+        "TITLE_LINK_VALUE": ".item-row-middle a",
+        "SELL_ITEM_BTN_VALUE": "//div[@class='side-mypage-menu']//a[@href='/mypage/products' and contains(text(), '出品した商品')]",
         "ITEM_SORT_BTN_VALUE": "//select[@name='sort_index']",
         "SELECT_VALUE": "1",
         "DISABLE_ELEMENT_VALUE": "//a[@class='btn btn-boost btn-disabled' and @href='javascript:void(0)']",

@@ -68,6 +68,8 @@ class FlowGameClubUpdate:
         # すべてのリンク先にジャンプして更新を実行
         self._update_all_process(link_list=link_list)
 
+        self._random_sleep()
+
 
     # ----------------------------------------------------------------------------------
     # idログイン
@@ -148,7 +150,7 @@ class FlowGameClubUpdate:
     def _update_all_process(self, link_list: List):
         try:
             for i, link in enumerate(link_list):
-                self.logger.info(f'{i} 個目の更新作業実施')
+                self.logger.info(f'{i +1} 個目の更新作業実施')
                 self._update_process(targetUrl=link)
 
             self.logger.info(f'すべての更新完了')
@@ -156,7 +158,7 @@ class FlowGameClubUpdate:
 
         # 更新ボタンが押せなくなった処理
         except NoSuchElementException:
-            self.logger.info(f'更新の上限に達しました: 実施回数 {i}回、Update実施')
+            self.logger.info(f'更新の上限に達しました: 実施回数 {i + 1}回、Update実施')
             return self.chrome.quit()
 
         except Exception as e:
@@ -203,7 +205,7 @@ class FlowGameClubUpdate:
                     self.logger.info(f'更新の上限に達しました: 実施回数 {count}回、Update実施')
                 self.chrome.quit()
                 break
-        # self.chrome.close()
+
 
     # ----------------------------------------------------------------------------------
     # 更新処理
