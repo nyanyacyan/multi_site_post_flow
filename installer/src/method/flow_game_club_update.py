@@ -58,10 +58,10 @@ class FlowGameClubUpdate:
         self._id_login(id_text=id_text, pass_text=pass_text)
 
         # 出品した商品をクリック
-        self._click_sell_item_btn()
+        self._click_watch_list_btn()
 
         # 日時が古い順を選択
-        self._select_old_datetime()
+        self._get_title_link()
 
         # 無効化されているか確認
         self._disable_element_check_process()
@@ -80,14 +80,48 @@ class FlowGameClubUpdate:
 
 
     # ----------------------------------------------------------------------------------
-    # 出品した商品をクリック
+    # ウォッチリストをクリック
 
-    def _click_sell_item_btn(self):
-        value = self.update_info["SELL_ITEM_BTN_VALUE"]
+    def _click_watch_list_btn(self):
+        value = self.update_info["WATCH_LIST_VALUE"]
         self.logger.debug(f"value: {value}")
         self.element.clickElement(value=value)
         self._random_sleep()
 
+
+    # ----------------------------------------------------------------------------------
+    # すべてリンクを取得
+
+    def _get_title_link(self, max_update: int=15):
+        all_title_link = []
+
+        while len(all_title_link) < max_update:
+            if all_title_link:
+                self._get_next_page()
+
+            title_link_value = self.update_info['TITLE_LINK_VALUE']
+            elements = self.element.getElements(value=title_link_value)
+            self.logger.debug(f'elements: {elements}')
+            for element in elements:
+                element_text = element.text
+                element_link = element.get_attribute('href')
+                self.logger.debug(f'element_text: {element_text}\nelement_link: {element_link}')
+                all_title_link.append(element_text)
+
+        self.logger.info(f'すべてのアップデート情報の取得を行いました\n{all_title_link}')
+        return all_title_link
+
+
+    # ----------------------------------------------------------------------------------
+    # 次のページへ移行
+
+    def _get_next_page(self):
+        value = self.update_info["NEXT_BTN_VALUE"]
+        self.logger.debug(f"value: {value}")
+        self.element.clickElement(value=value)
+        self._random_sleep()
+
+    # ----------------------------------------------------------------------------------
 
     # ----------------------------------------------------------------------------------
     # 日時が古い順を選択
@@ -161,3 +195,4 @@ if __name__ == "__main__":
 
     test_flow = FlowGameClubUpdate()
     test_flow.process(id_text=id_text, pass_text=pass_text)
+

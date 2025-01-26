@@ -91,7 +91,7 @@ class UserInfoForm(QGroupBox):
         # ID入力
         id_label = QLabel(gui_info["ID_LABEL"])
         self.id_input = self._create_input_field(
-            gui_info["INPUT_EXAMPLE_ID"], fixed_width=250, is_password=True
+            gui_info["INPUT_EXAMPLE_ID"], fixed_width=250, is_password=False
         )
 
         # idのレイアウト作成
@@ -105,7 +105,7 @@ class UserInfoForm(QGroupBox):
         # Pass入力
         pass_label = QLabel(gui_info["PASS_LABEL"])
         self.pass_input = self._create_input_field(
-            gui_info["INPUT_EXAMPLE_PASS"], fixed_width=250, is_password=True
+            gui_info["INPUT_EXAMPLE_PASS"], fixed_width=250, is_password=False
         )
 
         # Passのレイアウト作成

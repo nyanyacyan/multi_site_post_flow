@@ -416,6 +416,10 @@ class GuiInfo(Enum):
 
 class UpdateInfo(Enum):
     GAME_CLUB = {
+        "WATCH_LIST_URL": "https://gameclub.jp/mypage/like-list",
+        "TITLE_LINK_VALUE": ".//span[contains(text(), '出品中')]",
+        "WATCH_LIST_VALUE": "//a[contains(text(), 'ウォッチリスト')]",
+        "NEXT_BTN_VALUE": "",
         "SELL_ITEM_BTN_VALUE": "//div[@class='side-mypage-menu']//a[@href='/mypage/products' and contains(text(), '出品した商品')]",
         "ITEM_SORT_BTN_VALUE": "//select[@name='sort_index']",
         "SELECT_VALUE": "1",

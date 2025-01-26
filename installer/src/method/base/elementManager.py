@@ -77,19 +77,19 @@ class ElementManager:
     def getElements(self, value: str, by: str = "xpath"):
         self.clickWait.jsPageChecker(chrome=self.chrome)
         if by == "id":
-            return self.chrome.find_elements_by_id(value)
+            return self.chrome.find_elements(By.ID, value)
         elif by == "css":
-            return self.chrome.find_elements_by_css_selector(value)
+            return self.chrome.find_elements(By.CSS_SELECTOR, value)
         elif by == "xpath":
-            return self.chrome.find_elements_by_xpath(value)
+            return self.chrome.find_elements(By.XPATH, value)
         elif by == "tag":
-            return self.chrome.find_elements_by_tag_name(value)
+            return self.chrome.find_elements(By.TAG_NAME, value)
         elif by == "link":
-            return self.chrome.find_elements_by_link_text(value)
+            return self.chrome.find_elements(By.LINK_TEXT, value)
         elif by == "name":
-            return self.chrome.find_elements_by_name(value)
+            return self.chrome.find_elements(By.NAME, value)
         elif by == "class":
-            return self.chrome.find_elements_by_class_name(value)
+            return self.chrome.find_elements(By.CLASS_NAME, value)
         else:
             raise ValueError("定義してるもの以外のものを指定してます")
 
