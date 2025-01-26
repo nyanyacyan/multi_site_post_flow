@@ -80,14 +80,32 @@ class FlowGameClubUpdate:
 
 
     # ----------------------------------------------------------------------------------
-    # 出品した商品をクリック
+    # ウォッチリストをクリック
 
-    def _click_sell_item_btn(self):
-        value = self.update_info["SELL_ITEM_BTN_VALUE"]
+    def _click_watch_list_btn(self):
+        value = self.update_info["WATCH_LIST_VALUE"]
         self.logger.debug(f"value: {value}")
         self.element.clickElement(value=value)
         self._random_sleep()
 
+
+    # ----------------------------------------------------------------------------------
+    # すべてリンクを取得
+    def _get_title_link(self):
+        title_link_value = self.update_info['TITLE_LINK_VALUE']
+        all_title_link = []
+        elements = self.element.getElements(value=title_link_value)
+        for element in elements:
+            all_title_link.append(element.text)
+
+
+    # ----------------------------------------------------------------------------------
+    # 次のページへ移行
+
+    def _get_next_page(self):
+        pass
+
+    # ----------------------------------------------------------------------------------
 
     # ----------------------------------------------------------------------------------
     # 日時が古い順を選択
