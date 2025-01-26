@@ -92,6 +92,7 @@ class FlowGameClubUpdate:
     # ----------------------------------------------------------------------------------
     # すべてリンクを取得
 
+
     def _get_title_link(self, max_update: int=15):
         all_title_link = []
 
@@ -111,6 +112,13 @@ class FlowGameClubUpdate:
         self.logger.info(f'すべてのアップデート情報の取得を行いました\n{all_title_link}')
         return all_title_link
 
+    def _get_title_link(self):
+        title_link_value = self.update_info['TITLE_LINK_VALUE']
+        all_title_link = []
+        elements = self.element.getElements(value=title_link_value)
+        for element in elements:
+            all_title_link.append(element.text)
+
 
     # ----------------------------------------------------------------------------------
     # 次のページへ移行
@@ -120,6 +128,8 @@ class FlowGameClubUpdate:
         self.logger.debug(f"value: {value}")
         self.element.clickElement(value=value)
         self._random_sleep()
+
+
 
     # ----------------------------------------------------------------------------------
 
