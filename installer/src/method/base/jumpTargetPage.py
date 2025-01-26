@@ -31,15 +31,16 @@ class JumpTargetPage:
 
     # ----------------------------------------------------------------------------------
 
-
+    @decoInstance.jsCompleteWaitRetry()
     def flowJumpTargetPage(self, targetUrl: str):
+        self.logger.debug(f'targetUrl: {targetUrl}\ntargetUrl_type: {type(targetUrl)}')
         self.openNewWindow()
 
         self.changeNewPage()
 
         self.getTargetPage(targetUrl=targetUrl)
 
-        self.urlCheck()
+        # self.urlCheck()
         return
 
     # ----------------------------------------------------------------------------------
@@ -66,6 +67,7 @@ class JumpTargetPage:
     def getTargetPage(self, targetUrl: str):
         self.chrome.get(targetUrl)
         self._random_sleep()
+        self.clickWait.jsPageChecker(chrome=self.chrome)
 
     # ----------------------------------------------------------------------------------
 

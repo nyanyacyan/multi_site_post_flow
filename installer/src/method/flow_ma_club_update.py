@@ -97,7 +97,7 @@ class FlowMAClubUpdate:
     # ----------------------------------------------------------------------------------
     # すべてリンクを取得
 
-    def _get_title_link(self, max_update: int=15):
+    def _get_title_link(self, max_update: int=5):
         all_title_link = []
 
         while len(all_title_link) < max_update:
