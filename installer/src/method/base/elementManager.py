@@ -96,23 +96,46 @@ class ElementManager:
     # ----------------------------------------------------------------------------------
     # 要素を絞り込み
 
-    def filterElement(self, parentElement: str, value: str, by: str = "xpath"):
+    def filterElement(self, parentElement: WebElement, value: str, by: str = "xpath"):
         self.clickWait.jsPageChecker(chrome=self.chrome)
 
         if by == "id":
-            return self.chrome.find_elements(By.ID, value)
+            return parentElement.find_element(By.ID, value)
         elif by == "css":
-            return self.chrome.find_elements(By.CSS_SELECTOR, value)
+            return parentElement.find_element(By.CSS_SELECTOR, value)
         elif by == "xpath":
-            return self.chrome.find_elements(By.XPATH, value)
+            return parentElement.find_element(By.XPATH, value)
         elif by == "tag":
-            return self.chrome.find_elements(By.TAG_NAME, value)
+            return parentElement.find_element(By.TAG_NAME, value)
         elif by == "link":
-            return self.chrome.find_elements(By.LINK_TEXT, value)
+            return parentElement.find_element(By.LINK_TEXT, value)
         elif by == "name":
-            return self.chrome.find_elements(By.NAME, value)
+            return parentElement.find_element(By.NAME, value)
         elif by == "class":
-            return self.chrome.find_elements(By.CLASS_NAME, value)
+            return parentElement.find_element(By.CLASS_NAME, value)
+        else:
+            raise ValueError("定義しているもの以外のものを指定しています")
+
+    # ----------------------------------------------------------------------------------
+    # 要素を絞り込み
+
+    def filterElements(self, parentElement: WebElement, value: str, by: str = "xpath"):
+        self.clickWait.jsPageChecker(chrome=self.chrome)
+
+        if by == "id":
+            return parentElement.find_elements(By.ID, value)
+        elif by == "css":
+            return parentElement.find_elements(By.CSS_SELECTOR, value)
+        elif by == "xpath":
+            return parentElement.find_elements(By.XPATH, value)
+        elif by == "tag":
+            return parentElement.find_elements(By.TAG_NAME, value)
+        elif by == "link":
+            return parentElement.find_elements(By.LINK_TEXT, value)
+        elif by == "name":
+            return parentElement.find_elements(By.NAME, value)
+        elif by == "class":
+            return parentElement.find_elements(By.CLASS_NAME, value)
         else:
             raise ValueError("定義しているもの以外のものを指定しています")
 

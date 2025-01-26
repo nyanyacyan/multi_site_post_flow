@@ -10,7 +10,7 @@ from selenium.webdriver.chrome.webdriver import WebDriver
 from .utils import Logger
 from .driverDeco import jsCompleteWaitDeco
 from .seleniumBase import SeleniumBasicOperations
-
+from .driverDeco import ClickDeco
 
 decoInstance = jsCompleteWaitDeco()
 
@@ -26,6 +26,7 @@ class JumpTargetPage:
         self.logger = self.getLogger.getLogger()
 
         self.chrome = chrome
+        self.clickWait = ClickDeco()
         self.random_sleep = SeleniumBasicOperations(chrome=self.chrome)
 
     # ----------------------------------------------------------------------------------
@@ -64,6 +65,7 @@ class JumpTargetPage:
 
     def getTargetPage(self, targetUrl: str):
         self.chrome.get(targetUrl)
+        self._random_sleep()
 
     # ----------------------------------------------------------------------------------
 
@@ -74,6 +76,7 @@ class JumpTargetPage:
     # ----------------------------------------------------------------------------------
 
     def urlCheck(self):
+        self.clickWait.jsPageChecker(chrome=self.chrome)
         if self.targetUrl == self.currentUrl:
             self.logger.debug(f"新しいページに移行成功")
         else:
