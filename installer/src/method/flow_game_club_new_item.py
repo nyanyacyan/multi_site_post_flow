@@ -56,6 +56,7 @@ class FlowGameClubProcess:
                 gss_info=self.gss_info, worksheet_name=worksheet_name, gss_url=gss_url
             )
 
+
             # dfの中からチェックがあるものだけ抽出
             process_df = df[df["チェック"] == "TRUE"].reset_index(drop=True)
             df_row_num = len(process_df)
@@ -89,8 +90,6 @@ class FlowGameClubProcess:
 
         finally:
                 chrome.quit()
-
-
     # ----------------------------------------------------------------------------------
 # **********************************************************************************
 # 一連の流れ
@@ -372,7 +371,7 @@ class FlowGameClubNewItem:
         self.element.clickClearInput(
             value=self.sell_info["PRICE_VALUE"], inputText=input_price
         )
-        self._random_sleep(min_num=3, max_num=5)
+        self._random_sleep(3, 5)
 
     # ----------------------------------------------------------------------------------
     # 暗証番号をクリックして入力
@@ -414,7 +413,7 @@ class FlowGameClubNewItem:
     @deco.funcBase
     def _click_end_sell_btn(self):
         self.element.clickElement(value=self.sell_info["SELL_BTN"])
-        self._random_sleep(min_num=2, max_num=5)
+        self._random_sleep(2, 5)
 
     # ----------------------------------------------------------------------------------
     # ランダムSleep

@@ -188,13 +188,11 @@ class MainRMTClubApp(QWidget):
     def cancel_process(self):
         self.cancel_event._cancel_event(label=self.process_label)
 
-
     # ----------------------------------------------------------------------------------
     # 日付が変わるまでの時間を算出して待機する
 
     def _monitor_date_change(self):
         self.thread_event._monitor_date_change(stop_event=self.stop_flag, label=self.process_label, process_func=self.process_func, user_info=self.user_info, gss_info=self.gss_info, interval_info=self.interval_info)
-
 
     # ----------------------------------------------------------------------------------
     # 設定している時間になったら設定したtaskを実行

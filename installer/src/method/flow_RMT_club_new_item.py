@@ -2,7 +2,6 @@
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 # export PYTHONPATH="/Users/nyanyacyan/Desktop/project_file/domain_search/installer/src"
 
-
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 # import
 import time
@@ -92,7 +91,6 @@ class FlowRMTProcess:
 
         finally:
                 chrome.quit()
-
     # ----------------------------------------------------------------------------------
 # **********************************************************************************
 # 一連の流れ
@@ -281,8 +279,8 @@ class FlowRMTClubNewItem:
 
     def _photo_files_input(self, sell_data: Dict):
         file_path_list = self.element._get_all_files_path_list(subDirName=self.sell_info['INPUT_PHOTO_FOLDER_NAME'], subSubDirName=sell_data['画像フォルダ'])
-        self.element.files_input(value=self.sell_info['FILE_INPUT_VALUE'], check_by=self.sell_info['CHECK_BY'], check_value=self.sell_info['CHECK_VALUE'], file_path_list=file_path_list)
-        self._random_sleep()
+        self.element.files_input(value=self.sell_info['FILE_INPUT_VALUE'], file_path_list=file_path_list)
+        self._random_sleep(3, 5)
 
 
 # ----------------------------------------------------------------------------------
@@ -306,7 +304,7 @@ class FlowRMTClubNewItem:
         input_price = sell_data['取引価格']
         self.logger.debug(f'input_price: {input_price}')
         self.element.clickClearInput(by=self.sell_info['PRICE_BY'], value=self.sell_info['PRICE_VALUE'], inputText=input_price)
-        self._random_sleep()
+        self._random_sleep(3, 5)
 
 
 # ----------------------------------------------------------------------------------
@@ -330,7 +328,7 @@ class FlowRMTClubNewItem:
 
     def _click_sell_finish_btn(self):
         self.element.clickElement(value=self.sell_info['SELL_BTN'])
-        self._random_sleep()
+        self._random_sleep(2, 5)
 
 
 # ----------------------------------------------------------------------------------
@@ -344,7 +342,7 @@ class FlowRMTClubNewItem:
 # ----------------------------------------------------------------------------------
     # ランダムSleep
 
-    def _random_sleep(self, min_num: int = 3, max_num: int = 10):
+    def _random_sleep(self, min_num: int = 1, max_num: int = 3):
         self.random_sleep._random_sleep(min_num=min_num, max_num=max_num)
 
 
