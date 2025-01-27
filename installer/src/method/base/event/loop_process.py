@@ -184,7 +184,7 @@ class LoopProcess(QObject):
 
         try:
             # 処理を実施
-            process_func(id_text=user_info['id'], pass_text=user_info['pass'], worksheet_name=gss_info)
+            process_func(id_text=user_info['id'], pass_text=user_info['pass'], worksheet_name=gss_info['select_worksheet'], gss_url=gss_info['sheet_url'])
 
         except UnexpectedAlertPresentException as e:
             alert_comment = f"再出品の間隔が短いためを処理中断"

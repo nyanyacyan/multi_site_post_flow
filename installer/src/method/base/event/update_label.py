@@ -48,9 +48,9 @@ class UpdateLabel(QObject):
         # 実施した処理のあと反映してるのか確認
         label_text = label.text()
         self.logger.debug(f"label_text: {label_text}")
-        if label_text != comment:
-            self.logger.error(f"\n【ラベル更新に失敗しました】\n変更したいコメント: {comment}\n変更前コメント: {label_text}")
-            return
+        # if label_text != comment:
+        #     self.logger.error(f"\n【ラベル更新に失敗しました】\n変更したいコメント: {comment}\n変更前コメント: {label_text}")
+        #     return
 
 
     ####################################################################################

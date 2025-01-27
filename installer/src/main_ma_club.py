@@ -149,7 +149,6 @@ class MainMAClubApp(QWidget):
         self.uptime_info = self.uptime_form.get_uptime_info()
         self.countdown_event.entry_event(uptime_info=self.uptime_info, label=self.process_label, start_event_flag=self.start_event_flag, event_func=self.start_event)
 
-
     # ----------------------------------------------------------------------------------
     # start_event
 

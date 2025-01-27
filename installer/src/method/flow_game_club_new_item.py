@@ -40,12 +40,14 @@ class FlowGameClubProcess:
         # 必要info
         self.gss_info = GssInfo.GAME_CLUB.value
 
+        self.logger.debug(f'self.gss_info: {self.gss_info}')
+
 
     ####################################################################################
     # ----------------------------------------------------------------------------------
     # 各メソッドをまとめる
 
-    def process(self, worksheet_name: str, id_text: str, pass_text: str):
+    def process(self, worksheet_name: str, gss_url: str, id_text: str, pass_text: str):
         # 新しいブラウザを立ち上げ
         chrome_manager = ChromeManager()
         chrome = chrome_manager.flowSetupChrome()
@@ -55,8 +57,9 @@ class FlowGameClubProcess:
         try:
             # スプシの読み込み（辞書でoutput）
             df = gss_read._get_df_in_gui(
-                gss_info=self.gss_info, worksheet_name=worksheet_name
+                gss_info=self.gss_info, worksheet_name=worksheet_name, gss_url=gss_url
             )
+            self.logger.debug(f'df: {df.head()}')
 
             # dfの中からチェックがあるものだけ抽出
             process_df = df[df["チェック"] == "TRUE"].reset_index(drop=True)
@@ -188,7 +191,7 @@ class FlowGameClubNewItem:
         self._input_price(sell_data=sell_data)
 
         # 暗証番号を設定
-        self._click_input_pin()
+        self._click_input_pin(sell_data=sell_data)
 
         # 確認するをクリック
         self._check_click()
@@ -380,12 +383,20 @@ class FlowGameClubNewItem:
     # ----------------------------------------------------------------------------------
     # 暗証番号をクリックして入力
 
-    def _click_input_pin(self):
+    def _click_input_pin(self, sell_data: Dict):
+        self.logger.debug(f'sell_data: {sell_data}')
+        input_pin = sell_data["暗証番号"]
+
+        # チェックなし
+        if not input_pin:
+            self.logger.warning(f'暗証番号の設定なし: {input_pin}')
+            return
+
+        # 暗証番号入力部にクリック
         self.element.clickElement(value=self.sell_info["PIN_CHECK_CLICK_VALUE"])
         self._random_sleep()
 
-        # 暗証番号を入力
-        input_pin = self.sell_info["PIN_INPUT_VALUE"]
+        # 暗証番号入力
         self.logger.debug(f"input_pin: {input_pin}")
         self.element.clickClearJsInput(
             by=self.sell_info["PIN_INPUT_AREA_BY"],

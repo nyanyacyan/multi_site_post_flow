@@ -172,7 +172,7 @@ class GetDataGSSAPI:
     # GUIからWorksheetを指定してdfを返す
 
     @decoInstance.retryAction(maxRetry=3, delay=30)
-    def _get_df_in_gui(self, gss_info: Dict, worksheet_name: str):
+    def _get_df_in_gui(self, gss_info: Dict, worksheet_name: str, gss_url: str):
         client = self.client(jsonKeyName=gss_info["jsonKeyName"])
 
         self.logger.debug(
@@ -180,7 +180,7 @@ class GetDataGSSAPI:
         )
 
         # 対象のスプシを開く
-        worksheet = client.open_by_key(gss_info["spreadsheetId"]).worksheet(worksheet_name)
+        worksheet = client.open_by_url(gss_url).worksheet(worksheet_name)
 
         # デバッグ用
         all_values = worksheet.get_all_values()

@@ -58,8 +58,10 @@ class GSSInfoForm(QGroupBox):
         if select_worksheet == "--選択してください--":
             return None
 
+        sheet_url = self.gss_url_input.text().strip()
+
         self._set_error_msg(None)
-        return select_worksheet
+        return {"select_worksheet": select_worksheet, "sheet_url": sheet_url}
 
     # ----------------------------------------------------------------------------------
     # ここにWorksheetの値を受けて、フォルダーチェックをする

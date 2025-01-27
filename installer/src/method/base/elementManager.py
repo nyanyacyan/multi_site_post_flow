@@ -3,14 +3,14 @@
 
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 # import
-import time, re, os
+import time, re, os, json
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support.ui import Select
 from datetime import datetime
 from typing import Dict, Any, List, Tuple
 from selenium.webdriver.common.by import By
-from selenium.common.exceptions import ElementClickInterceptedException, ElementNotInteractableException, NoSuchElementException, TimeoutException
+from selenium.common.exceptions import ElementClickInterceptedException, ElementNotInteractableException, NoSuchElementException, TimeoutException, WebDriverException
 
 from pathlib import Path
 
@@ -262,7 +262,32 @@ class ElementManager:
             self.chrome.execute_script("arguments[0].click();", element)
 
         element.clear()
-        element.send_keys(inputText)
+
+        try:
+            element.send_keys(inputText)
+
+        # chromeDriverのバージョンが対応してない文字を検知した場合
+        except WebDriverException as e:
+            if "ChromeDriver only supports characters in the BMP" in str(e):
+                self.logger.warning(f'chromeDriverのバージョンが対応してない文字を検知: {inputText}')
+
+                bmp_text = ''.join(c for c in inputText if ord(c) < 0x10000)
+                self.logger.debug(f'bmp_text: {bmp_text}')
+                element.send_keys(bmp_text)
+
+                non_bmp_text = ''.join(c for c in inputText if ord(c) >= 0x10000)
+                self.logger.debug(f'non_bmp_text: {non_bmp_text}')
+                safe_non_bmp_text = json.dumps(non_bmp_text)
+                safe_non_bmp_text = safe_non_bmp_text.strip('"')
+                self.chrome.execute_script(f"arguments[0].value += '{safe_non_bmp_text}'", element)
+            else:
+                self.logger.error(f'未知のWebDriverExceptionが発生しました: {e}')
+                return None
+
+        except Exception as e:
+            self.logger.error(f'【開発者に連絡してください】入力の際にエラーが発生: {e}')
+            return None
+
         self.clickWait.jsPageChecker(chrome=self.chrome)
         return element
 
