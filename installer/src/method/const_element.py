@@ -332,7 +332,7 @@ class GuiInfo(Enum):
 
     MA_CLUB = {
         "JSON_KEY_NAME": "sns-auto-430920-08274ad68b41.json",
-        "SORT_WORD_LIST": ["M&A", "MA", "エムアンドエー", "MA_CLUB", "M&A_CLUB"],
+        "SORT_WORD_LIST": ["M&A", "MA", "エムアンドエー", "ma", "m&a"],
         "GSS_INPUT_TITLE": "Spreadsheet 情報",
         "MAIN_WINDOW_TITLE": "M&A_CLUB Automation Tool",
         "FOLDER_NAME": "02_MA_CLUB",

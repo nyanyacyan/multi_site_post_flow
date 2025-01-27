@@ -24,7 +24,7 @@ from method.base.event.loop_process import LoopProcessNoUpdate
 
 from method.base.time_manager import TimeManager
 from method.base.path import BaseToPath
-from method.flow_RMT_club_new_item import FlowRMTProcess
+from method.flow_rmt_club_new_item import FlowRMTProcess
 from method.base.GUI.Qtimer_content import CountDownQTimer, CheckFlag
 from method.base.event.update_label import UpdateLabel
 

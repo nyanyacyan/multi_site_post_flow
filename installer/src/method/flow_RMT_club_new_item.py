@@ -45,7 +45,7 @@ class FlowRMTProcess:
     # ----------------------------------------------------------------------------------
     # 各メソッドをまとめる
 
-    def process(self, worksheet_name: str, id_text: str, pass_text: str):
+    def process(self, worksheet_name: str, gss_url: str, id_text: str, pass_text: str):
         # 新しいブラウザを立ち上げ
         chrome_manager = ChromeManager()
         chrome = chrome_manager.flowSetupChrome()
@@ -55,8 +55,9 @@ class FlowRMTProcess:
         try:
             # スプシの読み込み（辞書でoutput）
             df = gss_read._get_df_in_gui(
-                gss_info=self.gss_info, worksheet_name=worksheet_name
+                gss_info=self.gss_info, worksheet_name=worksheet_name, gss_url=gss_url
             )
+
 
             # dfの中からチェックがあるものだけ抽出
             process_df = df[df["チェック"] == "TRUE"].reset_index(drop=True)
@@ -92,7 +93,7 @@ class FlowRMTProcess:
         finally:
                 chrome.quit()
 
-
+    # ----------------------------------------------------------------------------------
 # **********************************************************************************
 # 一連の流れ
 
@@ -120,8 +121,8 @@ class FlowRMTClubNewItem:
         self.sell_info = SellInfo.RMT_CLUB.value
 
 
-####################################################################################
-# ログイン〜出品処理
+    ####################################################################################
+    # ログイン〜出品処理
 
     @deco.funcBase
     def row_process(self, index: int, id_text: str, pass_text: str, sell_data: Dict):

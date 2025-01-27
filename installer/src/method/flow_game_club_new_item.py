@@ -4,11 +4,9 @@
 
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 # import
-import asyncio
 from typing import Dict
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
-from selenium.common.exceptions import NoSuchElementException
 
 # 自作モジュール
 from method.base.utils import Logger
@@ -40,8 +38,6 @@ class FlowGameClubProcess:
         # 必要info
         self.gss_info = GssInfo.GAME_CLUB.value
 
-        self.logger.debug(f'self.gss_info: {self.gss_info}')
-
 
     ####################################################################################
     # ----------------------------------------------------------------------------------
@@ -59,7 +55,6 @@ class FlowGameClubProcess:
             df = gss_read._get_df_in_gui(
                 gss_info=self.gss_info, worksheet_name=worksheet_name, gss_url=gss_url
             )
-            self.logger.debug(f'df: {df.head()}')
 
             # dfの中からチェックがあるものだけ抽出
             process_df = df[df["チェック"] == "TRUE"].reset_index(drop=True)
@@ -100,7 +95,6 @@ class FlowGameClubProcess:
 # **********************************************************************************
 # 一連の流れ
 
-
 class FlowGameClubNewItem:
     def __init__(self, chrome: webdriver):
         # logger
@@ -140,7 +134,7 @@ class FlowGameClubNewItem:
                 timeout=120,
             )
         else:
-            self._random_sleep(min_num=5, max_num=10)
+            self._random_sleep(5, 10)
             # Sessionを維持したままログインの手順を端折る
             self.jump_target_page.flowJumpTargetPage(
                 targetUrl=self.login_info["HOME_URL"]
@@ -385,11 +379,12 @@ class FlowGameClubNewItem:
 
     def _click_input_pin(self, sell_data: Dict):
         self.logger.debug(f'sell_data: {sell_data}')
-        input_pin = sell_data["暗証番号"]
+        input_pin_status = sell_data["暗証番号"]
+        self.logger.debug(f'input_pin_status: {input_pin_status}')
 
         # チェックなし
-        if not input_pin:
-            self.logger.warning(f'暗証番号の設定なし: {input_pin}')
+        if input_pin_status == 'FALSE':
+            self.logger.warning(f'暗証番号の設定なし: {input_pin_status}')
             return
 
         # 暗証番号入力部にクリック
@@ -397,11 +392,12 @@ class FlowGameClubNewItem:
         self._random_sleep()
 
         # 暗証番号入力
-        self.logger.debug(f"input_pin: {input_pin}")
+        input_pin_value = self.sell_info['PIN_INPUT_VALUE']
+        self.logger.debug(f"input_pin_value: {input_pin_value}")
         self.element.clickClearJsInput(
             by=self.sell_info["PIN_INPUT_AREA_BY"],
             value=self.sell_info["PIN_INPUT_AREA_VALUE"],
-            inputText=input_pin,
+            inputText=input_pin_value,
         )
         self._random_sleep()
 
@@ -440,8 +436,8 @@ if __name__ == "__main__":
     )
 
     test_flow = FlowGameClubNewItem()
-    asyncio.run(
-        test_flow.process(
-            worksheet_name=worksheet_name, id_text=id_text, pass_text=pass_text
-        )
+
+    test_flow.process(
+        worksheet_name=worksheet_name, id_text=id_text, pass_text=pass_text
     )
+

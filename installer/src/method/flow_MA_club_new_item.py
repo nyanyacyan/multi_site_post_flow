@@ -7,7 +7,6 @@
 from typing import Dict
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
-from selenium.common.exceptions import NoSuchElementException
 
 # 自作モジュール
 from method.base.utils import Logger
@@ -44,7 +43,7 @@ class FlowMAClubProcess:
     # ----------------------------------------------------------------------------------
     # 各メソッドをまとめる
 
-    def process(self, worksheet_name: str, id_text: str, pass_text: str):
+    def process(self, worksheet_name: str, gss_url: str, id_text: str, pass_text: str):
         # 新しいブラウザを立ち上げ
         chrome_manager = ChromeManager()
         chrome = chrome_manager.flowSetupChrome()
@@ -54,7 +53,7 @@ class FlowMAClubProcess:
         try:
             # スプシの読み込み（辞書でoutput）
             df = gss_read._get_df_in_gui(
-                gss_info=self.gss_info, worksheet_name=worksheet_name
+                gss_info=self.gss_info, worksheet_name=worksheet_name, gss_url=gss_url
             )
 
             # dfの中からチェックがあるものだけ抽出
@@ -122,7 +121,6 @@ class FlowMAClubNewItem:
 
 
     ####################################################################################
-
     # ログイン〜出品処理
 
     @deco.funcBase
@@ -185,14 +183,13 @@ class FlowMAClubNewItem:
         self._input_price(sell_data=sell_data)
 
         # 暗証番号を設定
-        self._click_input_pin()
+        self._click_input_pin(sell_data=sell_data)
 
         # 確認するをクリック
         self._check_click()
 
         # 売却登録するをクリック
         self._click_end_sell_btn()
-
 
     # ----------------------------------------------------------------------------------
     # 出品ボタンをクリック
@@ -218,8 +215,6 @@ class FlowMAClubNewItem:
         self.element.files_input(
             by=self.sell_info["FILE_INPUT_BY"],
             value=self.sell_info["FILE_INPUT_VALUE"],
-            check_by=self.sell_info["CHECK_BY"],
-            check_value=self.sell_info["CHECK_VALUE"],
             file_path_list=file_path_sort_list,
         )
         self._random_sleep()
@@ -254,29 +249,23 @@ class FlowMAClubNewItem:
     # カテゴリ選択
 
     def _category_select(self, sell_data: Dict):
-        try:
-            if sell_data['カテゴリ'] == 'サイト売買・サービス譲渡':
-                element = self.element.clickElement(value=self.sell_info['CATEGORY_SELL_SELECT_VALUE'])
-                self.logger.debug(f'「サイト売買・サービス譲渡」を選択: {element}')
-                self._random_sleep()
-            elif sell_data['カテゴリ'] == 'その他':
-                element = self.element.clickElement(value=self.sell_info['CATEGORY_OTHER_SELECT_VALUE'])
-                self.logger.debug(f'「その他」を選択: {element}')
-                self._random_sleep()
-            elif sell_data['カテゴリ'] == '運用代行':
-                element = self.element.clickElement(value=self.sell_info['CATEGORY_UNYODAIKO_SELECT_VALUE'])
-                self.logger.debug(f'「運用代行」を選択: {element}')
-                self._random_sleep()
-            else:
-                element = self.element.clickElement(value=self.sell_info['CATEGORY_JYOTO_SELECT_VALUE'])
-                self.logger.debug(f'「アカウント譲渡」を選択: {element}')
-                self._random_sleep()
 
-        # スプシ誤選択
-        except NoSuchElementException:
-            error_msg = f"スプシ項目に誤り\n【案件タイトル】{sell_data['案件タイトル']} 選択項目: {sell_data['カテゴリ']}"
-            self.logger.warning(error_msg)
-
+        if sell_data['カテゴリ'] == 'サイト売買・サービス譲渡':
+            element = self.element.clickElement(value=self.sell_info['CATEGORY_SELL_SELECT_VALUE'])
+            self.logger.debug(f'「サイト売買・サービス譲渡」を選択: {element}')
+            self._random_sleep()
+        elif sell_data['カテゴリ'] == 'その他':
+            element = self.element.clickElement(value=self.sell_info['CATEGORY_OTHER_SELECT_VALUE'])
+            self.logger.debug(f'「その他」を選択: {element}')
+            self._random_sleep()
+        elif sell_data['カテゴリ'] == '運用代行':
+            element = self.element.clickElement(value=self.sell_info['CATEGORY_UNYODAIKO_SELECT_VALUE'])
+            self.logger.debug(f'「運用代行」を選択: {element}')
+            self._random_sleep()
+        else:
+            element = self.element.clickElement(value=self.sell_info['CATEGORY_JYOTO_SELECT_VALUE'])
+            self.logger.debug(f'「アカウント譲渡」を選択: {element}')
+            self._random_sleep()
 
     # ----------------------------------------------------------------------------------
     # 案件タイトル
@@ -344,14 +333,28 @@ class FlowMAClubNewItem:
     # ----------------------------------------------------------------------------------
     # 暗証番号をクリックして入力
 
-    def _click_input_pin(self):
+    def _click_input_pin(self, sell_data: Dict):
+        self.logger.debug(f'sell_data: {sell_data}')
+        input_pin_status = sell_data["暗証番号"]
+        self.logger.debug(f'input_pin_status: {input_pin_status}')
+
+        # チェックなし
+        if input_pin_status == 'FALSE':
+            self.logger.warning(f'暗証番号の設定なし: {input_pin_status}')
+            return
+
+        # 暗証番号入力部にクリック
         self.element.clickElement(value=self.sell_info["PIN_CHECK_CLICK_VALUE"])
         self._random_sleep()
 
-        # 暗証番号を入力
-        input_pin= self.sell_info['PIN_INPUT_VALUE']
-        self.logger.debug(f'input_pin: {input_pin}')
-        self.element.clickClearJsInput(by=self.sell_info['PIN_INPUT_AREA_BY'], value=self.sell_info['PIN_INPUT_AREA_VALUE'], inputText=input_pin)
+        # 暗証番号入力
+        input_pin_value = self.sell_info['PIN_INPUT_VALUE']
+        self.logger.debug(f"input_pin_value: {input_pin_value}")
+        self.element.clickClearJsInput(
+            by=self.sell_info["PIN_INPUT_AREA_BY"],
+            value=self.sell_info["PIN_INPUT_AREA_VALUE"],
+            inputText=input_pin_value,
+        )
         self._random_sleep()
 
     # ----------------------------------------------------------------------------------
@@ -372,7 +375,7 @@ class FlowMAClubNewItem:
     # ----------------------------------------------------------------------------------
     # ランダムSleep
 
-    def _random_sleep(self, min_num: int = 3, max_num: int = 10):
+    def _random_sleep(self, min_num: int = 1, max_num: int = 3):
         self.random_sleep._random_sleep(min_num=min_num, max_num=max_num)
 
 
