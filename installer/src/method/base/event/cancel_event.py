@@ -39,7 +39,11 @@ class CancelEvent(QObject):
         threading_process = [f"スレッド名: {t.name}, スレッドID: {t.ident}" for t in threading.enumerate()]
         self.logger.debug(f'threading_process: {threading_process}')
 
-        os.kill(os.getpid(), signal.SIGKILL)  # 現在のプロセスを強制終了
+        if os.name == "nt":  # Windows の場合
+            os.kill(os.getpid(), signal.SIGTERM)
+        else:  # Unix/Linux の場合
+            os.kill(os.getpid(), signal.SIGKILL)
+
         sys.exit(0)
 
     # ----------------------------------------------------------------------------------
@@ -51,7 +55,10 @@ class CancelEvent(QObject):
         # プロセスを完全終了して再起動
         python = sys.executable
         os.execl(python, python, *sys.argv)
-        os.kill(os.getpid(), signal.SIGKILL)
+        if os.name == "nt":  # nt == windows
+            os.kill(os.getpid(), signal.SIGTERM)
+        else:
+            os.kill(os.getpid(), signal.SIGKILL)  # Unix/Linux用
         sys.exit(0)
 
     # ----------------------------------------------------------------------------------
