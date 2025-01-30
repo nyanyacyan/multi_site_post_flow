@@ -5,6 +5,7 @@
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 # import
 import base64, cv2, re
+import numpy as np
 from pytesseract import image_to_string
 from selenium.webdriver.remote.webelement import WebElement
 
@@ -138,7 +139,7 @@ class CanvasImageAnalysis:
     # OpenCVで読み込むためにBase64にてデコードして保存
 
     def _decoding_white(self, image_data_name: str, base64_data_base: str):
-        base64_image_path = self._get_base64_image_path(fileName=image_data_name)
+        base64_image_path = self._get_image_path(fileName=image_data_name)
         self.logger.debug(f'image_data_name: {image_data_name}\nimage_data_name: {image_data_name}')
 
         with open(base64_image_path, "wb") as image_file:
@@ -149,13 +150,98 @@ class CanvasImageAnalysis:
     # ----------------------------------------------------------------------------------
     # Input > File
 
-    def _get_base64_image_path(self, fileName: str):
+    def _get_image_path(self, fileName: str):
         file_path = self.path.getInputDataFilePath(fileName=fileName)
         self.logger.debug(f'file_path: {file_path}')
         return file_path
 
     # ----------------------------------------------------------------------------------
+    # 画像をOpenCVで読み込み
 
+    def _open_image_openCV(self, file_path: str):
+        image = cv2.imread(file_path)
+        self.logger.debug(f'image: {image}')
+        return image
+
+    # ----------------------------------------------------------------------------------
+    # 画像のデバッグ
+
+    def _debug_image_openCV(self, image: np.ndarray):
+        if image is None:
+            self.logger.error(f"imageデータがありません: {image}")
+            return None
+
+        # 画像をログに出すのではなく、ウィンドウで表示
+        cv2.imshow('確認用', image)
+        cv2.waitKey(0)  # キー入力があるまで待機
+        cv2.destroyAllWindows()  # Windowを閉じる
+
+        return image
+
+    # ----------------------------------------------------------------------------------
+    # 画像をOCRが読み込みしやすくするための設定
+
+    def _clean_image_for_ocr(self, image: np.ndarray):
+        # グレースケール化
+        gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        self._debug_image_openCV(image=gray_image)
+
+        # ヒストグラム均等化でコントラストを改善
+        equalized_image = cv2.equalizeHist(gray_image)
+        self._debug_image_openCV(image=equalized_image)
+
+        # 適応的二値化で文字を強調
+        binary_image = cv2.adaptiveThreshold(
+            equalized_image, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2
+        )
+        self._debug_image_openCV(image=binary_image)
+
+        # ノイズ除去
+        processed_image = cv2.GaussianBlur(binary_image, (5, 5), 0)
+        self._debug_image_openCV(image=processed_image)
+
+        return processed_image
+
+    # ----------------------------------------------------------------------------------
+    # 読み込みやすく編集したデータを保存
+
+    def _clean_image_keep(self, image: np.ndarray):
+        image_name = "analyze_image.png"
+        image_file_path = self._get_image_path(fileName=image_name)
+        cv2.imwrite(image_file_path, image)
+        self.logger.info(f'編集したデータの書込成功: {image_file_path}')
+        return image_file_path
+
+    # ----------------------------------------------------------------------------------
+    # OCRでテキストを抽出
+
+    def _OCR_text_one_row(self, clean_image: np.ndarray):
+        # Tesseract OCRのカスタム設定
+        custom_config = r'--oem 3 --psm 7'  # LSTMエンジンを使用し、1行テキスト用に設定
+
+        # OCRでテキストを抽出
+        extracted_text = image_to_string(clean_image, config=custom_config, lang="eng")
+        self.logger.info(f"OCRで抽出されたテキスト: {extracted_text}")
+
+        return extracted_text
+
+    # ----------------------------------------------------------------------------------
+    # 正規表現で数字部分を抽出
+
+    def _extract_regular_num(self, extracted_text):
+        # \d{1,3} == 1〜3桁の数字（100, 250, 999など）
+        # (,\d{3})* == カンマ+3桁の数字を繰り返し（,000 / ,500 / ,000 など）
+        match = re.search(r"(\d{1,3}(,\d{3})*)", extracted_text)
+        if match:
+            price = match.group(1)  # 見つけたものを選択（1つ目のものを選択）
+            self.logger.info(f"抽出された価格: {price}")
+            return price
+        else:
+            print("価格情報が見つかりませんでした")
+
+    # ----------------------------------------------------------------------------------
+
+    # ----------------------------------------------------------------------------------
 
 
 if __name__ == '__main__':
