@@ -45,68 +45,34 @@ class CanvasImageAnalysis:
         self.path = BaseToPath()
 
     ####################################################################################
+    # 1行のみあるtext画像のOCR抽出(canvas画像)
 
+    def flow_process(self, by: str, value: str):
+        # canvas素材の取得
+        canvas_element = self._get_canvas_element(by=by, value=value)
 
-    def _test_photo_data(self, url: str):
-        # ページを開く
-        self.chrome.get(url)
+        # canvasデータから画像データを抽出
+        base64_data_base = self._get_js_base64_to_canvas(canvas_element=canvas_element)
 
-        # Canvas要素を取得
-        canvas = self.element.getElement(by='id', value="price-7550")
+        # OpenCVで読み込むためにBase64にてデコードして保存
+        base64_image_path = self._decoding_white(base64_data_base=base64_data_base)
 
-        # JavaScriptを使用してCanvasの内容をBase64データとして取得
-        image_data = self.chrome.execute_script("""
-            const canvas = arguments[0];
-            return canvas.toDataURL('image/png');
-        """, canvas)
+        # OpenCVで読み込むためにBase64にてデコードして保存
+        image = self._open_image_openCV(file_path=base64_image_path)
 
-        # "data:image/png;base64," の部分を削除
-        image_data = image_data.split(",")[1]
+        # 画像をOCRが読み込みしやすくするための設定
+        clean_image = self._clean_image_for_ocr(image=image)
 
-        # Base64データを画像ファイルとして保存
-        image_data_name = "canvas_image.png"
-        with open(image_data_name, "wb") as image_file:
-            image_file.write(base64.b64decode(image_data))
-
-        print(f"画像が保存されました: {image_data_name}")
-
-        # 画像をOpenCVで読み込み
-        image = cv2.imread(image_data_name)
-
-        # グレースケール化
-        gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-
-        # ヒストグラム均等化でコントラストを改善
-        equalized_image = cv2.equalizeHist(gray_image)
-
-        # 適応的二値化で文字を強調
-        binary_image = cv2.adaptiveThreshold(
-            equalized_image, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2
-        )
-
-        # ノイズ除去
-        processed_image = cv2.GaussianBlur(binary_image, (5, 5), 0)
-
-        # 加工後の画像を保存（デバッグ用）
-        processed_image_name = "processed_image.png"
-        cv2.imwrite(processed_image_name, processed_image)
-        print(f"加工後の画像を保存しました: {processed_image_name}")
-
-        # Tesseract OCRのカスタム設定
-        custom_config = r'--oem 3 --psm 7'  # LSTMエンジンを使用し、1行テキスト用に設定
+        # 読み込みやすく編集したデータを保存
+        self._clean_image_keep(image=clean_image)
 
         # OCRでテキストを抽出
-        extracted_text = image_to_string(processed_image, config=custom_config, lang="eng")
-        print(f"OCRで抽出されたテキスト: {extracted_text}")
+        extracted_text = self._OCR_text_one_row(clean_image=clean_image)
 
         # 正規表現で数字部分を抽出
-        match = re.search(r"(\d{1,3}(,\d{3})*)", extracted_text)
-        if match:
-            price = match.group(1)
-            print(f"抽出された価格: {price}")
-        else:
-            print("価格情報が見つかりませんでした")
+        price = self._extract_regular_num(extracted_text=extracted_text)
 
+        return price
 
     # ----------------------------------------------------------------------------------
     # canvas素材の取得
@@ -131,7 +97,6 @@ class CanvasImageAnalysis:
         # 2つ目のデータがイメージデータ
         image_data = base64_data_base.split(",")[1]
         self.logger.debug(f'image_data: {image_data}')
-
 
         return base64_data_base
 
@@ -197,10 +162,10 @@ class CanvasImageAnalysis:
         self._debug_image_openCV(image=binary_image)
 
         # ノイズ除去
-        processed_image = cv2.GaussianBlur(binary_image, (5, 5), 0)
-        self._debug_image_openCV(image=processed_image)
+        clean_image = cv2.GaussianBlur(binary_image, (5, 5), 0)
+        self._debug_image_openCV(image=clean_image)
 
-        return processed_image
+        return clean_image
 
     # ----------------------------------------------------------------------------------
     # 読み込みやすく編集したデータを保存
@@ -228,7 +193,7 @@ class CanvasImageAnalysis:
     # ----------------------------------------------------------------------------------
     # 正規表現で数字部分を抽出
 
-    def _extract_regular_num(self, extracted_text):
+    def _extract_regular_num(self, extracted_text: str):
         # \d{1,3} == 1〜3桁の数字（100, 250, 999など）
         # (,\d{3})* == カンマ+3桁の数字を繰り返し（,000 / ,500 / ,000 など）
         match = re.search(r"(\d{1,3}(,\d{3})*)", extracted_text)
@@ -240,10 +205,3 @@ class CanvasImageAnalysis:
             print("価格情報が見つかりませんでした")
 
     # ----------------------------------------------------------------------------------
-
-
-if __name__ == '__main__':
-
-    url = "https://www.1-chome.com/elec"
-    test_flow = TestFlow()
-    test_flow._test_photo_data(url=url)
