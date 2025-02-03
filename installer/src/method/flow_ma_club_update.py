@@ -143,6 +143,22 @@ class FlowMAClubUpdate:
 
 
     # ----------------------------------------------------------------------------------
+    # 課金されている場合
+
+    def _charge_update_process(self):
+        try:
+            value = self.update_info["CHARGE_UPDATE_BTN_VALUE"]
+            charge_element = self.element.getElement(value=value)
+            if charge_element:
+                self.logger.info(f'課金されているPOPUPを発見: {charge_element}')
+                self.element._click_only(web_element=charge_element)
+                self._random_sleep()
+
+        except NoSuchElementException:
+            self.logger.info(f'課金のPOPUPはありませんでした。')
+
+
+    # ----------------------------------------------------------------------------------
     # リンク先にジャンプして更新ボタンを押下
 
     def _update_process(self, targetUrl: str):
@@ -151,6 +167,10 @@ class FlowMAClubUpdate:
         self.logger.debug(f"value: {value}")
         self.element.clickElement(value=value)
         self._random_sleep()
+
+        # 課金されてる場合に出てくるPOPUPがあるか確認
+        self._charge_update_process()
+
 
     # ----------------------------------------------------------------------------------
     # すべてのリンク先にアップデートプロセスを実施

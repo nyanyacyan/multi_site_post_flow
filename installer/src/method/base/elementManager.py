@@ -333,6 +333,27 @@ class ElementManager:
         return element
 
     # ----------------------------------------------------------------------------------
+    # クリックのみ(要素は別で取得)
+
+    def _click_only(self, web_element: WebElement):
+        self.clickWait.jsPageChecker(chrome=self.chrome)
+        try:
+            web_element.click()
+            self.logger.debug(f"クリック完了しました: {web_element}")
+        except ElementClickInterceptedException:
+            self.logger.debug(f"popupなどでClickができません: {web_element}")
+            self.chrome.execute_script("arguments[0].click();", web_element)
+
+        except ElementNotInteractableException:
+            self.logger.debug(f"要素があるんだけどクリックができません: {web_element}")
+            self.chrome.execute_script("arguments[0].click();", web_element)
+            self.logger.info(f"jsにてクリック実施: {web_element}")
+
+        self.clickWait.jsPageChecker(chrome=self.chrome)
+        return web_element
+
+    # ----------------------------------------------------------------------------------
+
 
     def recaptcha_click_element(
         self, by: str, value: str, home_url: str, check_element_by: str, check_element_value: str, max_retry: int = 40, delay: int = 5

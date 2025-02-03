@@ -428,7 +428,7 @@ class UpdateInfo(Enum):
         "SELECT_VALUE": "1",
         "DISABLE_ELEMENT_VALUE": "//a[@class='btn btn-boost btn-disabled' and @href='javascript:void(0)']",
         "UPDATE_BTN_VALUE": "//div[@class='boost-modal-content']//a[@class='btn btn-boost ']",
-        "": "",
+        "CHARGE_UPDATE_BTN_VALUE": "//a[contains(@class, 'btn') and contains(@class, 'btn-boost') and contains(@class, 'btn-disabled') and normalize-space(.) = '更新']",
     }
 
     ##########
@@ -446,7 +446,7 @@ class UpdateInfo(Enum):
         "SELECT_VALUE": "1",
         "DISABLE_ELEMENT_VALUE": "//a[@class='btn btn-boost btn-disabled' and @href='javascript:void(0)']",
         "UPDATE_BTN_VALUE": "//div[@class='boost-modal-content']//a[@class='btn btn-boost ']",
-        "": "",
+        "CHARGE_UPDATE_BTN_VALUE": "//a[contains(@class, 'btn') and contains(@class, 'btn-boost') and contains(@class, 'btn-disabled') and normalize-space(.) = '更新']",
     }
 
 
