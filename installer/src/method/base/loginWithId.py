@@ -6,7 +6,7 @@
 import time
 from typing import Dict
 from selenium.webdriver.chrome.webdriver import WebDriver
-from selenium.common.exceptions import TimeoutException
+from selenium.common.exceptions import TimeoutException, UnexpectedAlertPresentException
 
 # 自作モジュール
 from .utils import Logger
@@ -17,6 +17,8 @@ from .elementManager import ElementManager
 from .driverWait import Wait
 from .decorators import Decorators
 from .driverDeco import jsCompleteWaitDeco, InputDeco, ClickDeco
+from method.base.jumpTargetPage import JumpTargetPage
+from method.base.seleniumBase import SeleniumBasicOperations
 
 # const
 from method.const_element import LoginInfo
@@ -45,6 +47,8 @@ class SingleSiteIDLogin:
         self.path = BaseToPath()
         self.pickle_write = LimitSabDirFileWrite()
         self.pickle_read = ResultFileRead()
+        self.jump = JumpTargetPage(chrome=self.chrome)
+        self.random_sleep = SeleniumBasicOperations()
 
     # ----------------------------------------------------------------------------------
     # IDログイン
@@ -122,6 +126,8 @@ class SingleSiteIDLogin:
         self.wait.jsPageChecker(chrome=self.chrome, timeout=10)
 
         # reCAPTCHA対策を完了確認
+        # TODO ここでreCAPTCHA対策が稼働してない可能性ありのエラー対策する
+        # ジャンプしてログインを実行するように定義する→そこでログインするようにする3回繰り返したら、強制終了する
         return self.login_element_check(
             by=login_info["LOGIN_AFTER_ELEMENT_BY"],
             value=login_info["LOGIN_AFTER_ELEMENT_VALUE"],
@@ -129,6 +135,138 @@ class SingleSiteIDLogin:
         )
 
     # ----------------------------------------------------------------------------------
+    # IDログイン reCAPTCHA での例外処理込
+
+    def _flow_recapcha_handle_id_login(
+        self, login_info: dict, id_text: str, pass_text: str, timeout: int = 120
+    ):
+        try:
+            self._flow_id_login(
+                login_info=login_info, id_text=id_text, pass_text=pass_text
+            )
+
+            # reCAPTCHA対策を完了確認
+            # TODO ここでreCAPTCHA対策が稼働してない可能性ありのエラー対策する
+            # ジャンプしてログインを実行するように定義する→そこでログインするようにする3回繰り返したら、強制終了する
+            success = self.login_element_check(
+                by=login_info["LOGIN_AFTER_ELEMENT_BY"],
+                value=login_info["LOGIN_AFTER_ELEMENT_VALUE"],
+                timeout=timeout,
+            )
+            self.logger.debug(f"ログインができてるかどうかを確認: {success}")
+            return success
+
+        except UnexpectedAlertPresentException as e:
+            return self._handle_recaptcha_alert(
+                login_info=login_info,
+                id_text=id_text,
+                pass_text=pass_text,
+                timeout=timeout,
+                e=e,
+            )
+
+    # ----------------------------------------------------------------------------------
+
+    def _handle_recaptcha_alert(
+        self,
+        login_info: dict,
+        id_text: str,
+        pass_text: str,
+        e: UnexpectedAlertPresentException,
+        timeout: int = 120,
+    ):
+        try:
+            self.logger.warning(
+                f"{self.__class__.__name__} reCAPTCHAのアラートが検出されました。: {str(e)}"
+            )
+
+            alert = self.chrome.switch_to.alert
+            alert_text = alert.text
+            self.logger.debug(f"alert_text: {alert_text}")
+
+            if "私はロボットではありません" in alert_text:
+                alert.dismiss()  # アラートを閉じる
+                self.random_sleep._random_sleep()
+
+                max_count = 3
+                count = 1
+                while count < max_count:
+                    self.logger.info(f"【 {count} 回目】reCAPTCHAの処理NGのため再実行")
+
+                    # 新しいページにジャンプして開く
+                    self.jump.flowJumpTargetPage(targetUrl=login_info["LOGIN_URL"])
+
+                    # IDログインフロー
+                    self._flow_id_login(
+                        login_info=login_info, id_text=id_text, pass_text=pass_text
+                    )
+
+                    # ログインできてるか確認
+                    success = self.login_element_check(
+                        by=login_info["LOGIN_AFTER_ELEMENT_BY"],
+                        value=login_info["LOGIN_AFTER_ELEMENT_VALUE"],
+                        timeout=timeout,
+                    )
+                    self.logger.debug(f"ログイン整合: {success}")
+
+                    if success == True:
+                        return True
+
+                    count += 1
+
+
+                # 3回試行しても成功しなかった場合
+                self.logger.warning(
+                    f"{self.__class__.__name__} ({max_count}回) に達したため終了"
+                )
+                return False
+
+            else:
+                self.logger.warning(
+                    f"{self.__class__.__name__} 予定外のアラートが発生: {str(e)}"
+                )
+                alert.dismiss()  # アラートを閉じる
+                return False
+
+        except Exception as err:
+            self.logger.error(
+                f"{self.__class__.__name__} アラート処理中に例外発生: {err}"
+            )
+            return False
+
+    # ----------------------------------------------------------------------------------
+
+    def _flow_id_login(self, login_info: dict, id_text: str, pass_text: str):
+        # サイトを開いてCookieを追加
+        self.openSite(login_url=login_info["LOGIN_URL"])
+
+        self.inputId(
+            by=login_info["ID_BY"],
+            value=login_info["ID_VALUE"],
+            inputText=id_text,
+        )
+
+        self.inputPass(
+            by=login_info["PASS_BY"],
+            value=login_info["PASS_VALUE"],
+            inputText=pass_text,
+        )
+
+        # クリックを繰り返しPOPUPがなくなるまで繰り返す
+        self.click_login_btn_in_recaptcha(
+            by=login_info["BTN_BY"],
+            value=login_info["BTN_VALUE"],
+            home_url=login_info["HOME_URL"],
+            check_element_by=login_info["LOGIN_AFTER_ELEMENT_BY"],
+            check_element_value=login_info["LOGIN_AFTER_ELEMENT_VALUE"],
+        )
+
+        # 検索ページなどが出てくる対策
+        # PCのスペックに合わせて設定
+        self.wait.jsPageChecker(chrome=self.chrome, timeout=10)
+
+    # ----------------------------------------------------------------------------------
+
     @decoJsInstance.jsCompleteWait
     def openSite(self, login_url: str):
         return self.chrome.get(url=login_url)
@@ -168,10 +306,24 @@ class SingleSiteIDLogin:
     # ログインボタン押下
     # reCAPTCHA
 
-    def click_login_btn_in_recaptcha(self, by: str, value: str, home_url:str, check_element_by: str, check_element_value: str):
+    def click_login_btn_in_recaptcha(
+        self,
+        by: str,
+        value: str,
+        home_url: str,
+        check_element_by: str,
+        check_element_value: str,
+    ):
         self.logger.debug(f"value: {value}")
 
-        return self.element.recaptcha_click_element(by=by, value=value, home_url=home_url, check_element_by=check_element_by, check_element_value=check_element_value)
+        return self.element.recaptcha_click_element(
+            by=by,
+            value=value,
+            home_url=home_url,
+            check_element_by=check_element_by,
+            check_element_value=check_element_value,
+        )
+
     # ----------------------------------------------------------------------------------
 
     def loginUrlCheck(self, url: str):
@@ -199,7 +351,6 @@ class SingleSiteIDLogin:
             return False
 
     # ----------------------------------------------------------------------------------
-
 
     def actionBeforeLogin(
         self, url: str, login_info: dict, delay: int = 2, maxRetries: int = 3
