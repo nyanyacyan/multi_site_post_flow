@@ -48,7 +48,7 @@ class SingleSiteIDLogin:
         self.pickle_write = LimitSabDirFileWrite()
         self.pickle_read = ResultFileRead()
         self.jump = JumpTargetPage(chrome=self.chrome)
-        self.random_sleep = SeleniumBasicOperations()
+        self.random_sleep = SeleniumBasicOperations(chrome=self.chrome)
 
     # ----------------------------------------------------------------------------------
     # IDログイン
