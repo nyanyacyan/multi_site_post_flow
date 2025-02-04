@@ -76,12 +76,7 @@ class FlowGameClubUpdate:
     # idログイン
 
     def _id_login(self, id_text: str, pass_text: str):
-            self.login.flow_login_id_input_gui(
-                login_info=self.login_info,
-                id_text=id_text,
-                pass_text=pass_text,
-                timeout=120,
-            )
+            self.login._flow_recapcha_handle_id_login( login_info=self.login_info, id_text=id_text, pass_text=pass_text, timeout=120, )
 
 
     # ----------------------------------------------------------------------------------

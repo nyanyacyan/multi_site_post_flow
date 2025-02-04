@@ -127,18 +127,11 @@ class FlowRMTClubNewItem:
         self.logger.debug(f"index: {index}")
         if index == 0:
             # IDログイン
-            self.login.flow_login_id_input_gui(
-                login_info=self.login_info,
-                id_text=id_text,
-                pass_text=pass_text,
-                timeout=120,
-            )
+            self.login._flow_recapcha_handle_id_login( login_info=self.login_info, id_text=id_text, pass_text=pass_text, timeout=120, )
         else:
             self._random_sleep(5, 10)
             # Sessionを維持したままログインの手順を端折る
-            self.jump_target_page.flowJumpTargetPage(
-                targetUrl=self.login_info["HOME_URL"]
-            )
+            self.jump_target_page.flowJumpTargetPage( targetUrl=self.login_info["HOME_URL"] )
 
         # 出品処理
         self.sell_process(sell_data=sell_data)

@@ -92,89 +92,47 @@ class SingleSiteIDLogin:
     # IDログイン
     # reCAPTCHA OK
 
-    def flow_login_id_input_gui(
-        self, login_info: dict, id_text: str, pass_text: str, timeout: int = 120
-    ):
+    def flow_login_id_input_gui( self, login_info: dict, id_text: str, pass_text: str, timeout: int = 120 ):
         self.logger.debug(f"login_info: {login_info}")
 
         # サイトを開いてCookieを追加
         self.openSite(login_url=login_info["LOGIN_URL"])
 
-        self.inputId(
-            by=login_info["ID_BY"],
-            value=login_info["ID_VALUE"],
-            inputText=id_text,
-        )
+        self.inputId( by=login_info["ID_BY"], value=login_info["ID_VALUE"], inputText=id_text, )
 
-        self.inputPass(
-            by=login_info["PASS_BY"],
-            value=login_info["PASS_VALUE"],
-            inputText=pass_text,
-        )
+        self.inputPass( by=login_info["PASS_BY"], value=login_info["PASS_VALUE"], inputText=pass_text, )
 
         # クリックを繰り返しPOPUPがなくなるまで繰り返す
-        self.click_login_btn_in_recaptcha(
-            by=login_info["BTN_BY"],
-            value=login_info["BTN_VALUE"],
-            home_url=login_info["HOME_URL"],
-            check_element_by=login_info["LOGIN_AFTER_ELEMENT_BY"],
-            check_element_value=login_info["LOGIN_AFTER_ELEMENT_VALUE"],
-        )
+        self.click_login_btn_in_recaptcha( by=login_info["BTN_BY"], value=login_info["BTN_VALUE"], home_url=login_info["HOME_URL"], check_element_by=login_info["LOGIN_AFTER_ELEMENT_BY"], check_element_value=login_info["LOGIN_AFTER_ELEMENT_VALUE"], )
 
         # 検索ページなどが出てくる対策
         # PCのスペックに合わせて設定
         self.wait.jsPageChecker(chrome=self.chrome, timeout=10)
 
         # reCAPTCHA対策を完了確認
-        # TODO ここでreCAPTCHA対策が稼働してない可能性ありのエラー対策する
         # ジャンプしてログインを実行するように定義する→そこでログインするようにする3回繰り返したら、強制終了する
-        return self.login_element_check(
-            by=login_info["LOGIN_AFTER_ELEMENT_BY"],
-            value=login_info["LOGIN_AFTER_ELEMENT_VALUE"],
-            timeout=timeout,
-        )
+        return self.login_element_check( by=login_info["LOGIN_AFTER_ELEMENT_BY"], value=login_info["LOGIN_AFTER_ELEMENT_VALUE"], timeout=timeout)
 
     # ----------------------------------------------------------------------------------
     # IDログイン reCAPTCHA での例外処理込
 
-    def _flow_recapcha_handle_id_login(
-        self, login_info: dict, id_text: str, pass_text: str, timeout: int = 120
-    ):
+    def _flow_recapcha_handle_id_login( self, login_info: dict, id_text: str, pass_text: str, timeout: int = 120 ):
         try:
-            self._flow_id_login(
-                login_info=login_info, id_text=id_text, pass_text=pass_text
-            )
+            self._flow_id_login( login_info=login_info, id_text=id_text, pass_text=pass_text )
 
             # reCAPTCHA対策を完了確認
-            # TODO ここでreCAPTCHA対策が稼働してない可能性ありのエラー対策する
-            # ジャンプしてログインを実行するように定義する→そこでログインするようにする3回繰り返したら、強制終了する
-            success = self.login_element_check(
-                by=login_info["LOGIN_AFTER_ELEMENT_BY"],
-                value=login_info["LOGIN_AFTER_ELEMENT_VALUE"],
-                timeout=timeout,
-            )
+            success = self.login_element_check( by=login_info["LOGIN_AFTER_ELEMENT_BY"], value=login_info["LOGIN_AFTER_ELEMENT_VALUE"], timeout=timeout, )
             self.logger.debug(f"ログインができてるかどうかを確認: {success}")
             return success
 
+        # reCAPTCHAを実施する前にクリックがあった場合の例外処理
         except UnexpectedAlertPresentException as e:
-            return self._handle_recaptcha_alert(
-                login_info=login_info,
-                id_text=id_text,
-                pass_text=pass_text,
-                timeout=timeout,
-                e=e,
-            )
+            return self._handle_recaptcha_alert( login_info=login_info, id_text=id_text, pass_text=pass_text, timeout=timeout, e=e, )
 
     # ----------------------------------------------------------------------------------
+    # reCAPTCHAを実施する前にクリックがあった場合の例外処理
 
-    def _handle_recaptcha_alert(
-        self,
-        login_info: dict,
-        id_text: str,
-        pass_text: str,
-        e: UnexpectedAlertPresentException,
-        timeout: int = 120,
-    ):
+    def _handle_recaptcha_alert( self, login_info: dict, id_text: str, pass_text: str, e: UnexpectedAlertPresentException, timeout: int = 120, ):
         try:
             self.logger.warning(
                 f"{self.__class__.__name__} reCAPTCHAのアラートが検出されました。: {str(e)}"
@@ -197,23 +155,16 @@ class SingleSiteIDLogin:
                     self.jump.flowJumpTargetPage(targetUrl=login_info["LOGIN_URL"])
 
                     # IDログインフロー
-                    self._flow_id_login(
-                        login_info=login_info, id_text=id_text, pass_text=pass_text
-                    )
+                    self._flow_id_login( login_info=login_info, id_text=id_text, pass_text=pass_text )
 
                     # ログインできてるか確認
-                    success = self.login_element_check(
-                        by=login_info["LOGIN_AFTER_ELEMENT_BY"],
-                        value=login_info["LOGIN_AFTER_ELEMENT_VALUE"],
-                        timeout=timeout,
-                    )
+                    success = self.login_element_check( by=login_info["LOGIN_AFTER_ELEMENT_BY"], value=login_info["LOGIN_AFTER_ELEMENT_VALUE"], timeout=timeout, )
                     self.logger.debug(f"ログイン整合: {success}")
 
                     if success == True:
                         return True
 
                     count += 1
-
 
                 # 3回試行しても成功しなかった場合
                 self.logger.warning(

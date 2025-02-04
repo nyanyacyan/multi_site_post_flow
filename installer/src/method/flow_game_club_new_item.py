@@ -52,9 +52,7 @@ class FlowGameClubProcess:
 
         try:
             # スプシの読み込み（辞書でoutput）
-            df = gss_read._get_df_in_gui(
-                gss_info=self.gss_info, worksheet_name=worksheet_name, gss_url=gss_url
-            )
+            df = gss_read._get_df_in_gui( gss_info=self.gss_info, worksheet_name=worksheet_name, gss_url=gss_url )
 
 
             # dfの中からチェックがあるものだけ抽出
@@ -81,9 +79,7 @@ class FlowGameClubProcess:
                 self.logger.info(f"{i + 1}/{df_row_num} 処理開始")
 
                 # ログイン〜処理実施まで
-                item_processor.row_process(
-                    index=i, id_text=id_text, pass_text=pass_text, sell_data=sell_data
-                )
+                item_processor.row_process( index=i, id_text=id_text, pass_text=pass_text, sell_data=sell_data )
                 self.logger.info(f"{i + 1}/{df_row_num} 処理完了")
 
             self.logger.info(f"すべての処理完了")
@@ -126,18 +122,11 @@ class FlowGameClubNewItem:
         self.logger.debug(f"index: {index}")
         if index == 0:
             # IDログイン
-            self.login.flow_login_id_input_gui(
-                login_info=self.login_info,
-                id_text=id_text,
-                pass_text=pass_text,
-                timeout=120,
-            )
+            self.login._flow_recapcha_handle_id_login( login_info=self.login_info, id_text=id_text, pass_text=pass_text, timeout=120, )
         else:
             self._random_sleep(5, 10)
             # Sessionを維持したままログインの手順を端折る
-            self.jump_target_page.flowJumpTargetPage(
-                targetUrl=self.login_info["HOME_URL"]
-            )
+            self.jump_target_page.flowJumpTargetPage( targetUrl=self.login_info["HOME_URL"] )
 
         # 出品処理
         self.sell_process(sell_data=sell_data)
