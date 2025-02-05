@@ -35,7 +35,6 @@ class LoopProcess(QObject):
         self.getLogger = Logger()
         self.logger = self.getLogger.getLogger()
 
-
         # インスタンス
         self.update_label = UpdateLabel()
         self.update_event = UpdateEvent()
@@ -45,7 +44,7 @@ class LoopProcess(QObject):
     ####################################################################################
     # start_eventに使用するmain処理
 
-    def main_task(self, update_bool: bool, stop_event: threading.Event, label: QLabel, update_event: threading.Event, update_func: Callable, process_func: Callable, user_info: Dict, gss_info: str, interval_info: Dict):
+    def main_task(self, update_bool: bool, stop_event: threading.Event, label: QLabel, update_event: threading.Event, update_func: Callable, process_func: Callable, user_info: Dict, gss_info: Dict, interval_info: Dict):
         # 更新処理がありの場合に処理
         if update_bool:
             update_comment = "更新処理中..."
@@ -80,7 +79,7 @@ class LoopProcess(QObject):
     # Queを管理するツールを起動→Queを作り続ける→監視ツールがQueを確認次第処理を開始→並列処理
 
 
-    def _start_parallel_process(self, stop_event: threading.Event, executor: ThreadPoolExecutor, task_que: Queue, process_func: Callable, user_info: Dict, gss_info: str, label: QLabel, interval_info: Dict):
+    def _start_parallel_process(self, stop_event: threading.Event, executor: ThreadPoolExecutor, task_que: Queue, process_func: Callable, user_info: Dict, gss_info: Dict, label: QLabel, interval_info: Dict):
         # 並列処理ロジックスタート（dispatcherはtaskを受取、ThreadPoolに割り当てる）
         dispatcher_thread = threading.Thread(
             target=self._task_manager,
@@ -91,6 +90,7 @@ class LoopProcess(QObject):
                 'process_func' : process_func,
                 'user_info' : user_info,
                 'gss_info' : gss_info,
+                'interval_info': interval_info,
                 'label' : label,
             }
         )
@@ -105,9 +105,15 @@ class LoopProcess(QObject):
                 task_id += 1
 
                 # 指定しているランダム待機
-                random_wait = self.time_manager._random_sleep(random_info=interval_info)
-                self.logger.info(f"{int(random_wait)} 秒待機して次のタスクを生成...")
-                time.sleep(random_wait)
+                random_wait_time = self.time_manager._random_sleep(random_info=interval_info)
+
+                # TODO ここに列の分だけ追加するrandomの待機時間を生成する
+                row_num = gss_info['row_num'] + 1
+                self.logger.debug(f'\nrow_num: {row_num}\n型: {type(row_num)}')
+                total_wait_time = random_wait_time * row_num
+
+                self.logger.info(f"{int(total_wait_time)} 秒待機して次のタスクを生成...")
+                time.sleep(total_wait_time)
 
         except KeyboardInterrupt:
             self.logger.info("停止要求を受け付けました")
@@ -137,7 +143,7 @@ class LoopProcess(QObject):
     # Queがないかを監視
 
 
-    def _task_manager(self, stop_event: threading.Event, executor: ThreadPoolExecutor, task_que: Queue, process_func: Callable, user_info: Dict, gss_info: str, label: QLabel, delay: int=1):
+    def _task_manager(self, stop_event: threading.Event, executor: ThreadPoolExecutor, task_que: Queue, process_func: Callable, user_info: Dict, gss_info: Dict, interval_info: Dict, label: QLabel, delay: int=1):
         task_count = 0
         while not stop_event.is_set():
             try:
@@ -146,7 +152,7 @@ class LoopProcess(QObject):
                 self.logger.info(f"task_id: {task_id}")
 
                 #! ここでメインのループ処理を実行する
-                task = partial(self._task_contents, count=task_count, label=label, process_func=process_func, user_info=user_info, gss_info=gss_info)
+                task = partial(self._task_contents, count=task_count, label=label, process_func=process_func, user_info=user_info, gss_info=gss_info, interval_info=interval_info)
                 # 処理を実施
                 executor.submit(task)
 
@@ -170,7 +176,7 @@ class LoopProcess(QObject):
     # ----------------------------------------------------------------------------------
     # taskの中身（実際に処理する内容）
 
-    def _task_contents(self, count: int, label: QLabel, process_func: Callable, user_info: Dict, gss_info: Dict):
+    def _task_contents(self, count: int, label: QLabel, process_func: Callable, user_info: Dict, gss_info: Dict, interval_info: Dict):
         comment = f"新規出品 処理中 {count + 1}回目 ..."
         self.update_label._update_label(label=label, comment=comment)
         self.update_label_signal.emit(comment)
@@ -184,7 +190,9 @@ class LoopProcess(QObject):
 
         try:
             # 処理を実施
-            process_func(id_text=user_info['id'], pass_text=user_info['pass'], worksheet_name=gss_info['select_worksheet'], gss_url=gss_info['sheet_url'])
+            # TODO ここにシートの長さとインターバルインフォを渡す
+
+            process_func(id_text=user_info['id'], pass_text=user_info['pass'], worksheet_name=gss_info['select_worksheet'], gss_url=gss_info['sheet_url'], interval_info=interval_info)
 
         except UnexpectedAlertPresentException as e:
             alert_comment = f"再出品の間隔が短いためを処理中断"
@@ -268,6 +276,7 @@ class LoopProcessNoUpdate(QObject):
                 'process_func' : process_func,
                 'user_info' : user_info,
                 'gss_info' : gss_info,
+                'interval_info': interval_info,
             }
         )
         dispatcher_thread.start()
@@ -311,7 +320,7 @@ class LoopProcessNoUpdate(QObject):
     # Queがないかを監視
 
 
-    def _task_manager(self, stop_event: threading.Event, executor: ThreadPoolExecutor, task_que: Queue, process_func: Callable, user_info: Dict, gss_info: str, delay: int=1):
+    def _task_manager(self, stop_event: threading.Event, executor: ThreadPoolExecutor, task_que: Queue, process_func: Callable, user_info: Dict, gss_info: str, interval_info: Dict, delay: int=1):
         task_count = 0
         while not stop_event.is_set():
             try:
@@ -320,7 +329,7 @@ class LoopProcessNoUpdate(QObject):
                 self.logger.info(f"task_id: {task_id}")
 
                 #! ここでメインのループ処理を実行する
-                task = partial(self._task_contents, count=task_count, process_func=process_func, user_info=user_info, gss_info=gss_info)
+                task = partial(self._task_contents, count=task_count, process_func=process_func, user_info=user_info, gss_info=gss_info, interval_info=interval_info)
                 # 処理を実施
                 executor.submit(task)
 
@@ -344,7 +353,7 @@ class LoopProcessNoUpdate(QObject):
     # ----------------------------------------------------------------------------------
     # taskの中身（実際に処理する内容）
 
-    def _task_contents(self, count: int, process_func: Callable, user_info: Dict, gss_info: Dict):
+    def _task_contents(self, count: int, process_func: Callable, user_info: Dict, gss_info: Dict, interval_info: Dict):
         comment = f"新規出品 処理中 {count + 1} 回目..."
         self.update_label_signal.emit(comment)
 
@@ -353,10 +362,11 @@ class LoopProcessNoUpdate(QObject):
         start_time_str = start_time.strftime("%Y-%m-%d %H:%M:%S")
         self.logger.info(f"【start】実行処理開始: ({count}回目) [{start_time_str}]")
 
-        self.logger.debug(f"\nid: {user_info['id']}\npass: {user_info['pass']}\nworksheet_name: {gss_info}")
+        self.logger.debug(f"\nid: {user_info['id']}\npass: {user_info['pass']}\nworksheet_name: {gss_info['select_worksheet']}\ngss_url: {gss_info['sheet_url']}\nmin_interval: {interval_info['min']}\nmax_interval: {interval_info['max']}")
 
         try:
             # 処理を実施
+            # TODO ここにシートの長さとインターバルインフォを渡す
             process_func(id_text=user_info['id'], pass_text=user_info['pass'], worksheet_name=gss_info['select_worksheet'], gss_url=gss_info['sheet_url'])
 
         except UnexpectedAlertPresentException as e:

@@ -59,9 +59,11 @@ class GSSInfoForm(QGroupBox):
             return None
 
         sheet_url = self.gss_url_input.text().strip()
+        df = self._get_gss_df(worksheet_name=select_worksheet)
+        row_num = len(df)
 
         self._set_error_msg(None)
-        return {"select_worksheet": select_worksheet, "sheet_url": sheet_url}
+        return {"select_worksheet": select_worksheet, "sheet_url": sheet_url, "row_num": row_num}
 
     # ----------------------------------------------------------------------------------
     # ここにWorksheetの値を受けて、フォルダーチェックをする

@@ -42,9 +42,9 @@ class TimeManager:
 
         wait_max_minutes = int(random_info['max'])
         wait_max_seconds = wait_max_minutes * 60
-        random_wait = random.uniform(wait_min_seconds, wait_max_seconds)
-        self.logger.debug(f'random_wait: {random_wait}')
-        return random_wait
+        random_wait_time = random.uniform(wait_min_seconds, wait_max_seconds)
+        self.logger.debug(f'random_wait_time: {int(random_wait_time)}')
+        return int(random_wait_time)
 
 
     # ----------------------------------------------------------------------------------

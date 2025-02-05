@@ -157,7 +157,7 @@ class MainGamaClubApp(QWidget):
         try:
             self.user_info = self.user_info_form.get_user_info()  # 入力したIDとパス
             self.gss_info = self.gss_info_form.get_gss_info()  # ドロップダウンメニューから選択された値
-            self.interval_info = self.interval_form.get_interval_info()  # 処理の実施間隔の値
+            self.interval_info = self.interval_form.get_interval_info()  # TODO 処理の実施間隔の値
             self.update_bool = self.radio_btn_form.get_radio_info()  # 選択した値
 
 
