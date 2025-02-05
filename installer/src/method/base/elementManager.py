@@ -22,7 +22,7 @@ from .path import BaseToPath
 from .popup import Popup
 
 from .decorators import Decorators
-from .Archive.textManager import TextManager
+from .textManager import TextManager
 from .driverDeco import ClickDeco
 from .driverWait import Wait
 

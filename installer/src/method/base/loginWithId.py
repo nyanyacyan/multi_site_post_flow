@@ -6,7 +6,7 @@
 import time
 from typing import Dict
 from selenium.webdriver.chrome.webdriver import WebDriver
-from selenium.common.exceptions import TimeoutException, UnexpectedAlertPresentException
+from selenium.common.exceptions import TimeoutException, UnexpectedAlertPresentException, NoAlertPresentException
 
 # 自作モジュール
 from .utils import Logger
@@ -138,12 +138,11 @@ class SingleSiteIDLogin:
                 f"{self.__class__.__name__} reCAPTCHAのアラートが検出されました。: {str(e)}"
             )
 
-            alert = self.chrome.switch_to.alert
-            alert_text = alert.text
-            self.logger.debug(f"alert_text: {alert_text}")
+            error_message = str(e)  # エラーメッセージを取得
+            self.logger.debug(f"error_message: {error_message}")
 
-            if "私はロボットではありません" in alert_text:
-                alert.dismiss()  # アラートを閉じる
+            if "私はロボットではありません" in error_message:
+
                 self.random_sleep._random_sleep()
 
                 max_count = 3
@@ -172,12 +171,6 @@ class SingleSiteIDLogin:
                 )
                 return False
 
-            else:
-                self.logger.warning(
-                    f"{self.__class__.__name__} 予定外のアラートが発生: {str(e)}"
-                )
-                alert.dismiss()  # アラートを閉じる
-                return False
 
         except Exception as err:
             self.logger.error(
@@ -196,6 +189,8 @@ class SingleSiteIDLogin:
             value=login_info["ID_VALUE"],
             inputText=id_text,
         )
+
+        self.random_sleep._random_sleep()
 
         self.inputPass(
             by=login_info["PASS_BY"],

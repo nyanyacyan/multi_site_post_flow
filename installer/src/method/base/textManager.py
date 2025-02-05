@@ -7,7 +7,7 @@ from typing import List
 
 
 # 自作モジュール
-from ..utils import Logger
+from .utils import Logger
 
 # **********************************************************************************
 
