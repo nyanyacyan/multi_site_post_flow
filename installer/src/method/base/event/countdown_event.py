@@ -69,8 +69,8 @@ class CountdownEvent(QObject):
 
         try:
             self.countdown_timer.timeout.disconnect()  # 古い接続を解除してリセット
-            # self.countdown_timer.setInterval(1000)  # 1秒ごとに発火
-            self.countdown_timer.setInterval(10)  # テスト用
+            self.countdown_timer.setInterval(1000)  # 1秒ごとに発火
+            # self.countdown_timer.setInterval(10)  # テスト用
 
         except RuntimeError:
             self.logger.debug(f'タイマー接続なしのためスキップ')

@@ -201,20 +201,17 @@ class MainMAClubApp(QWidget):
     def cancel_process(self):
         self.cancel_event._cancel_event(label=self.process_label)
 
-
     # ----------------------------------------------------------------------------------
     # 日付が変わるまでの時間を算出して待機する
 
     def _monitor_date_change(self):
         self.thread_event._monitor_date_change(stop_event=self.stop_flag, label=self.process_label, update_event=self.update_flag, update_func=self.update_func, process_func=self.process_func, update_bool=self.update_bool, user_info=self.user_info, gss_info=self.gss_info, interval_info=self.interval_info)
 
-
     # ----------------------------------------------------------------------------------
     # 設定している時間になったら設定したtaskを実行
 
     def _monitor_end_time(self):
         self.thread_event._monitor_end_time(uptime_info=self.uptime_info, stop_event=self.stop_flag)
-
 
     # ----------------------------------------------------------------------------------
     # ラベルをアップデートする
