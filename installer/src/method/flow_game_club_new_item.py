@@ -55,7 +55,6 @@ class FlowGameClubProcess:
             # スプシの読み込み（辞書でoutput）
             df = gss_read._get_df_in_gui( gss_info=self.gss_info, worksheet_name=worksheet_name, gss_url=gss_url )
 
-
             # dfの中からチェックがあるものだけ抽出
             process_df = df[df["チェック"] == "TRUE"].reset_index(drop=True)
             df_row_num = len(process_df)
@@ -79,7 +78,6 @@ class FlowGameClubProcess:
                 self.logger.info(f"{i + 1}/{df_row_num} タイトル: {sell_data['商品価格']}")
                 self.logger.info(f"{i + 1}/{df_row_num} 処理開始")
 
-
                 # ログイン〜処理実施まで
                 item_processor.row_process( index=i, id_text=id_text, pass_text=pass_text, sell_data=sell_data )
                 self.logger.info(f"{i + 1}/{df_row_num} 処理完了")
@@ -92,6 +90,7 @@ class FlowGameClubProcess:
 
         finally:
                 chrome.quit()
+
     # ----------------------------------------------------------------------------------
 # **********************************************************************************
 # 一連の流れ
@@ -219,10 +218,7 @@ class FlowGameClubNewItem:
     # ゲームタイトルクリック
 
     def _game_title_click(self):
-        self.element.clickElement(
-            by=self.sell_info["GAME_TITLE_CLICK_BY"],
-            value=self.sell_info["GAME_TITLE_CLICK_VALUE"],
-        )
+        self.element.clickElement( by=self.sell_info["GAME_TITLE_CLICK_BY"], value=self.sell_info["GAME_TITLE_CLICK_VALUE"], )
         self._random_sleep()
 
     # ----------------------------------------------------------------------------------
@@ -231,11 +227,7 @@ class FlowGameClubNewItem:
     def _popup_title_input(self, sell_data: Dict):
         input_game_title = sell_data["ゲームタイトル"]
         self.logger.debug(f"input_game_title: {input_game_title}")
-        element = self.element.clickClearInput(
-            by=self.sell_info["GAME_TITLE_INPUT_BY"],
-            value=self.sell_info["GAME_TITLE_INPUT_VALUE"],
-            inputText=input_game_title,
-        )
+        element = self.element.clickClearInput( by=self.sell_info["GAME_TITLE_INPUT_BY"], value=self.sell_info["GAME_TITLE_INPUT_VALUE"], inputText=input_game_title, )
         element.send_keys(Keys.RETURN)
         self._random_sleep()
 
@@ -251,27 +243,19 @@ class FlowGameClubNewItem:
 
     def _category_select(self, sell_data: Dict):
         if sell_data["カテゴリ"] == "代行":
-            element = self.element.clickElement(
-                value=self.sell_info["CATEGORY_DAIKO_SELECT_VALUE"]
-            )
+            element = self.element.clickElement( value=self.sell_info["CATEGORY_DAIKO_SELECT_VALUE"] )
             self.logger.debug(f"「代行」を選択: {element}")
             self._random_sleep()
         elif sell_data["カテゴリ"] == "リセマラ・初期垢":
-            element = self.element.clickElement(
-                value=self.sell_info["CATEGORY_RISEMARA_SELECT_VALUE"]
-            )
+            element = self.element.clickElement( value=self.sell_info["CATEGORY_RISEMARA_SELECT_VALUE"] )
             self.logger.debug(f"「リセマラ・初期垢」を選択: {element}")
             self._random_sleep()
         elif sell_data["カテゴリ"] == "アイテム・通貨":
-            element = self.element.clickElement(
-                value=self.sell_info["CATEGORY_ITEM_SELECT_VALUE"]
-            )
+            element = self.element.clickElement( value=self.sell_info["CATEGORY_ITEM_SELECT_VALUE"] )
             self.logger.debug(f"「アイテム・通貨」を選択: {element}")
             self._random_sleep()
         else:
-            element = self.element.clickElement(
-                value=self.sell_info["CATEGORY_INTAI_SELECT_VALUE"]
-            )
+            element = self.element.clickElement( value=self.sell_info["CATEGORY_INTAI_SELECT_VALUE"] )
             self.logger.debug(f"「引退垢」を選択: {element}")
             self._random_sleep()
 
@@ -281,11 +265,7 @@ class FlowGameClubNewItem:
     def _input_sell_title(self, sell_data: Dict):
         input_sell_title = sell_data["出品タイトル"]
         self.logger.debug(f"input_sell_title: {input_sell_title}")
-        self.element.clickClearInput(
-            by=self.sell_info["SELL_TITLE_INPUT_BY"],
-            value=self.sell_info["SELL_TITLE_INPUT_VALUE"],
-            inputText=input_sell_title,
-        )
+        self.element.clickClearInput( by=self.sell_info["SELL_TITLE_INPUT_BY"], value=self.sell_info["SELL_TITLE_INPUT_VALUE"], inputText=input_sell_title, )
         self._random_sleep()
 
     # ----------------------------------------------------------------------------------
@@ -295,11 +275,7 @@ class FlowGameClubNewItem:
     def _input_game_explanation(self, sell_data: Dict):
         input_game_explanation = sell_data["商品説明"]
         self.logger.debug(f"input_game_explanation: {input_game_explanation}")
-        self.element.clickClearJsInput(
-            by=self.sell_info["SELL_EXPLANATION_INPUT_BY"],
-            value=self.sell_info["SELL_EXPLANATION_INPUT_VALUE"],
-            inputText=input_game_explanation,
-        )
+        self.element.clickClearJsInput( by=self.sell_info["SELL_EXPLANATION_INPUT_BY"], value=self.sell_info["SELL_EXPLANATION_INPUT_VALUE"], inputText=input_game_explanation, )
         self._random_sleep()
 
     # ----------------------------------------------------------------------------------
@@ -315,11 +291,7 @@ class FlowGameClubNewItem:
             return
 
         self.logger.debug(f"input_first_msg: {input_first_msg}")
-        self.element.clickClearInput(
-            by=self.sell_info["FIRST_MSG_BY"],
-            value=self.sell_info["FIRST_MSG_VALUE"],
-            inputText=input_first_msg,
-        )
+        self.element.clickClearInput( by=self.sell_info["FIRST_MSG_BY"], value=self.sell_info["FIRST_MSG_VALUE"], inputText=input_first_msg, )
         self._random_sleep()
 
     # ----------------------------------------------------------------------------------
@@ -363,9 +335,7 @@ class FlowGameClubNewItem:
     def _input_price(self, sell_data: Dict):
         input_price = sell_data["商品価格"]
         self.logger.debug(f"input_price: {input_price}")
-        self.element.clickClearInput(
-            value=self.sell_info["PRICE_VALUE"], inputText=input_price
-        )
+        self.element.clickClearInput( value=self.sell_info["PRICE_VALUE"], inputText=input_price )
         self._random_sleep(3, 5)
 
     # ----------------------------------------------------------------------------------
@@ -434,4 +404,3 @@ if __name__ == "__main__":
     test_flow.process(
         worksheet_name=worksheet_name, id_text=id_text, pass_text=pass_text
     )
-

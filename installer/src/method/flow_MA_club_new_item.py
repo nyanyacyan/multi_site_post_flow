@@ -37,13 +37,14 @@ class FlowMAClubProcess:
 
         # 必要info
         self.gss_info = GssInfo.MA_CLUB.value
+        self.time_manager = TimeManager()
 
 
     ####################################################################################
     # ----------------------------------------------------------------------------------
     # 各メソッドをまとめる
 
-    def process(self, worksheet_name: str, gss_url: str, id_text: str, pass_text: str):
+    def process(self, worksheet_name: str, gss_url: str, id_text: str, pass_text: str, interval_info: Dict):
         # 新しいブラウザを立ち上げ
         chrome_manager = ChromeManager()
         chrome = chrome_manager.flowSetupChrome()
@@ -52,9 +53,7 @@ class FlowMAClubProcess:
 
         try:
             # スプシの読み込み（辞書でoutput）
-            df = gss_read._get_df_in_gui(
-                gss_info=self.gss_info, worksheet_name=worksheet_name, gss_url=gss_url
-            )
+            df = gss_read._get_df_in_gui( gss_info=self.gss_info, worksheet_name=worksheet_name, gss_url=gss_url )
 
             # dfの中からチェックがあるものだけ抽出
             process_df = df[df["チェック"] == "TRUE"].reset_index(drop=True)
@@ -80,21 +79,21 @@ class FlowMAClubProcess:
                 self.logger.info(f"{i + 1}/{df_row_num} 処理開始")
 
                 # ログイン〜処理実施まで
-                item_processor.row_process(
-                    index=i, id_text=id_text, pass_text=pass_text, sell_data=sell_data
-                )
+                item_processor.row_process( index=i, id_text=id_text, pass_text=pass_text, sell_data=sell_data )
                 self.logger.info(f"{i + 1}/{df_row_num} 処理完了")
+
+                # TODO ここに出品感覚時間を挿入
+                random_wait_time = self.time_manager._random_sleep(random_info=interval_info)
+                self.logger.info(f'スプシ {i + 1}行目開始: 待機時間 {int(random_wait_time)} 秒間待機完了')
 
             self.logger.info(f"すべての処理完了")
 
         finally:
                 chrome.quit()
 
-
     # ----------------------------------------------------------------------------------
 # **********************************************************************************
 # 一連の流れ
-
 
 class FlowMAClubNewItem:
     def __init__(self, chrome: webdriver):
@@ -222,12 +221,10 @@ class FlowMAClubNewItem:
     # ----------------------------------------------------------------------------------
     # POPUPに案件タイトル入力
 
-
     def _popup_title_input(self, sell_data: Dict):
         input_case_title = sell_data['案件タイトル']
         self.logger.debug(f'input_case_title: {input_case_title}')
         element = self.element.clickClearJsInput(by=self.sell_info['CASE_TITLE_INPUT_BY'], value=self.sell_info['CASE_TITLE_INPUT_VALUE'], inputText=input_case_title)
-
         element.send_keys(Keys.RETURN)
         self._random_sleep()
 

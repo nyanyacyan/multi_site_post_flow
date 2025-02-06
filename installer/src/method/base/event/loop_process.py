@@ -367,7 +367,7 @@ class LoopProcessNoUpdate(QObject):
         try:
             # 処理を実施
             # TODO ここにシートの長さとインターバルインフォを渡す
-            process_func(id_text=user_info['id'], pass_text=user_info['pass'], worksheet_name=gss_info['select_worksheet'], gss_url=gss_info['sheet_url'])
+            process_func(id_text=user_info['id'], pass_text=user_info['pass'], worksheet_name=gss_info['select_worksheet'], gss_url=gss_info['sheet_url'], interval_info=interval_info)
 
         except UnexpectedAlertPresentException as e:
             alert_comment = f"再出品の間隔が短いためを処理中断"
