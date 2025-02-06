@@ -23,7 +23,7 @@ from method.base.event.countdown_event import CountdownEvent
 from method.base.event.update_event import UpdateEvent
 from method.base.event.cancel_event import CancelEvent
 from method.base.event.thread_event import ThreadEvent
-from method.base.event.loop_process import LoopProcess
+from method.base.event.loop_process import LoopProcessOrder
 
 from method.base.time_manager import TimeManager
 from method.base.path import BaseToPath
@@ -130,7 +130,7 @@ class MainGamaClubApp(QWidget):
         self.check_flag = CheckFlag()
         self.cancel_event = CancelEvent()
         self.thread_event = ThreadEvent()
-        self.main_event = LoopProcess()
+        self.main_event = LoopProcessOrder()
         self.update_label = UpdateLabel()
 
         # シグナル受信（ Qt.QueuedConnection 受け取ったときにメインスレッドにする）

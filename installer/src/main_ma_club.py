@@ -23,7 +23,7 @@ from method.base.event.countdown_event import CountdownEvent
 from method.base.event.update_event import UpdateEvent
 from method.base.event.cancel_event import CancelEvent
 from method.base.event.thread_event import ThreadEvent
-from method.base.event.loop_process import LoopProcess
+from method.base.event.loop_process import LoopProcessOrder
 
 from method.base.time_manager import TimeManager
 from method.base.path import BaseToPath
@@ -130,7 +130,7 @@ class MainMAClubApp(QWidget):
         self.check_flag = CheckFlag()
         self.cancel_event = CancelEvent()
         self.thread_event = ThreadEvent()
-        self.main_event = LoopProcess()
+        self.main_event = LoopProcessOrder()
         self.update_label = UpdateLabel()
 
         # シグナル受信
@@ -174,21 +174,7 @@ class MainMAClubApp(QWidget):
             self.update_label._update_label(label=self.process_label, comment=comment)
 
             # メイン処理を別スレッドで実行
-            self.main_task_thread = threading.Thread(
-                target=self.main_event.main_task,
-                kwargs={
-                    "update_bool": self.update_bool,
-                    "stop_event": self.stop_flag,
-                    "label": self.process_label,
-                    "update_event": self.update_flag,
-                    "update_func": self.update_func,
-                    "process_func": self.process_func,
-                    "user_info": self.user_info,
-                    "gss_info": self.gss_info,
-                    "interval_info": self.interval_info,
-                },
-                daemon=True
-            )
+            self.main_task_thread = threading.Thread( target=self.main_event.main_task, kwargs={ "update_bool": self.update_bool, "stop_event": self.stop_flag, "label": self.process_label, "update_event": self.update_flag, "update_func": self.update_func, "process_func": self.process_func, "user_info": self.user_info, "gss_info": self.gss_info, "interval_info": self.interval_info, }, daemon=True )
             self.main_task_thread.start()
 
         except Exception as e:

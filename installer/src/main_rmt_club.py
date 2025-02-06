@@ -20,7 +20,7 @@ from method.base.GUI.set_action_btn import ActionBtn
 from method.base.event.countdown_event import CountdownEvent
 from method.base.event.cancel_event import CancelEvent
 from method.base.event.thread_event import ThreadEventNoUpdate
-from method.base.event.loop_process import LoopProcessNoUpdate
+from method.base.event.loop_process import LoopProcessOrderNoUpdate
 
 from method.base.time_manager import TimeManager
 from method.base.path import BaseToPath
@@ -122,7 +122,7 @@ class MainRMTClubApp(QWidget):
         self.check_flag = CheckFlag()
         self.cancel_event = CancelEvent()
         self.thread_event = ThreadEventNoUpdate()
-        self.main_event = LoopProcessNoUpdate()
+        self.main_event = LoopProcessOrderNoUpdate()
         self.update_label = UpdateLabel()
 
         # シグナル受信

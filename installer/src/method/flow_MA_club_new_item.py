@@ -4,6 +4,7 @@
 
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 # import
+import time
 from typing import Dict
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
@@ -38,7 +39,6 @@ class FlowMAClubProcess:
         # 必要info
         self.gss_info = GssInfo.MA_CLUB.value
         self.time_manager = TimeManager()
-
 
     ####################################################################################
     # ----------------------------------------------------------------------------------
@@ -85,6 +85,8 @@ class FlowMAClubProcess:
                 # TODO ここに出品感覚時間を挿入
                 random_wait_time = self.time_manager._random_sleep(random_info=interval_info)
                 self.logger.info(f'スプシ {i + 1}行目開始: 待機時間 {int(random_wait_time)} 秒間待機完了')
+                time.sleep(random_wait_time)
+                self.logger.info(f" {random_wait_time} 秒間待機完了 ")
 
             self.logger.info(f"すべての処理完了")
 

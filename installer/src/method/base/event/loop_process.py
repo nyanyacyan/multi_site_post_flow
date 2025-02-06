@@ -81,19 +81,7 @@ class LoopProcess(QObject):
 
     def _start_parallel_process(self, stop_event: threading.Event, executor: ThreadPoolExecutor, task_que: Queue, process_func: Callable, user_info: Dict, gss_info: Dict, label: QLabel, interval_info: Dict):
         # 並列処理ロジックスタート（dispatcherはtaskを受取、ThreadPoolに割り当てる）
-        dispatcher_thread = threading.Thread(
-            target=self._task_manager,
-            kwargs={
-                'stop_event': stop_event,
-                'executor' : executor,
-                'task_que' : task_que,
-                'process_func' : process_func,
-                'user_info' : user_info,
-                'gss_info' : gss_info,
-                'interval_info': interval_info,
-                'label' : label,
-            }
-        )
+        dispatcher_thread = threading.Thread( target=self._task_manager, kwargs={ 'stop_event': stop_event, 'executor' : executor, 'task_que' : task_que, 'process_func' : process_func, 'user_info' : user_info, 'gss_info' : gss_info, 'interval_info': interval_info, 'label' : label, } )
         dispatcher_thread.start()
 
         task_id = 1
@@ -396,5 +384,148 @@ class LoopProcessNoUpdate(QObject):
         executor.shutdown(wait=True)  # 並列処理の機械をシャットダウンする
         self.logger.info("すべてのタスクが完了しました")
 
+
+    # ----------------------------------------------------------------------------------
+
+class LoopProcessOrder(QObject):
+    update_label_signal = Signal(str)  # クラス変数
+
+    def __init__(self):
+        super().__init__()
+        # logger
+        self.getLogger = Logger()
+        self.logger = self.getLogger.getLogger()
+
+        # インスタンス
+        self.update_label = UpdateLabel()
+        self.update_event = UpdateEvent()
+        self.time_manager = TimeManager()
+
+    ####################################################################################
+    # start_eventに使用するmain処理
+
+    def main_task(self, update_bool: bool, stop_event: threading.Event, label: QLabel, update_event: threading.Event, update_func: Callable, process_func: Callable, user_info: Dict, gss_info: Dict, interval_info: Dict):
+        # 更新処理がある場合
+        if update_bool:
+            update_comment = "更新処理中..."
+            self.update_label_signal.emit(update_comment)
+            self.logger.warning(f'update_comment: {update_comment}')
+
+            self.update_event._update_task(stop_event=stop_event, update_event=update_event, update_func=update_func, user_info=user_info)
+
+            comp_comment = "更新処理が完了しました。"
+            self.update_label_signal.emit(comp_comment)
+            self.logger.debug(comp_comment)
+        else:
+            self.logger.info("更新処理「なし」のため更新処理なし")
+
+        self.logger.info("これからmainloop処理を開始")
+        self.process(stop_event=stop_event, process_func=process_func, user_info=user_info, gss_info=gss_info, label=label, interval_info=interval_info)
+
+    ####################################################################################
+    # 直列処理に変更（並列処理はなし）
+
+    def process(self, stop_event: threading.Event, process_func: Callable, user_info: Dict, gss_info: Dict, label: QLabel, interval_info: Dict):
+        task_id = 1
+        try:
+            while not stop_event.is_set():
+                # 直接タスクを実行
+                self._task_contents(count=task_id, label=label, process_func=process_func, user_info=user_info, gss_info=gss_info, interval_info=interval_info)
+                task_id += 1
+
+
+        except KeyboardInterrupt:
+            self.logger.info("停止要求を受け付けました")
+
+    ####################################################################################
+    # タスクの実行
+
+    def _task_contents(self, count: int, label: QLabel, process_func: Callable, user_info: Dict, gss_info: Dict, interval_info: Dict):
+        comment = f"新規出品 処理中 {count} 回目 ..."
+        self.update_label._update_label(label=label, comment=comment)
+        self.update_label_signal.emit(comment)
+
+        # 開始時刻
+        start_time = datetime.now()
+        start_time_str = start_time.strftime("%Y-%m-%d %H:%M:%S")
+        self.logger.info(f"【start】実行処理開始: ({count}回目) [{start_time_str}]")
+
+        self.logger.debug(f"\nid: {user_info['id']}\npass: {user_info['pass']}\nworksheet_name: {gss_info}")
+
+        try:
+            # 処理を実施
+            process_func(id_text=user_info['id'], pass_text=user_info['pass'], worksheet_name=gss_info['select_worksheet'], gss_url=gss_info['sheet_url'], interval_info=interval_info)
+
+        except UnexpectedAlertPresentException as e:
+            alert_comment = "再出品の間隔が短いため処理中断"
+            self.logger.error(f"再出品の間隔が短いため、エラー 処理中断: {e}")
+            self.update_label_signal.emit(alert_comment)
+
+        except Exception as e:
+            self.logger.error(f"タスク実行中にエラーが発生 この処理をスキップ: {e}")
+
+        # 処理時間計測
+        end_time = datetime.now()
+        diff_time = end_time - start_time
+        minutes, seconds = divmod(diff_time.total_seconds(), 60)
+        diff_time_str = f"{int(minutes)} 分 {int(seconds)} 秒" if minutes > 0 else f"{int(seconds)} 秒"
+
+        self.logger.info(f"【complete】実行処理完了: ({count}回目) [処理時間: {diff_time_str}]")
+
+    ####################################################################################
+    # ストップ処理（不要なexecutor削除）
+
+    def stop(self):
+        self.logger.info("すべてのタスクが完了しました")
+
+
+# **********************************************************************************
+
+class LoopProcessOrderNoUpdate(QObject):
+    update_label_signal = Signal(str)  # クラス変数
+
+    def __init__(self):
+        super().__init__()
+        self.getLogger = Logger()
+        self.logger = self.getLogger.getLogger()
+        self.update_label = UpdateLabel()
+        self.time_manager = TimeManager()
+
+    # ----------------------------------------------------------------------------------
+
+    def main_task(self, stop_event: threading.Event, process_func: Callable, user_info: Dict, gss_info: str, interval_info: Dict):
+        self.logger.info("これからmainloop処理を開始")
+        self.process(stop_event=stop_event, process_func=process_func, user_info=user_info, gss_info=gss_info, interval_info=interval_info)
+
+    # ----------------------------------------------------------------------------------
+
+    def process(self, stop_event: threading.Event, process_func: Callable, user_info: Dict, gss_info: str, interval_info: Dict):
+        task_id = 1
+        try:
+            while not stop_event.is_set():
+                self._execute_task(task_id=task_id, process_func=process_func, user_info=user_info, gss_info=gss_info, interval_info=interval_info)
+                task_id += 1
+
+        except KeyboardInterrupt:
+            self.logger.info("停止要求を受け付けました")
+
+    # ----------------------------------------------------------------------------------
+
+    def _execute_task(self, task_id: int, process_func: Callable, user_info: Dict, gss_info: str, interval_info: Dict):
+        self.logger.info(f"タスク {task_id} を実行します")
+        comment = f"新規出品 処理中 {task_id} 回目..."
+        self.update_label_signal.emit(comment)
+
+        start_time = datetime.now()
+        try:
+            process_func(id_text=user_info['id'], pass_text=user_info['pass'], worksheet_name=gss_info['select_worksheet'], gss_url=gss_info['sheet_url'], interval_info=interval_info)
+        except Exception as e:
+            self.logger.error(f"タスク実行中にエラーが発生 この処理をスキップ: {e}")
+
+        end_time = datetime.now()
+        diff_time = end_time - start_time
+        minutes, seconds = divmod(diff_time.total_seconds(), 60)
+        diff_time_str = f"{int(minutes)} 分 {int(seconds)} 秒" if minutes > 0 else f"{int(seconds)} 秒"
+        self.logger.info(f"タスク {task_id} の処理が完了しました [処理時間: {diff_time_str}]")
 
     # ----------------------------------------------------------------------------------

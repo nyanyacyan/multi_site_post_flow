@@ -84,7 +84,9 @@ class FlowRMTProcess:
 
                 # TODO ここに出品感覚時間を挿入
                 random_wait_time = self.time_manager._random_sleep(random_info=interval_info)
-                self.logger.info(f'スプシ {i + 1}行目開始: 待機時間 {int(random_wait_time)} 秒間待機完了')
+                self.logger.info(f'スプシ {i + 1}行目処理完了: 待機時間 {int(random_wait_time)} 秒間待機開始')
+                time.sleep(random_wait_time)
+                self.logger.info(f" {random_wait_time} 秒間待機完了 ")
 
             self.logger.info(f"すべての処理完了")
 
