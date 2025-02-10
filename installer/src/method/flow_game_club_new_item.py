@@ -78,15 +78,18 @@ class FlowGameClubProcess:
                 self.logger.info(f"{i + 1}/{df_row_num} タイトル: {sell_data['商品価格']}")
                 self.logger.info(f"{i + 1}/{df_row_num} 処理開始")
 
+                # TODO ここに出品感覚時間を挿入
+                random_wait_time = self.time_manager._random_sleep(random_info=interval_info)
+                self.logger.info(f'スプシ {i + 1}行目開始: 待機時間 {int(random_wait_time)} 秒間待機完了')
+
+                if not i == 0:
+                    time.sleep(random_wait_time)
+                    self.logger.info(f" {random_wait_time} 秒間待機完了 ")
+
                 # ログイン〜処理実施まで
                 item_processor.row_process( index=i, id_text=id_text, pass_text=pass_text, sell_data=sell_data )
                 self.logger.info(f"{i + 1}/{df_row_num} 処理完了")
 
-                # TODO ここに出品感覚時間を挿入
-                random_wait_time = self.time_manager._random_sleep(random_info=interval_info)
-                self.logger.info(f'スプシ {i + 1}行目開始: 待機時間 {int(random_wait_time)} 秒間待機完了')
-                time.sleep(random_wait_time)
-                self.logger.info(f" {random_wait_time} 秒間待機完了 ")
             self.logger.info(f"すべての処理完了")
 
         finally:

@@ -12,6 +12,7 @@ from PySide6.QtGui import QGuiApplication
 
 
 # 自作モジュール
+
 from method.base.GUI.set_user_info import UserInfoForm
 from method.base.GUI.set_gss_info import GSSInfoForm
 from method.base.GUI.set_interval_time import IntervalTimeForm
@@ -160,37 +161,12 @@ class MainGamaClubApp(QWidget):
             self.interval_info = self.interval_form.get_interval_info()  # TODO 処理の実施間隔の値
             self.update_bool = self.radio_btn_form.get_radio_info()  # 選択した値
 
-
-            # 終了時間の監視taskをスタート
-            self.end_time_thread = threading.Thread(target=self._monitor_end_time, daemon=True)
-
-            # 終了時間の監視taskをスタート
-            self.date_change_thread = threading.Thread(target=self._monitor_date_change, daemon=True)
-
             # 各スレッドスタート
-            self.end_time_thread.start()
-            self.date_change_thread.start()
+            self._start_main_thread()
+            self._start_monitor_date_thread()
+            self._start_monitor_end_time_thread()
 
-            comment = "処理中..."
-            self.update_label._update_label(label=self.process_label, comment=comment)
 
-            # メイン処理を別スレッドで実行
-            self.main_task_thread = threading.Thread(
-                target=self.main_event.main_task,
-                kwargs={
-                    "update_bool": self.update_bool,
-                    "stop_event": self.stop_flag,
-                    "label": self.process_label,
-                    "update_event": self.update_flag,
-                    "update_func": self.update_func,
-                    "process_func": self.process_func,
-                    "user_info": self.user_info,
-                    "gss_info": self.gss_info,
-                    "interval_info": self.interval_info,
-                },
-                daemon=True
-            )
-            self.main_task_thread.start()
 
         except Exception as e:
             print(f"処理中にエラーが発生: {e}")
@@ -203,16 +179,67 @@ class MainGamaClubApp(QWidget):
         self.cancel_event._cancel_event(label=self.process_label)
 
     # ----------------------------------------------------------------------------------
+    # メインスレッドの実行
+
+    def _start_main_thread(self):
+            # メイン処理を別スレッドの定義
+            self.main_task_thread = threading.Thread(
+                target=self.main_event.main_task,
+                kwargs={
+                    "update_bool": self.update_bool,
+                    "stop_event": self.stop_flag,
+                    "label": self.process_label,
+                    "update_event": self.update_flag,
+                    "update_func": self.update_func,
+                    "process_func": self.process_func,
+                    "user_info": self.user_info,
+                    "gss_info": self.gss_info,
+                    "interval_info": self.interval_info,
+                }, daemon=True )
+
+            # 各スレッドスタート
+            self.main_task_thread.start()
+
+
+    # ----------------------------------------------------------------------------------
     # 日付が変わるまでの時間を算出して待機する
 
-    def _monitor_date_change(self):
-        self.thread_event._monitor_date_change(stop_event=self.stop_flag, label=self.process_label, update_event=self.update_flag, update_func=self.update_func, process_func=self.process_func, update_bool=self.update_bool, user_info=self.user_info, gss_info=self.gss_info, interval_info=self.interval_info)
+    def _start_monitor_date_thread(self):
+        # 日付変更の監視taskをスタート
+        try:
+            self.date_change_thread = threading.Thread(
+                target=self.thread_event._monitor_date_change,
+                kwargs={
+                    "stop_event": self.stop_flag,
+                    "finish_event": self.finish_flag,
+                    "main_thread": self.main_task_thread
+                },
+                daemon=True
+            )
+
+            # threadスタート
+            self.date_change_thread.start()
+        except Exception as e:
+            print(e)
+
+
 
     # ----------------------------------------------------------------------------------
     # 設定している時間になったら設定したtaskを実行
 
-    def _monitor_end_time(self):
-        self.thread_event._monitor_end_time(uptime_info=self.uptime_info, stop_event=self.stop_flag)
+    def _start_monitor_end_time_thread(self):
+        # 終了時間の監視taskをスタート
+        self.end_time_thread = threading.Thread(
+            target=self.thread_event._monitor_end_time,
+            kwargs={
+                "uptime_info": self.uptime_info,
+                "finish_event": self.finish_flag,
+                "main_thread": self.main_task_thread
+            }, daemon=True)
+
+        # threadスタート
+        self.end_time_thread.start()
+
 
     # ----------------------------------------------------------------------------------
     # ラベルをアップデートする

@@ -404,35 +404,6 @@ class LoopProcessOrder(QObject):
         self.time_manager = TimeManager()
         self.thread_event = ThreadEvent()
 
-    ####################################################################################
-
-
-    def parallel_process(self, update_bool: bool, uptime_info: dict, stop_event: threading.Event, label: QLabel, update_event: threading.Event, update_func: Callable, process_func: Callable, user_info: Dict, gss_info: Dict, interval_info: Dict):
-        # メインで行うスレッドを定義
-        main_thread = threading.Thread(target=self.main_task, args=(
-            update_bool, self.stop_event, label, update_event, update_func, process_func, user_info, gss_info, interval_info
-        ), daemon=True)
-
-        # 日付変更を検知するスレッド
-        monitor_date_thread = threading.Thread(target=self.thread_event._monitor_date_change, args=(
-            stop_event, label, update_event, update_bool, update_func, process_func, user_info, gss_info, interval_info
-        ), daemon=True)
-
-        # 指定した時間を検知するスレッド
-        monitor_end_time_thread = threading.Thread(target=self.thread_event._monitor_end_time, args=(
-            uptime_info, stop_event
-        ), daemon=True)
-
-        # 各スレッドスタート
-        monitor_date_thread.start()
-        monitor_end_time_thread.start()
-        main_thread.start()
-
-
-
-
-
-
     # ----------------------------------------------------------------------------------
     ####################################################################################
     # start_eventに使用するmain処理
@@ -518,76 +489,77 @@ class LoopProcessOrder(QObject):
 
 
     # ----------------------------------------------------------------------------------
+    # 日付が変わるまで秒数待機（GCとMAのみ）
 
-    def _main_thread_process(self, update_bool: bool, stop_event: threading.Event, label: QLabel, update_event: threading.Event, update_func: Callable, process_func: Callable, user_info: Dict, gss_info: Dict, interval_info: Dict):
-        # メインで行うスレッドを定義
-        main_thread = threading.Thread(target=self.main_task, kwargs={
-            "update_bool": update_bool,
-            "stop_event": stop_event,
-            "label": label,
-            "update_event": update_event,
-            "update_func": update_func,
-            "process_func": process_func,
-            "user_info": user_info,
-            "gss_info": gss_info,
-            "interval_info": interval_info
-        }, daemon=True)
+    def _monitor_date_change( self, stop_event: threading.Event, finish_event:threading.Event, main_thread: threading.Thread ):
+        try:
+            self.logger.debug( f"_monitor_date_change のスレッドID: {threading.get_ident()}" )
 
-        # スレッドスタート
-        main_thread.start()
+            while not finish_event.is_set():
+                # 今の時間から日付が変わるまでの秒数を算出
+                now = datetime.now()
+                next_day = (now + timedelta(days=1)).replace( hour=0, minute=0, second=0, microsecond=0 )
+                next_day_total_time = (next_day - now).total_seconds()
+                self.logger.info( f"\n現時刻: {now}\n翌日の時刻（24時換算): {next_day}\n日付が変わるまでの秒数: {next_day_total_time}" )
+
+                # 日付が変わるまで秒数待機
+                self.logger.info('日付が変わるまで待機するthreadスタート')
+                finish_event.wait(next_day_total_time)
+
+                if main_thread.is_alive():
+                    self.logger.info('`main_task_thread` の処理が完了するまで待機中...')
+                    main_thread.join()
+                    self.logger.info('最後の`main_task_thread` が終了しました')
+
+                self._restart_main_task(stop_event=stop_event)
+
+
+        except Exception as e:
+            self.logger.error(f"処理中にエラーが発生: {e}")
+
+    # ----------------------------------------------------------------------------------
+    ####################################################################################
+
+    def _restart_main_task(self, stop_event: threading.Event):
+        self.logger.info("【日付変更】`main_task` の再起動を開始")
+
+        # 🔴 既存の `main_task` を停止
+        stop_event.set()
+
+        if hasattr(self, 'main_task_thread') and self.main_task_thread.is_alive():
+            self.logger.info("`main_task_thread` の処理が完了するまで待機中...")
+            self.main_task_thread.join()  # スレッド終了を待機
+
+        self.logger.info("`main_task_thread` が終了しました。新しいタスクを開始します。")
+
+        # 🟢 新しい `main_task` を開始
+        stop_event.clear()
+        self._restart_main_thread()
 
 
     # ----------------------------------------------------------------------------------
+    # 新しいメインスレッドの実行
 
+    def _restart_main_thread(self):
+            # メイン処理を別スレッドの定義
+            self.main_task_thread = threading.Thread(
+                target=self.main_task,
+                kwargs={
+                    "update_bool": self.update_bool,
+                    "stop_event": self.stop_flag,
+                    "label": self.process_label,
+                    "update_event": self.update_flag,
+                    "update_func": self.update_func,
+                    "process_func": self.process_func,
+                    "user_info": self.user_info,
+                    "gss_info": self.gss_info,
+                    "interval_info": self.interval_info,
+                }, daemon=True )
 
-    def _monitor_date_change(self, stop_event: threading.Event, finish_event: threading.Event, label, update_event, update_bool, update_func, process_func, user_info, gss_info, interval_info):
-        """日付変更を検知し、main_taskの終了を待ってから再実行するループ"""
-
-        while not finish_event.is_set:
-            # 📌 1. 次の日の 0 時になるまで待機
-            now = datetime.now()
-            next_day = (now + timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
-            wait_time = (next_day - now).total_seconds()
-
-            self.logger.info(f"次の日まで {wait_time:.2f} 秒待機中...")
-            threading.Timer(wait_time, self._trigger_date_change_task)
-
-
-            self.logger.warning("【日付変更】タスクをリスタート準備中...")
-
-            # 📌 2. 現在の `main_task` が終了するのを待つ
-            if self.main_thread and self.main_thread.is_alive():
-                self.logger.info("`main_task` の処理が完了するまで待機中...")
-                self.main_thread.join()  # `main_task` の終了を待つ
-
-            # 📌 3. `main_task` を再実行
-            stop_event.clear()  # 停止フラグを解除
-            self.logger.info("再度 `main_task` を開始！")
-
-            self.start_main_task(update_bool, stop_event, label, update_event, update_func, process_func, user_info, gss_info, interval_info)
-
-            # 📌 4. 次の日付変更を待機（ループへ戻る）
+            # 各スレッドスタート
+            self.main_task_thread.start()
 
     # ----------------------------------------------------------------------------------
-
-    def _trigger_date_change_task(self, finish_event: threading.Event, update_bool: bool, stop_event: threading.Event, label: QLabel, update_event: threading.Event, update_func: Callable, process_func: Callable, user_info: Dict, gss_info: Dict, interval_info: Dict):
-        if finish_event.is_set:
-            return
-
-        self.logger.warning("【日付変更】タスクをリスタート準備中...")
-
-        if self._main_thread_process and self._main_thread_process.is_alive():
-            self.logger.info("`main_task` の処理が完了するまで待機中...")
-            self._main_thread_process.join()  # `main_task` の終了を待つ
-
-        # 📌 3. `main_task` を再実行
-        stop_event.clear()  # 停止フラグを解除
-        self.logger.info("再度 `main_task` を開始！")
-
-        self._main_thread_process(update_bool=update_bool, stop_event=stop_event, label=label, update_event=update_event, update_func=update_func, process_func=process_func, user_info=user_info, gss_info=gss_info, interval_info=interval_info)
-
-    # ----------------------------------------------------------------------------------
-
 # **********************************************************************************
 
 class LoopProcessOrderNoUpdate(QObject):
