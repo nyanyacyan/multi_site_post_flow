@@ -12,7 +12,6 @@ from PySide6.QtGui import QGuiApplication
 
 
 # 自作モジュール
-
 from method.base.GUI.set_user_info import UserInfoForm
 from method.base.GUI.set_gss_info import GSSInfoForm
 from method.base.GUI.set_interval_time import IntervalTimeForm
@@ -23,7 +22,6 @@ from method.base.GUI.set_action_btn import ActionBtn
 from method.base.event.countdown_event import CountdownEvent
 from method.base.event.update_event import UpdateEvent
 from method.base.event.cancel_event import CancelEvent
-from method.base.event.thread_event import ThreadEvent
 from method.base.event.loop_process import LoopProcessOrder
 
 from method.base.time_manager import TimeManager
@@ -131,7 +129,6 @@ class MainGamaClubApp(QWidget):
         self.update_event = UpdateEvent()
         self.check_flag = CheckFlag()
         self.cancel_event = CancelEvent()
-        self.thread_event = ThreadEvent()
         self.main_event = LoopProcessOrder()
         self.update_label = UpdateLabel()
 

@@ -399,12 +399,7 @@ if __name__ == "__main__":
     worksheet_name = LoginInfo.SITE_PATTERNS.value["GAME_CLUB"]["SITE_NAME"]
     id_text = LoginInfo.SITE_PATTERNS.value["GAME_CLUB"]["ID_TEXT"]
     pass_text = LoginInfo.SITE_PATTERNS.value["GAME_CLUB"]["PASS_TEXT"]
-    print(
-        f"worksheet_name: {worksheet_name}\nid_text: {id_text}\npass_text: {pass_text}"
-    )
+    print( f"worksheet_name: {worksheet_name}\nid_text: {id_text}\npass_text: {pass_text}" )
 
     test_flow = FlowGameClubNewItem()
-
-    test_flow.process(
-        worksheet_name=worksheet_name, id_text=id_text, pass_text=pass_text
-    )
+    test_flow.process( worksheet_name=worksheet_name, id_text=id_text, pass_text=pass_text )
