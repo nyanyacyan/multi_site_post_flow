@@ -113,6 +113,7 @@ class MainGamaClubApp(QWidget):
 
         # フラグをセット（フラグを立てる場合には self.stop_event.set() を実施）
         self.stop_flag = threading.Event()
+        self.finish_flag = threading.Event()
         self.update_flag = threading.Event()
         self.start_event_flag = threading.Event()
 

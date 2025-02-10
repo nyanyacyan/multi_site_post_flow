@@ -9,7 +9,7 @@ from queue import Queue, Empty
 import threading, time
 from functools import partial
 from concurrent.futures import ThreadPoolExecutor
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Dict, Callable
 from PySide6.QtWidgets import QLabel
 from PySide6.QtCore import QObject, Signal
@@ -467,9 +467,13 @@ class LoopProcessOrder(QObject):
                 self._task_contents(count=task_id, label=label, process_func=process_func, user_info=user_info, gss_info=gss_info, interval_info=interval_info)
                 task_id += 1
 
-
         except KeyboardInterrupt:
             self.logger.info("停止要求を受け付けました")
+
+        finally:
+            end_comment = "stop_eventを検知認め終了"
+            self.logger.info(end_comment)
+            self.update_label_signal.emit("待機中...")
 
     ####################################################################################
     # タスクの実行
@@ -512,8 +516,77 @@ class LoopProcessOrder(QObject):
     def stop(self):
         self.logger.info("すべてのタスクが完了しました")
 
+
     # ----------------------------------------------------------------------------------
 
+    def _main_thread_process(self, update_bool: bool, stop_event: threading.Event, label: QLabel, update_event: threading.Event, update_func: Callable, process_func: Callable, user_info: Dict, gss_info: Dict, interval_info: Dict):
+        # メインで行うスレッドを定義
+        main_thread = threading.Thread(target=self.main_task, kwargs={
+            "update_bool": update_bool,
+            "stop_event": stop_event,
+            "label": label,
+            "update_event": update_event,
+            "update_func": update_func,
+            "process_func": process_func,
+            "user_info": user_info,
+            "gss_info": gss_info,
+            "interval_info": interval_info
+        }, daemon=True)
+
+        # スレッドスタート
+        main_thread.start()
+
+
+    # ----------------------------------------------------------------------------------
+
+
+    def _monitor_date_change(self, stop_event: threading.Event, finish_event: threading.Event, label, update_event, update_bool, update_func, process_func, user_info, gss_info, interval_info):
+        """日付変更を検知し、main_taskの終了を待ってから再実行するループ"""
+
+        while not finish_event.is_set:
+            # 📌 1. 次の日の 0 時になるまで待機
+            now = datetime.now()
+            next_day = (now + timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
+            wait_time = (next_day - now).total_seconds()
+
+            self.logger.info(f"次の日まで {wait_time:.2f} 秒待機中...")
+            threading.Timer(wait_time, self._trigger_date_change_task)
+
+
+            self.logger.warning("【日付変更】タスクをリスタート準備中...")
+
+            # 📌 2. 現在の `main_task` が終了するのを待つ
+            if self.main_thread and self.main_thread.is_alive():
+                self.logger.info("`main_task` の処理が完了するまで待機中...")
+                self.main_thread.join()  # `main_task` の終了を待つ
+
+            # 📌 3. `main_task` を再実行
+            stop_event.clear()  # 停止フラグを解除
+            self.logger.info("再度 `main_task` を開始！")
+
+            self.start_main_task(update_bool, stop_event, label, update_event, update_func, process_func, user_info, gss_info, interval_info)
+
+            # 📌 4. 次の日付変更を待機（ループへ戻る）
+
+    # ----------------------------------------------------------------------------------
+
+    def _trigger_date_change_task(self, finish_event: threading.Event, update_bool: bool, stop_event: threading.Event, label: QLabel, update_event: threading.Event, update_func: Callable, process_func: Callable, user_info: Dict, gss_info: Dict, interval_info: Dict):
+        if finish_event.is_set:
+            return
+
+        self.logger.warning("【日付変更】タスクをリスタート準備中...")
+
+        if self._main_thread_process and self._main_thread_process.is_alive():
+            self.logger.info("`main_task` の処理が完了するまで待機中...")
+            self._main_thread_process.join()  # `main_task` の終了を待つ
+
+        # 📌 3. `main_task` を再実行
+        stop_event.clear()  # 停止フラグを解除
+        self.logger.info("再度 `main_task` を開始！")
+
+        self._main_thread_process(update_bool=update_bool, stop_event=stop_event, label=label, update_event=update_event, update_func=update_func, process_func=process_func, user_info=user_info, gss_info=gss_info, interval_info=interval_info)
+
+    # ----------------------------------------------------------------------------------
 
 # **********************************************************************************
 
