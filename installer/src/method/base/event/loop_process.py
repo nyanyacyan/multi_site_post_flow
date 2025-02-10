@@ -342,8 +342,8 @@ class LoopProcessOrderNoUpdate(QObject):
                 now = datetime.now()
                 next_day = (now + timedelta(days=1)).replace( hour=0, minute=0, second=0, microsecond=0 )
 
-                # next_day_total_time = (next_day - now).total_seconds()  # TODO 本番環境
-                next_day_total_time = 30  # TODO テスト環境
+                next_day_total_time = (next_day - now).total_seconds()  # TODO 本番環境
+                # next_day_total_time = 30  # TODO テスト環境
 
                 self.logger.info( f"\n現時刻: {now}\n翌日の時刻（24時換算): {next_day}\n日付が変わるまでの秒数: {next_day_total_time}" )
 
