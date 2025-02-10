@@ -121,13 +121,6 @@ class LoopProcessOrder(QObject):
         self.logger.info(f"【complete】実行処理完了: ({count}回目) [処理時間: {diff_time_str}]")
 
     # ----------------------------------------------------------------------------------
-    # ストップ処理（不要なexecutor削除）
-
-    def stop(self):
-        self.logger.info("すべてのタスクが完了しました")
-
-
-    # ----------------------------------------------------------------------------------
     # 日付が変わるまで秒数待機（GCとMAのみ）
 
     def _monitor_date_change( self, stop_event: threading.Event, finish_event:threading.Event, main_thread: threading.Thread, update_bool: bool, label: QLabel, update_event: threading.Event, update_func: Callable, process_func: Callable, user_info: Dict, gss_info: Dict, interval_info: Dict):
@@ -138,7 +131,6 @@ class LoopProcessOrder(QObject):
                 # 今の時間から日付が変わるまでの秒数を算出
                 now = datetime.now()
                 next_day = (now + timedelta(days=1)).replace( hour=0, minute=0, second=0, microsecond=0 )
-
 
                 # next_day_total_time = (next_day - now).total_seconds()  # TODO 本番環境
                 next_day_total_time = 30  # TODO テスト環境
@@ -165,7 +157,9 @@ class LoopProcessOrder(QObject):
 
                 # ここに出品感覚時間を挿入
                 random_wait_time = self.time_manager._random_sleep(random_info=interval_info)
-                self.logger.info(f'出品間隔に合わせて {int(random_wait_time)} 秒間、待機してます')
+                random_wait_comment = f'出品間隔に合わせて {int(random_wait_time)} 秒間、待機してます'
+                self.logger.info(random_wait_comment)
+                self.update_label_signal.emit(random_wait_comment)
 
                 finish_event.wait(random_wait_time)
 
@@ -183,6 +177,8 @@ class LoopProcessOrder(QObject):
         finally:
             self.logger.info(f'finish_eventを検知しました。')
             self.update_label_signal.emit("待機中...")
+            stop_event.clear()
+            finish_event.clear()
 
     # ----------------------------------------------------------------------------------
 

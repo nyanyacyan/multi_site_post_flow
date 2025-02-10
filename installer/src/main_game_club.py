@@ -166,11 +166,8 @@ class MainGamaClubApp(QWidget):
             self._start_monitor_date_thread()
             self._start_monitor_end_time_thread()
 
-
-
         except Exception as e:
             print(f"処理中にエラーが発生: {e}")
-
 
     # ----------------------------------------------------------------------------------
     # キャンセル処理
