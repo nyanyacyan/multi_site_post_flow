@@ -14,7 +14,6 @@ from PySide6.QtCore import QObject, QTimer
 # 自作モジュール
 from method.base.utils import Logger
 from method.base.event.update_label import UpdateLabel
-from method.base.event.loop_process import LoopProcess
 from method.base.GUI.Qtimer_content import CheckFlag
 
 
@@ -34,7 +33,6 @@ class CountdownEvent(QObject):
 
         # インスタンス
         self.update_label = UpdateLabel()
-        self.loop_process = LoopProcess()
         self.check_flag = CheckFlag()
 
 

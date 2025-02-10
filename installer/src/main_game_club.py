@@ -208,14 +208,20 @@ class MainGamaClubApp(QWidget):
         # 日付変更の監視taskをスタート
         try:
             self.date_change_thread = threading.Thread(
-                target=self.thread_event._monitor_date_change,
-                kwargs={
+                target=self.main_event._monitor_date_change,
+                kwargs = {
                     "stop_event": self.stop_flag,
                     "finish_event": self.finish_flag,
-                    "main_thread": self.main_task_thread
-                },
-                daemon=True
-            )
+                    "main_thread": self.main_task_thread,
+                    "update_bool": self.update_bool,
+                    "label": self.process_label,
+                    "update_event": self.update_flag,
+                    "update_func": self.update_func,
+                    "process_func": self.process_func,
+                    "user_info": self.user_info,
+                    "gss_info": self.gss_info,
+                    "interval_info": self.interval_info,
+                }, daemon=True )
 
             # threadスタート
             self.date_change_thread.start()
@@ -230,10 +236,11 @@ class MainGamaClubApp(QWidget):
     def _start_monitor_end_time_thread(self):
         # 終了時間の監視taskをスタート
         self.end_time_thread = threading.Thread(
-            target=self.thread_event._monitor_end_time,
+            target=self.main_event._monitor_end_time,
             kwargs={
                 "uptime_info": self.uptime_info,
                 "finish_event": self.finish_flag,
+                "stop_event": self.stop_flag,
                 "main_thread": self.main_task_thread
             }, daemon=True)
 
