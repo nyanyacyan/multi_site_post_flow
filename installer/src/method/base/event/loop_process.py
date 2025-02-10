@@ -20,6 +20,7 @@ from method.base.utils import Logger
 from method.base.event.update_label import UpdateLabel
 from method.base.event.update_event import UpdateEvent
 from method.base.time_manager import TimeManager
+from method.base.event.thread_event import ThreadEvent
 
 
 # ----------------------------------------------------------------------------------
@@ -386,6 +387,7 @@ class LoopProcessNoUpdate(QObject):
 
 
     # ----------------------------------------------------------------------------------
+#! **********************************************************************************
 
 class LoopProcessOrder(QObject):
     update_label_signal = Signal(str)  # クラス変数
@@ -400,7 +402,38 @@ class LoopProcessOrder(QObject):
         self.update_label = UpdateLabel()
         self.update_event = UpdateEvent()
         self.time_manager = TimeManager()
+        self.thread_event = ThreadEvent()
 
+    ####################################################################################
+
+
+    def parallel_process(self, update_bool: bool, uptime_info: dict, stop_event: threading.Event, label: QLabel, update_event: threading.Event, update_func: Callable, process_func: Callable, user_info: Dict, gss_info: Dict, interval_info: Dict):
+        # メインで行うスレッドを定義
+        main_thread = threading.Thread(target=self.main_task, args=(
+            update_bool, self.stop_event, label, update_event, update_func, process_func, user_info, gss_info, interval_info
+        ), daemon=True)
+
+        # 日付変更を検知するスレッド
+        monitor_date_thread = threading.Thread(target=self.thread_event._monitor_date_change, args=(
+            stop_event, label, update_event, update_bool, update_func, process_func, user_info, gss_info, interval_info
+        ), daemon=True)
+
+        # 指定した時間を検知するスレッド
+        monitor_end_time_thread = threading.Thread(target=self.thread_event._monitor_end_time, args=(
+            uptime_info, stop_event
+        ), daemon=True)
+
+        # 各スレッドスタート
+        monitor_date_thread.start()
+        monitor_end_time_thread.start()
+        main_thread.start()
+
+
+
+
+
+
+    # ----------------------------------------------------------------------------------
     ####################################################################################
     # start_eventに使用するmain処理
 
@@ -420,12 +453,13 @@ class LoopProcessOrder(QObject):
             self.logger.info("更新処理「なし」のため更新処理なし")
 
         self.logger.info("これからmainloop処理を開始")
-        self.process(stop_event=stop_event, process_func=process_func, user_info=user_info, gss_info=gss_info, label=label, interval_info=interval_info)
+        self.new_item_process(stop_event=stop_event, process_func=process_func, user_info=user_info, gss_info=gss_info, label=label, interval_info=interval_info)
 
+    # ----------------------------------------------------------------------------------
     ####################################################################################
     # 直列処理に変更（並列処理はなし）
 
-    def process(self, stop_event: threading.Event, process_func: Callable, user_info: Dict, gss_info: Dict, label: QLabel, interval_info: Dict):
+    def new_item_process(self, stop_event: threading.Event, process_func: Callable, user_info: Dict, gss_info: Dict, label: QLabel, interval_info: Dict):
         task_id = 1
         try:
             while not stop_event.is_set():
@@ -472,11 +506,13 @@ class LoopProcessOrder(QObject):
 
         self.logger.info(f"【complete】実行処理完了: ({count}回目) [処理時間: {diff_time_str}]")
 
-    ####################################################################################
+    # ----------------------------------------------------------------------------------
     # ストップ処理（不要なexecutor削除）
 
     def stop(self):
         self.logger.info("すべてのタスクが完了しました")
+
+    # ----------------------------------------------------------------------------------
 
 
 # **********************************************************************************
