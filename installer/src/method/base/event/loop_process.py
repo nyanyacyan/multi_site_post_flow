@@ -42,7 +42,7 @@ class LoopProcessOrder(QObject):
         self.thread_event = ThreadEvent()
 
         self.new_main_task_thread = None
-        self.TEST_MODE = True
+        self.TEST_MODE = False
 
     ####################################################################################
     # start_eventに使用するmain処理
@@ -304,7 +304,7 @@ class LoopProcessOrderNoUpdate(QObject):
         self.time_manager = TimeManager()
 
         self.new_main_task_thread = None
-        self.TEST_MODE = True
+        self.TEST_MODE = False
 
     # ----------------------------------------------------------------------------------
     # start_eventに使用するmain処理
