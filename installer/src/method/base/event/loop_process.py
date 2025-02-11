@@ -131,27 +131,53 @@ class LoopProcessOrder(QObject):
                 now = datetime.now()
                 next_day = (now + timedelta(days=1)).replace( hour=0, minute=0, second=0, microsecond=0 )
 
-                # next_day_total_time = (next_day - now).total_seconds()  # TODO 本番環境
-                next_day_total_time = 30  # TODO テスト環境
+                next_day_total_time = (next_day - now).total_seconds()  # TODO 本番環境
+                # next_day_total_time = 30  # TODO テスト環境
 
                 self.logger.info( f"\n現時刻: {now}\n翌日の時刻（24時換算): {next_day}\n日付が変わるまでの秒数: {next_day_total_time}" )
 
                 # 日付が変わるまで秒数待機
                 self.logger.info('日付が変わるまで待機するthreadスタート')
-                self.logger.critical(f'{self.__class__.__name__} 待ち時間終了: {next_day_total_time}')
+                while next_day_total_time > 0:
+                    sleep_time = min(next_day_total_time, 60)  # minは引数の小さいものを使う→60よりも小さくなったらそっちの数字を使う
+                    self.logger.warning(f'【日にち切替確認】次のチェックまで {sleep_time} 秒待機...')
+                    try:
+                        finish_event.wait(sleep_time)
+                    except Exception as e:
+                        self.logger.critical(f'{self.__class__.__name__} 確認中の部分のエラー: {e}')
 
-                finish_event.wait(next_day_total_time)
+                    now = datetime.now()
+                    next_day_total_time = (next_day - now).total_seconds()
 
+                    # 時間・分・秒に変換
+                    hours = int(next_day_total_time // 3600)
+                    minutes = int((next_day_total_time % 3600) // 60)
+                    seconds = int(next_day_total_time % 60)
+
+                    # 1時間未満なら時間を表示しない
+                    if hours >= 1:
+                        time_str = f"{hours}時間 {minutes}分 {seconds}秒"
+                    else:
+                        time_str = f"{minutes}分 {seconds}秒"
+
+                    self.logger.critical(f"日付が変わるまで残り時間: {time_str}")
+
+                    if next_day_total_time <= 0:
+                        break
+                self.logger.critical(f'{self.__class__.__name__} 日付が変わりました。main_taskを再起動します')
+
+                # 最初のメインスレッドがあるかを確認して最終まで完了するまで待機
                 if main_thread.is_alive():
                     self.logger.info(f'`main_task_thread` の処理が完了するまで待機中...{main_thread}')
-                    stop_event.set()
-                    main_thread.join()
+                    stop_event.set()  # メインスレッド停止フラグをセット
+                    main_thread.join()  # メインスレッドが完了するまで待機
                     self.logger.info('最後の`main_task_thread` が終了しました')
 
+                # 2回目以降のメインスレッドを確認→完了するまで待機
                 if self.new_main_task_thread and self.new_main_task_thread.is_alive():
                     self.logger.info(f'`new_main_task_thread` の処理が完了するまで待機中...{self.new_main_task_thread}')
-                    stop_event.set()
-                    self.new_main_task_thread.join()
+                    stop_event.set()  # メインスレッドの停止フラグをセット
+                    self.new_main_task_thread.join()  # 2回目以降のメインスレッドが完了するまで待機
                     self.logger.info('最後の`new_main_task_thread` が終了しました')
 
                 # ここに出品感覚時間を挿入
@@ -349,20 +375,43 @@ class LoopProcessOrderNoUpdate(QObject):
 
                 # 日付が変わるまで秒数待機
                 self.logger.info('日付が変わるまで待機するthreadスタート')
-                self.logger.critical(f'{self.__class__.__name__} 待ち時間終了: {next_day_total_time}')
+                while next_day_total_time > 0:
+                    sleep_time = min(next_day_total_time, 60)  # minは引数の小さいものを使う→60よりも小さくなったらそっちの数字を使う
+                    self.logger.warning(f'【日にち切替確認】次のチェックまで {sleep_time} 秒待機...')
+                    finish_event.wait(sleep_time)
 
-                finish_event.wait(next_day_total_time)
+                    now = datetime.now()
+                    next_day_total_time = (next_day - now).total_seconds()
 
+                    # 時間・分・秒に変換
+                    hours = int(next_day_total_time // 3600)
+                    minutes = int((next_day_total_time % 3600) // 60)
+                    seconds = int(next_day_total_time % 60)
+
+                    # 1時間未満なら時間を表示しない
+                    if hours >= 1:
+                        time_str = f"{hours}時間 {minutes}分 {seconds}秒"
+                    else:
+                        time_str = f"{minutes}分 {seconds}秒"
+
+                    self.logger.critical(f"日付が変わるまで残り時間: {time_str}")
+
+                    if next_day_total_time <= 0:
+                        break
+                self.logger.critical(f'{self.__class__.__name__} 日付が変わりました。main_taskを再起動します')
+
+                # 最初のメインスレッドがあるかを確認して最終まで完了するまで待機
                 if main_thread.is_alive():
                     self.logger.info(f'`main_task_thread` の処理が完了するまで待機中...{main_thread}')
-                    stop_event.set()
-                    main_thread.join()
+                    stop_event.set()  # メインスレッド停止フラグをセット
+                    main_thread.join()  # メインスレッドが完了するまで待機
                     self.logger.info('最後の`main_task_thread` が終了しました')
 
+                # 2回目以降のメインスレッドを確認→完了するまで待機
                 if self.new_main_task_thread and self.new_main_task_thread.is_alive():
                     self.logger.info(f'`new_main_task_thread` の処理が完了するまで待機中...{self.new_main_task_thread}')
-                    stop_event.set()
-                    self.new_main_task_thread.join()
+                    stop_event.set()  # メインスレッドの停止フラグをセット
+                    self.new_main_task_thread.join()  # 2回目以降のメインスレッドが完了するまで待機
                     self.logger.info('最後の`new_main_task_thread` が終了しました')
 
                 # ここに出品感覚時間を挿入
