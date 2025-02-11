@@ -80,6 +80,7 @@ class LoopProcessOrder(QObject):
                     random_wait_comment = f'出品間隔に合わせて {int(random_wait_time)} 秒間、待機してます'
                     self.logger.info(random_wait_comment)
                     self.update_label_signal.emit(random_wait_comment)
+                    stop_event.wait(random_wait_time)
 
                 # 直接タスクを実行
                 self._task_contents(task_id=task_id, label=label, process_func=process_func, user_info=user_info, gss_info=gss_info, interval_info=interval_info)
@@ -335,6 +336,7 @@ class LoopProcessOrderNoUpdate(QObject):
                     random_wait_comment = f'出品間隔に合わせて {int(random_wait_time)} 秒間、待機してます'
                     self.logger.info(random_wait_comment)
                     self.update_label_signal.emit(random_wait_comment)
+                    stop_event.wait(random_wait_time)
 
                 # 直接タスクを実行
                 self._task_contents(task_id=task_id, label=label, process_func=process_func, user_info=user_info, gss_info=gss_info, interval_info=interval_info)
