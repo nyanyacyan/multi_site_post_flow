@@ -77,7 +77,14 @@ class LoopProcessOrder(QObject):
                     self.logger.debug(f'task_id: {task_id}')
                     # 🔹 出品間隔時間を待機
                     random_wait_time = self.time_manager._random_sleep(random_info=interval_info)
-                    random_wait_comment = f'出品間隔に合わせて {int(random_wait_time)} 秒間、待機してます'
+
+                    hours = int(random_wait_time // 3600)
+                    minutes = int((random_wait_time % 3600) // 60)
+                    seconds = int(random_wait_time % 60)
+
+                    time_str = f"{hours}時間 {minutes}分 {seconds}秒" if hours >= 1 else f"{minutes}分 {seconds}秒"
+
+                    random_wait_comment = f'出品間隔に合わせて、{time_str} 待機してます'
                     self.logger.info(random_wait_comment)
                     self.update_label_signal.emit(random_wait_comment)
                     stop_event.wait(random_wait_time)
@@ -333,7 +340,14 @@ class LoopProcessOrderNoUpdate(QObject):
                     self.logger.debug(f'task_id: {task_id}')
                     # 🔹 出品間隔時間を待機
                     random_wait_time = self.time_manager._random_sleep(random_info=interval_info)
-                    random_wait_comment = f'出品間隔に合わせて {int(random_wait_time)} 秒間、待機してます'
+
+                    hours = int(random_wait_time // 3600)
+                    minutes = int((random_wait_time % 3600) // 60)
+                    seconds = int(random_wait_time % 60)
+
+                    time_str = f"{hours}時間 {minutes}分 {seconds}秒" if hours >= 1 else f"{minutes}分 {seconds}秒"
+
+                    random_wait_comment = f'出品間隔に合わせて、{time_str} 待機してます'
                     self.logger.info(random_wait_comment)
                     self.update_label_signal.emit(random_wait_comment)
                     stop_event.wait(random_wait_time)
