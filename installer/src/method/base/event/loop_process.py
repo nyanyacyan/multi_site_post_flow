@@ -72,6 +72,14 @@ class LoopProcessOrder(QObject):
     def new_item_process(self, stop_event: threading.Event, process_func: Callable, user_info: Dict, gss_info: Dict, label: QLabel, interval_info: Dict):
         task_id = 1
         try:
+            if not task_id == 1:
+                self.logger.debug(f'task_id: {task_id}')
+                # 🔹 出品間隔時間を待機
+                random_wait_time = self.time_manager._random_sleep(random_info=interval_info)
+                random_wait_comment = f'出品間隔に合わせて {int(random_wait_time)} 秒間、待機してます'
+                self.logger.info(random_wait_comment)
+                self.update_label_signal.emit(random_wait_comment)
+
             while not stop_event.is_set():
                 # 直接タスクを実行
                 self._task_contents(task_id=task_id, label=label, process_func=process_func, user_info=user_info, gss_info=gss_info, interval_info=interval_info)
@@ -319,6 +327,14 @@ class LoopProcessOrderNoUpdate(QObject):
     def new_item_process(self, stop_event: threading.Event, process_func: Callable, user_info: Dict, gss_info: Dict, label: QLabel, interval_info: Dict):
         task_id = 1
         try:
+            if not task_id == 1:
+                self.logger.debug(f'task_id: {task_id}')
+                # 🔹 出品間隔時間を待機
+                random_wait_time = self.time_manager._random_sleep(random_info=interval_info)
+                random_wait_comment = f'出品間隔に合わせて {int(random_wait_time)} 秒間、待機してます'
+                self.logger.info(random_wait_comment)
+                self.update_label_signal.emit(random_wait_comment)
+
             while not stop_event.is_set():
                 # 直接タスクを実行
                 self._task_contents(task_id=task_id, label=label, process_func=process_func, user_info=user_info, gss_info=gss_info, interval_info=interval_info)
