@@ -220,7 +220,8 @@ class MainGamaClubApp(QWidget):
             # threadスタート
             self.date_change_thread.start()
         except Exception as e:
-            print(e)
+            self.logger.error(f"処理中にエラーが発生: {e}")
+
 
 
 
