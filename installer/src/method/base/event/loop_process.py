@@ -155,7 +155,7 @@ class LoopProcessOrder(QObject):
 
                 self.logger.info(f"\n現時刻: {now}\n翌日の時刻（24時換算): {next_day}\n日付が変わるまでの秒数: {next_day_total_time}")
 
-                while next_day_total_time > 0:
+                while not finish_event.is_set() and next_day_total_time > 0:
 
                     now = datetime.now()  # ✅ 毎回現在時刻を取得（時間のずれを防ぐ）
                     next_day_total_time = (next_day - now).total_seconds()  # ✅ 正確な残り時間を計算
@@ -217,7 +217,7 @@ class LoopProcessOrder(QObject):
                     restart_comment = "日付が変わったため更新処理からリスタート処理を実施"
                     self.logger.info(restart_comment)
                     self.update_label_signal.emit(restart_comment)
-                    self._restart_main_task(stop_event, update_bool, label, update_event, update_func, process_func, user_info, gss_info, interval_info)
+                    self._restart_main_task(stop_event, finish_event, update_bool, label, update_event, update_func, process_func, user_info, gss_info, interval_info)
                 else:
                     self.logger.critical(f'finish_eventがあるため最後の処理をスキップしてます: {finish_event.is_set()}')
 
@@ -233,11 +233,12 @@ class LoopProcessOrder(QObject):
 
     # ----------------------------------------------------------------------------------
 
-    def _restart_main_task(self, stop_event: threading.Event, update_bool: bool, label: QLabel, update_event: threading.Event, update_func: Callable, process_func: Callable, user_info: Dict, gss_info: Dict, interval_info: Dict):
+    def _restart_main_task(self, stop_event: threading.Event, finish_event: threading.Event, update_bool: bool, label: QLabel, update_event: threading.Event, update_func: Callable, process_func: Callable, user_info: Dict, gss_info: Dict, interval_info: Dict):
         self.logger.info("【日付変更】`main_task` の再起動を開始")
 
         # 🟢 新しい `main_task` を開始
         stop_event.clear()
+        finish_event.clear()
         self.logger.info("stop_eventを元の状態に戻しました。")
 
         self._restart_main_thread(update_bool, stop_event, label, update_event, update_func,process_func, user_info, gss_info, interval_info)

@@ -99,13 +99,18 @@ class ThreadEvent(QObject):
 
                 finish_event.wait(next_day_total_time)
 
+                # 待機したあとにメインメソッドの繰り返しを止める
+                stop_event.set()
+
                 if main_thread.is_alive():
                     self.logger.info(f'`main_task_thread` の処理が完了するまで待機中...{main_thread}')
-                    stop_event.set()
+
                     main_thread.join()
                     self.logger.info('最後の`main_task_thread` が終了しました')
 
                 self._restart_main_task(stop_event=stop_event)
+
+            self.logger.warning(f'{self.__class__.__name__} finish_eventのフラグを検知')
 
         except Exception as e:
             self.logger.error(f"処理中にエラーが発生: {e}")

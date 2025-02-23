@@ -375,7 +375,7 @@ class GuiInfo(Enum):
         "SORT_WORD_LIST": ["RMT", "rmt", "アールエムティ", "RMT_CLUB", "rmt_club"],
         "GSS_INPUT_TITLE": "Spreadsheet 情報",
         "MAIN_WINDOW_TITLE": "RMT_CLUB Automation Tool",
-        "FOLDER_NAME": "02_MA_CLUB",
+        "FOLDER_NAME": "03_RMT_CLUB",
         "COL_NAME": "画像フォルダ",
         "GUI_WIDTH": 300,
         "GUI_HEIGHT": 600,
