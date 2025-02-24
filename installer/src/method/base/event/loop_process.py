@@ -294,15 +294,19 @@ class LoopProcessOrder(QObject):
             self.logger.warning(comment)
             self.update_label_signal.emit(comment)
 
-        # threadにあるmain_threadがあったら終わるまで待機する
-        if main_thread and main_thread.is_alive():
-            self.logger.info('`main_task` の処理が完了するまで待機中...: ')
-            main_thread.join()  # main_threadが終了するまで待機
+        try:
+            # threadにあるmain_threadがあったら終わるまで待機する
+            if main_thread and main_thread.is_alive():
+                self.logger.info('`main_task` の処理が完了するまで待機中...: ')
+                main_thread.join()  # main_threadが終了するまで待機
 
-        if self.new_main_task_thread and self.new_main_task_thread.is_alive():
-            self.logger.info(f'`new_main_task_thread` の処理が完了するまで待機中...{self.new_main_task_thread}')
-            self.new_main_task_thread.join()
-            self.logger.info('最後の`new_main_task_thread` が終了しました')
+            if self.new_main_task_thread and self.new_main_task_thread.is_alive():
+                self.logger.info(f'`new_main_task_thread` の処理が完了するまで待機中...{self.new_main_task_thread}')
+                self.new_main_task_thread.join()
+                self.logger.info('最後の`new_main_task_thread` が終了しました')
+
+        except AssertionError:
+            self.logger.warning("AssertionError をキャッチしましたが、処理を継続します。")
 
         # 処理完了後に「待機中...」を設定
         self.update_label_signal.emit("待機中...")
@@ -419,7 +423,7 @@ class LoopProcessOrderNoUpdate(QObject):
 
                 self.logger.info(f"\n現時刻: {now}\n翌日の時刻（24時換算): {next_day}\n日付が変わるまでの秒数: {next_day_total_time}")
 
-                while next_day_total_time > 0:
+                while not finish_event.is_set() and next_day_total_time > 0:
 
                     now = datetime.now()  # ✅ 毎回現在時刻を取得（時間のずれを防ぐ）
                     next_day_total_time = (next_day - now).total_seconds()  # ✅ 正確な残り時間を計算
@@ -552,15 +556,19 @@ class LoopProcessOrderNoUpdate(QObject):
             self.logger.warning(comment)
             self.update_label_signal.emit(comment)
 
-        # threadにあるmain_threadがあったら終わるまで待機する
-        if main_thread and main_thread.is_alive():
-            self.logger.info('`main_task` の処理が完了するまで待機中...: ')
-            main_thread.join()  # main_threadが終了するまで待機
+        try:
+            # threadにあるmain_threadがあったら終わるまで待機する
+            if main_thread and main_thread.is_alive():
+                self.logger.info('`main_task` の処理が完了するまで待機中...: ')
+                main_thread.join()  # main_threadが終了するまで待機
 
-        if self.new_main_task_thread and self.new_main_task_thread.is_alive():
-            self.logger.info(f'`new_main_task_thread` の処理が完了するまで待機中...{self.new_main_task_thread}')
-            self.new_main_task_thread.join()
-            self.logger.info('最後の`new_main_task_thread` が終了しました')
+            if self.new_main_task_thread and self.new_main_task_thread.is_alive():
+                self.logger.info(f'`new_main_task_thread` の処理が完了するまで待機中...{self.new_main_task_thread}')
+                self.new_main_task_thread.join()
+                self.logger.info('最後の`new_main_task_thread` が終了しました')
+
+        except AssertionError:
+            self.logger.warning("AssertionError をキャッチしましたが、処理を継続します。")
 
         # 処理完了後に「待機中...」を設定
         self.update_label_signal.emit("待機中...")

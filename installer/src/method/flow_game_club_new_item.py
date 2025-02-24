@@ -284,9 +284,8 @@ class FlowGameClubNewItem:
     def _input_first_msg(self, sell_data: Dict):
         input_first_msg = sell_data["買い手へ初回自動表示するメッセージ"]
         if not input_first_msg:
-            self.logger.warning(
-                f"「買い手へ初回自動表示するメッセージ」入力なし: {input_first_msg}"
-            )
+            self.logger.warning( f"「買い手へ初回自動表示するメッセージ」入力なし: {input_first_msg}" )
+            self._random_sleep()
             return
 
         self.logger.debug(f"input_first_msg: {input_first_msg}")

@@ -129,13 +129,8 @@ class FlowMAClubNewItem:
     @deco.funcBase
     def row_process(self, index: int, id_text: str, pass_text: str, sell_data: Dict):
         self.logger.debug(f"index: {index}")
-        if index == 0:
-            # IDログイン
-            self.login._flow_recapcha_handle_id_login( login_info=self.login_info, id_text=id_text, pass_text=pass_text, timeout=120, )
-        else:
-            self._random_sleep(5, 10)
-            # Sessionを維持したままログインの手順を端折る
-            self.jump_target_page.flowJumpTargetPage( targetUrl=self.login_info["HOME_URL"] )
+
+        self.login.flow_login_id_input_gui( login_info=self.login_info, id_text=id_text, pass_text=pass_text, timeout=120, )
 
         # 出品処理
         self.sell_process(sell_data=sell_data)
@@ -243,7 +238,6 @@ class FlowMAClubNewItem:
     # カテゴリ選択
 
     def _category_select(self, sell_data: Dict):
-
         if sell_data['カテゴリ'] == 'サイト売買・サービス譲渡':
             element = self.element.clickElement(value=self.sell_info['CATEGORY_SELL_SELECT_VALUE'])
             self.logger.debug(f'「サイト売買・サービス譲渡」を選択: {element}')
@@ -264,13 +258,11 @@ class FlowMAClubNewItem:
     # ----------------------------------------------------------------------------------
     # 案件タイトル
 
-    @deco.funcBase
     def _input_sell_title(self, sell_data: Dict):
         input_sell_title = sell_data['出品タイトル']
         self.logger.debug(f'input_sell_title: {input_sell_title}')
         self.element.clickClearJsInput(by=self.sell_info['SELL_TITLE_INPUT_BY'], value=self.sell_info['SELL_TITLE_INPUT_VALUE'], inputText=input_sell_title)
         self._random_sleep()
-
 
     # ----------------------------------------------------------------------------------
     # 案件説明
@@ -288,7 +280,6 @@ class FlowMAClubNewItem:
     @deco.funcBase
     def _input_first_msg(self, sell_data: Dict):
         input_first_msg = sell_data['買い主へ初回自動表示するメッセージ']
-
         if not input_first_msg:
             self.logger.warning(f'「買い主へ初回自動表示するメッセージ」入力なし: {input_first_msg}')
             self._random_sleep()
@@ -381,11 +372,7 @@ if __name__ == "__main__":
     worksheet_name = LoginInfo.SITE_PATTERNS.value["MA_CLUB"]["SITE_NAME"]
     id_text = LoginInfo.SITE_PATTERNS.value["MA_CLUB"]["ID_TEXT"]
     pass_text = LoginInfo.SITE_PATTERNS.value["MA_CLUB"]["PASS_TEXT"]
-    print(
-        f"worksheet_name: {worksheet_name}\nid_text: {id_text}\npass_text: {pass_text}"
-    )
+    print( f"worksheet_name: {worksheet_name}\nid_text: {id_text}\npass_text: {pass_text}" )
 
     test_flow = FlowMAClubProcess()
-    test_flow.process(
-        worksheet_name=worksheet_name, id_text=id_text, pass_text=pass_text
-    )
+    test_flow.process( worksheet_name=worksheet_name, id_text=id_text, pass_text=pass_text )
