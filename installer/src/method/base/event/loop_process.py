@@ -42,7 +42,7 @@ class LoopProcessOrder(QObject):
         self.thread_event = ThreadEvent()
 
         self.new_main_task_thread = None
-        self.TEST_MODE = False
+        self.TEST_MODE = True
 
     ####################################################################################
     # start_eventに使用するmain処理
@@ -54,7 +54,7 @@ class LoopProcessOrder(QObject):
             self.update_label_signal.emit(update_comment)
             self.logger.warning(f'update_comment: {update_comment}')
 
-            self.update_event._update_task(stop_event=stop_event, update_event=update_event, update_func=update_func, user_info=user_info)
+            # self.update_event._update_task(stop_event=stop_event, update_event=update_event, update_func=update_func, user_info=user_info)
 
             comp_comment = "更新処理が完了しました。"
             self.update_label_signal.emit(comp_comment)
@@ -229,6 +229,17 @@ class LoopProcessOrder(QObject):
             self.update_label_signal.emit("待機中...")
             stop_event.clear()
             finish_event.clear()
+
+
+    # ----------------------------------------------------------------------------------
+
+
+    def _async_raise(self, tid, exctype):
+        pass
+        # if not isinstance(exctype, type) or not
+
+
+
 
 
     # ----------------------------------------------------------------------------------

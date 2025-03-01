@@ -69,13 +69,3 @@ class TimeManager:
 
     # ----------------------------------------------------------------------------------
 
-
-    def _countdown_minutes(self, reserve_time: datetime):
-
-        now = datetime.now()
-
-        reserve_time - now
-
-        hours = int(next_day_total_time // 3600)
-        minutes = int((next_day_total_time % 3600) // 60)
-        seconds = int(next_day_total_time % 60)

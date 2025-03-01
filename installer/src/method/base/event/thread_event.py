@@ -228,27 +228,12 @@ class ThreadEventNoUpdate(QObject):
 
             # 今の時間から日付が変わるまでの秒数を算出
             now = datetime.now()
-            next_day = (now + timedelta(days=1)).replace(
-                hour=0, minute=0, second=0, microsecond=0
-            )
+            next_day = (now + timedelta(days=1)).replace( hour=0, minute=0, second=0, microsecond=0 )
             next_day_total_time = (next_day - now).total_seconds()
-            self.logger.info(
-                f"\n現時刻: {now}\n翌日の時刻（24時換算): {next_day}\n日付が変わるまでの秒数: {next_day_total_time}"
-            )
+            self.logger.info( f"\n現時刻: {now}\n翌日の時刻（24時換算): {next_day}\n日付が変わるまでの秒数: {next_day_total_time}" )
 
             # 日付が変わるまで秒数待機
-            threading.Timer(
-                next_day_total_time,
-                lambda: self._date_end_time_task(
-                    stop_event=stop_event,
-                    label=label,
-                    process_func=process_func,
-                    user_info=user_info,
-                    gss_info=gss_info,
-                    interval_info=interval_info,
-                ),
-            ).start()
-
+            threading.Timer( next_day_total_time, lambda: self._date_end_time_task( stop_event=stop_event, label=label, process_func=process_func, user_info=user_info, gss_info=gss_info, interval_info=interval_info, ), ).start()
         except Exception as e:
             comment = f"処理中にエラーが発生: {e}"
             self.logger.error(comment)
