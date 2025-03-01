@@ -5,6 +5,8 @@
 
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 # import
+import ctypes
+from datetime import datetime, timedelta
 from queue import Queue, Empty
 import threading, time
 from functools import partial
@@ -235,8 +237,11 @@ class LoopProcessOrder(QObject):
 
 
     def _async_raise(self, tid, exctype):
-        pass
-        # if not isinstance(exctype, type) or not
+        if not isinstance(exctype, type) or not issubclass(exctype, BaseException):
+            raise ValueError("exctype は BaseException のサブクラスである必要")
+
+        res = ctypes.pythonapi.PyThreadState_SetAsyncExc(ctypes.c_long(tid), None)
+        raise SystemError()
 
 
 
