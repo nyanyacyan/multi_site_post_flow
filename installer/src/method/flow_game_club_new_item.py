@@ -45,12 +45,7 @@ class FlowGameClubProcess:
     # 各メソッドをまとめる
 
     def process(self, worksheet_name: str, gss_url: str, id_text: str, pass_text: str, interval_info: Dict):
-        # 新しいブラウザを立ち上げ
-        chrome_manager = ChromeManager()
-        chrome = chrome_manager.flowSetupChrome()
-
         gss_read = GetDataGSSAPI()
-
 
         # スプシの読み込み（辞書でoutput）
         df = gss_read._get_df_in_gui( gss_info=self.gss_info, worksheet_name=worksheet_name, gss_url=gss_url )
@@ -64,8 +59,7 @@ class FlowGameClubProcess:
             f"スプシの全行数: {df_row_num}行\nスプシの全column数: {df_columns}"
         )
 
-        # インスタンス
-        item_processor = FlowGameClubNewItem(chrome=chrome)
+
 
         # DFの各行に対して処理を行う
         for i, row in process_df.iterrows():
@@ -85,6 +79,13 @@ class FlowGameClubProcess:
             if not i == 0:
                 time.sleep(random_wait_time)
                 self.logger.info(f" {random_wait_time} 秒間待機完了 ")
+
+            # 新しいブラウザを立ち上げ
+            chrome_manager = ChromeManager()
+            chrome = chrome_manager.flowSetupChrome()
+
+            # インスタンス
+            item_processor = FlowGameClubNewItem(chrome=chrome)
 
             # ログイン〜処理実施まで
             item_processor.row_process( index=i, id_text=id_text, pass_text=pass_text, sell_data=sell_data )
