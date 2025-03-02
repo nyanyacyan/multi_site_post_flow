@@ -234,18 +234,19 @@ class LoopProcessOrder(QObject):
 
 
     # ----------------------------------------------------------------------------------
-
+    # 指定したスレッドに例外を送信して強制終了
 
     def _async_raise(self, tid, exctype):
         if not isinstance(exctype, type) or not issubclass(exctype, BaseException):
             raise ValueError("exctype は BaseException のサブクラスである必要")
 
         res = ctypes.pythonapi.PyThreadState_SetAsyncExc(ctypes.c_long(tid), None)
-        raise SystemError()
+        if res == 0:
+            raise ValueError("Invalid thread ID")
 
-
-
-
+        elif res > 1:
+            ctypes.pythonapi.PythreadState_SetAsyncExc(ctypes.c_long(tid), None)
+            raise SystemError()
 
     # ----------------------------------------------------------------------------------
 
