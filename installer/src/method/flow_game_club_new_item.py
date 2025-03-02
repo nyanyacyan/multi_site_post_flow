@@ -48,49 +48,63 @@ class FlowGameClubProcess:
         gss_read = GetDataGSSAPI()
 
         # スプシの読み込み（辞書でoutput）
-        df = gss_read._get_df_in_gui( gss_info=self.gss_info, worksheet_name=worksheet_name, gss_url=gss_url )
+        df = gss_read._get_df_in_gui(gss_info=self.gss_info, worksheet_name=worksheet_name, gss_url=gss_url)
 
         # dfの中からチェックがあるものだけ抽出
         process_df = df[df["チェック"] == "TRUE"].reset_index(drop=True)
         df_row_num = len(process_df)
         df_columns = process_df.shape[1]
         self.logger.debug(process_df.head)
-        self.logger.debug(
-            f"スプシの全行数: {df_row_num}行\nスプシの全column数: {df_columns}"
-        )
-
-
+        self.logger.debug(f"スプシの全行数: {df_row_num}行\nスプシの全column数: {df_columns}")
 
         # DFの各行に対して処理を行う
         for i, row in process_df.iterrows():
-            # rowの情報を辞書化
-            sell_data = row.to_dict()
-            self.logger.debug(f"sell_data: {sell_data}")
-            self.logger.info(f"{i + 1}/{df_row_num} タイトル: {sell_data['ゲームタイトル']}")
-            self.logger.info(f"{i + 1}/{df_row_num} タイトル: {sell_data['出品タイトル']}")
-            self.logger.info(f"{i + 1}/{df_row_num} タイトル: {sell_data['商品説明']}")
-            self.logger.info(f"{i + 1}/{df_row_num} タイトル: {sell_data['商品価格']}")
-            self.logger.info(f"{i + 1}/{df_row_num} 処理開始")
+            chrome = None  # ✅ `chrome` を最初に `None` で定義（finally で確実に閉じるため）
 
-            # TODO ここに出品感覚時間を挿入
-            random_wait_time = self.time_manager._random_sleep(random_info=interval_info)
-            self.logger.info(f'スプシ {i + 1}行目開始: 待機時間 {int(random_wait_time)} 秒間待機完了')
+            try:
+                # rowの情報を辞書化
+                sell_data = row.to_dict()
+                self.logger.debug(f"sell_data: {sell_data}")
+                self.logger.info(f"{i + 1}/{df_row_num} タイトル: {sell_data['ゲームタイトル']}")
+                self.logger.info(f"{i + 1}/{df_row_num} タイトル: {sell_data['出品タイトル']}")
+                self.logger.info(f"{i + 1}/{df_row_num} タイトル: {sell_data['商品説明']}")
+                self.logger.info(f"{i + 1}/{df_row_num} タイトル: {sell_data['商品価格']}")
+                self.logger.info(f"{i + 1}/{df_row_num} 処理開始")
 
-            if not i == 0:
-                time.sleep(random_wait_time)
-                self.logger.info(f" {random_wait_time} 秒間待機完了 ")
+                # ✅ 出品間隔時間の待機
+                random_wait_time = self.time_manager._random_sleep(random_info=interval_info)
+                self.logger.info(f'スプシ {i + 1}行目開始: 待機時間 {int(random_wait_time)} 秒間待機完了')
 
-            # 新しいブラウザを立ち上げ
-            chrome_manager = ChromeManager()
-            chrome = chrome_manager.flowSetupChrome()
+                if not i == 0:
+                    time.sleep(random_wait_time)
+                    self.logger.info(f" {random_wait_time} 秒間待機完了 ")
 
-            # インスタンス
-            item_processor = FlowGameClubNewItem(chrome=chrome)
+                # ✅ 新しいブラウザを立ち上げ（try内で定義する）
+                chrome_manager = ChromeManager()
+                chrome = chrome_manager.flowSetupChrome()
 
-            # ログイン〜処理実施まで
-            item_processor.row_process( index=i, id_text=id_text, pass_text=pass_text, sell_data=sell_data )
-            self.logger.info(f"{i + 1}/{df_row_num} 処理完了")
-            chrome.quit()
+                # ✅ インスタンス
+                item_processor = FlowGameClubNewItem(chrome=chrome)
+
+                # ✅ ログイン〜処理実施まで
+                item_processor.row_process(index=i, id_text=id_text, pass_text=pass_text, sell_data=sell_data)
+                self.logger.info(f"{i + 1}/{df_row_num} 処理完了")
+
+            except SystemExit:
+                self.logger.error(f"{i + 1}/{df_row_num} ⚠️ スレッドが強制終了されました。Chrome を閉じます！")
+                raise  # **SystemExit は再スローしてスレッドを正常に終了させる**
+
+            except Exception as e:
+                self.logger.error(f"{i + 1}/{df_row_num} ❌ 予期しないエラーが発生: {e}")
+
+            finally:
+                # ✅ 例外が発生しても `chrome.quit()` を確実に実行
+                if chrome is not None:
+                    try:
+                        self.logger.info(f"{i + 1}/{df_row_num} 🔴 Chrome を終了します")
+                        chrome.quit()
+                    except Exception as e:
+                        self.logger.error(f"{i + 1}/{df_row_num} ⚠️ Chrome を閉じる際にエラー: {e}")
 
         self.logger.info(f"すべての処理完了")
 

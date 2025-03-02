@@ -65,9 +65,7 @@ class jsCompleteWaitDeco:
                             self.logger.error(f"{func.__name__}: リトライ上限まで実施")
 
                     except Exception as e:
-                        self.logger.error(
-                            f"{func.__name__} ページが更新されるまでの待機中になんらかのエラーが発生: {e}"
-                        )
+                        self.logger.error( f"{func.__name__} ページが更新されるまでの待機中になんらかのエラーが発生: {e}" )
                         break
 
             return wrapper

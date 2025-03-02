@@ -5,7 +5,7 @@
 
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 # import
-import ctypes
+import ctypes, psutil, os
 from datetime import datetime, timedelta
 from queue import Queue, Empty
 import threading, time
@@ -187,7 +187,6 @@ class LoopProcessOrder(QObject):
                     if self.TEST_MODE:
                         next_day_total_time = -1
 
-
                 # ✅ `while True` の先頭で `next_day` を更新するので、次の日の監視を継続できる
                 self.logger.critical(f'{self.__class__.__name__} 日付が変わりました。main_taskを再起動します')
 
@@ -202,6 +201,8 @@ class LoopProcessOrder(QObject):
                 if main_thread.is_alive():
                     self.logger.warning(f'{self.__class__.__name__} メインスレッドが終了しないため、強制終了します。{main_thread}')
                     self._async_raise(main_thread.ident, SystemExit)
+
+
 
                 # ✅ さらに `threading.enumerate()` でスレッドが完全に消えたか確認
                 if main_thread.is_alive():
@@ -223,15 +224,15 @@ class LoopProcessOrder(QObject):
                     self._async_raise(self.new_main_task_thread.ident, SystemExit)
 
 
+
                 # ✅ さらに `threading.enumerate()` でスレッドが完全に消えたか確認
                 if self.new_main_task_thread and self.new_main_task_thread.is_alive():
                     for thread in threading.enumerate():
                         if thread is self.new_main_task_thread and thread.is_alive():
                             print("🚨 メインスレッドが完全に終了していないため、参照を解除します。")
                             del self.new_main_task_thread
+
                             break  # ループを抜ける
-
-
 
                 # 🔹 再スタート処理
                 if not finish_event.is_set():
@@ -270,7 +271,17 @@ class LoopProcessOrder(QObject):
             ctypes.pythonapi.PyThreadState_SetAsyncExc(ctypes.c_long(main_thread), None)  # ✅ 送った例外を取り消す
             raise SystemError("PyThreadState_SetAsyncExc failed")
 
+    # ----------------------------------------------------------------------------------
 
+
+    def kill_chrome(self):
+        for process in psutil.process_iter(attrs=["pid", "name"]):
+            try:
+                if "chrome" in process.info["name"].lower() or "chromedriver" in process.info["name"].lower():
+                    self.logger.info(f"Chromeを強制終了: {process.info['name']} (PID: {process.info['pid']})")
+                    os.kill(process.info["pid"], 9) # ✅ 強制終了
+            except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+                pass
 
     # ----------------------------------------------------------------------------------
 
