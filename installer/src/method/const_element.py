@@ -427,7 +427,8 @@ class UpdateInfo(Enum):
         "ITEM_SORT_BTN_VALUE": "//select[@name='sort_index']",
         "SELECT_VALUE": "1",
         "DISABLE_ELEMENT_VALUE": "//a[@class='btn btn-boost btn-disabled' and @href='javascript:void(0)']",
-        "UPDATE_BTN_VALUE": "//div[@class='boost-modal-content']//a[@class='btn btn-boost ']",
+        "UPDATE_BTN_VALUE": '//div[@class="btn-buy-group"]//a[contains(text(), "更新")]',
+        "UPDATE_POPUP_BTN_VALUE": '//div[contains(@class, "modal-wrapper") and contains(@class, "show")]//div[@class="boost-modal-content"]//a[contains(@class, "btn-boost")]',
         "CHARGE_UPDATE_BTN_VALUE": "//a[contains(@class, 'btn') and contains(@class, 'btn-boost') and contains(@class, 'btn-disabled') and normalize-space(.) = '更新']",
     }
 

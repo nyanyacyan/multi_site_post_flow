@@ -56,7 +56,7 @@ class LoopProcessOrder(QObject):
             self.update_label_signal.emit(update_comment)
             self.logger.warning(f'update_comment: {update_comment}')
 
-            # self.update_event._update_task(stop_event=stop_event, update_event=update_event, update_func=update_func, user_info=user_info)
+            self.update_event._update_task(stop_event=stop_event, update_event=update_event, update_func=update_func, user_info=user_info)
 
             comp_comment = "更新処理が完了しました。"
             self.update_label_signal.emit(comp_comment)

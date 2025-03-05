@@ -165,6 +165,8 @@ class FlowGameClubUpdate:
         self.element.clickElement(value=value)
         self._random_sleep()
 
+        self._click_update_popup_btn()
+
         # 課金されてる場合に出てくるPOPUPがあるか確認
         self._charge_update_process()
 
@@ -222,6 +224,10 @@ class FlowGameClubUpdate:
                 self.logger.debug(f"クリック試行: {count + 1}回目")
                 try:
                     self._click_update_btn()
+                    self._random_sleep()
+
+
+
                 except NoSuchElementException as e:
                     self.logger.info(f'更新の上限に達しました: 実施回数 {count}回、Update実施')
                     break
@@ -243,6 +249,16 @@ class FlowGameClubUpdate:
 
     def _click_update_btn(self):
         value = self.update_info["UPDATE_BTN_VALUE"]
+        self.logger.debug(f"value: {value}")
+        self.element.clickElement(value=value)
+        self._random_sleep()
+
+
+    # ----------------------------------------------------------------------------------
+    # 更新処理
+
+    def _click_update_popup_btn(self):
+        value = self.update_info["UPDATE_POPUP_BTN_VALUE"]
         self.logger.debug(f"value: {value}")
         self.element.clickElement(value=value)
         self._random_sleep()
