@@ -145,96 +145,66 @@ class LoopProcessOrder(QObject):
         try:
             self.logger.debug(f"_monitor_date_change のスレッドID: {threading.get_ident()}")
 
-            # 完全終了（指定した時間のフラグが立つまでずっと繰り返す）
             while not finish_event.is_set():
                 now = datetime.now()
-                next_day = (now + timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)  # ✅ 日付が変わるたびに更新
-                self.logger.warning(f'next_day: {next_day}')
-
                 if self.TEST_MODE:
-                    next_day_total_time = 90  # ✅ テスト用に30秒後に実行
+                    next_day = now + timedelta(seconds=180)  # ✅ テスト用：30秒後に処理
                 else:
-                    next_day_total_time = (next_day - now).total_seconds()  # ✅ 本番環境
+                    next_day = (now + timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)  # ✅ 本番用
 
-                self.logger.info(f"\n現時刻: {now}\n翌日の時刻（24時換算): {next_day}\n日付が変わるまでの秒数: {next_day_total_time}")
+                self.logger.info(f"\n現時刻: {now}\n次のチェック時間: {next_day}")
 
-                # 日付が変わることを監視する
-                while not finish_event.is_set() and next_day_total_time > 0:
-
-                    now = datetime.now()  # ✅ 毎回現在時刻を取得（時間のずれを防ぐ）
-                    next_day_total_time = (next_day - now).total_seconds()  # ✅ 正確な残り時間を計算
-
-                    if next_day_total_time <= 0:
-                        self.logger.critical("日付変更を検知！ `next_day` を更新してループを継続します。")
-                        break  # ✅ 日付が変わったのでループを抜け、新しい `next_day` を設定する
-
-                    sleep_time = min(next_day_total_time, 60)  # ✅ 最大60秒ごとに待機
-                    self.logger.warning(f'【日にち切替確認】次のチェックまで {sleep_time} 秒待機...')
-
-                    finish_event.wait(sleep_time)  # ✅ `finish_event` がセットされると即時終了
-
-                    # ✅ 待機後に現在の時間を取得し、再計算
+                # ループ内で next_day_total_time を計算
+                while not finish_event.is_set():
                     now = datetime.now()
                     next_day_total_time = (next_day - now).total_seconds()
 
-                    hours = int(next_day_total_time // 3600)
-                    minutes = int((next_day_total_time % 3600) // 60)
-                    seconds = int(next_day_total_time % 60)
+                    if next_day_total_time <= 0:
+                        self.logger.critical("日付変更を検知！ `next_day` を更新してループを継続します。")
+                        break  # ✅ 日付が変わったのでループを抜ける
 
-                    time_str = f"{hours}時間 {minutes}分 {seconds}秒" if hours >= 1 else f"{minutes}分 {seconds}秒"
-                    self.logger.critical(f"日付が変わるまで残り時間: {time_str}")
+                    sleep_time = min(next_day_total_time, 60)  # ✅ 最大60秒ごとに待機（テスト時は最大30秒）
+                    self.logger.info(f'【日にち切替確認】次のチェックまで {sleep_time} 秒待機...')
+                    finish_event.wait(sleep_time)  # ✅ `finish_event` がセットされると即時終了
 
-                    if self.TEST_MODE:
-                        next_day_total_time = -1
-
-                # ✅ `while True` の先頭で `next_day` を更新するので、次の日の監視を継続できる
                 self.logger.critical(f'{self.__class__.__name__} 日付が変わりました。main_taskを再起動します')
 
-                # 🔹 メインスレッドが生きている場合、完了を待機
+                # メインスレッドの終了処理
                 if main_thread.is_alive():
-                    self.logger.info(f'`main_task_thread` の処理が完了するまで待機中...{main_thread}')
+                    self.logger.info(f'`main_task_thread` の処理が完了するまで待機中...')
                     self.update_label_signal.emit("日付が変わったことを検知...最後の処理が完了するまで待機")
                     stop_event.set()
                     main_thread.join(timeout=2)
-                    self.logger.info('最後の`main_task_thread` が終了しました')
 
                 if main_thread.is_alive():
-                    self.logger.warning(f'{self.__class__.__name__} メインスレッドが終了しないため、強制終了します。{main_thread}')
+                    self.logger.warning(f'{self.__class__.__name__} メインスレッドが終了しないため、強制終了します。')
                     self._async_raise(main_thread.ident, SystemExit)
 
+                # ✅ `threading.enumerate()` でスレッドが完全終了したかチェック
+                for thread in threading.enumerate():
+                    if thread is main_thread and thread.is_alive():
+                        self.logger.warning("🚨 メインスレッドが完全に終了していないため、参照を解除します。")
+                        del main_thread
+                        break
 
-
-                # ✅ さらに `threading.enumerate()` でスレッドが完全に消えたか確認
-                if main_thread.is_alive():
-                    for thread in threading.enumerate():
-                        if thread is main_thread and thread.is_alive():
-                            print("🚨 メインスレッドが完全に終了していないため、参照を解除します。")
-                            del main_thread
-                            break  # ループを抜ける
-
-                # 🔹 2回目以降のスレッドも完了するまで待機
+                # 2回目以降のスレッドも完了するまで待機
                 if self.new_main_task_thread and self.new_main_task_thread.is_alive():
-                    self.logger.info(f'`new_main_task_thread` の処理が完了するまで待機中...{self.new_main_task_thread}')
+                    self.logger.info(f'`new_main_task_thread` の処理が完了するまで待機中...')
                     stop_event.set()
                     self.new_main_task_thread.join(timeout=2)
-                    self.logger.info('最後の`new_main_task_thread` が終了しました')
 
                 if self.new_main_task_thread and self.new_main_task_thread.is_alive():
-                    self.logger.warning(f'{self.__class__.__name__} メインスレッドが終了しないため、強制終了します。{self.new_main_task_thread}')
+                    self.logger.warning(f'{self.__class__.__name__} `new_main_task_thread` が終了しないため、強制終了します。')
                     self._async_raise(self.new_main_task_thread.ident, SystemExit)
 
+                # ✅ `threading.enumerate()` で完全にスレッドが終了したか確認
+                for thread in threading.enumerate():
+                    if thread is self.new_main_task_thread and thread.is_alive():
+                        self.logger.warning("🚨 `new_main_task_thread` が完全に終了していないため、参照を解除します。")
+                        del self.new_main_task_thread
+                        break
 
-
-                # ✅ さらに `threading.enumerate()` でスレッドが完全に消えたか確認
-                if self.new_main_task_thread and self.new_main_task_thread.is_alive():
-                    for thread in threading.enumerate():
-                        if thread is self.new_main_task_thread and thread.is_alive():
-                            print("🚨 メインスレッドが完全に終了していないため、参照を解除します。")
-                            del self.new_main_task_thread
-
-                            break  # ループを抜ける
-
-                # 🔹 再スタート処理
+                # ✅ 再スタート処理
                 if not finish_event.is_set():
                     restart_comment = "日付が変わったため更新処理からリスタート処理を実施"
                     self.logger.info(restart_comment)
@@ -251,6 +221,7 @@ class LoopProcessOrder(QObject):
             self.update_label_signal.emit("待機中...")
             stop_event.clear()
             finish_event.clear()
+
 
 
     # ----------------------------------------------------------------------------------
@@ -325,11 +296,23 @@ class LoopProcessOrder(QObject):
         try:
             self.logger.debug( f"_monitor_end_time のスレッドID: {threading.get_ident()}" )
             end_diff = uptime_info["end_diff"]
+            self.logger.info(f'end_diff: {end_diff}')
 
-            if end_diff > 0:
-                self.logger.critical( f"終了時間まで {end_diff} 秒待機します (threading.Timer を使用)" )
-                # 終了時間まで待機
-                threading.Timer( end_diff, lambda: self._end_time_task(finish_event=finish_event, stop_event=stop_event, main_thread=main_thread) ).start()
+            now = datetime.now()
+
+            end_time = now + timedelta(seconds=end_diff)
+            self.logger.critical(f"終了時間 {end_time}\n 現在時刻: {now}")
+
+            while datetime.now() < end_time and not finish_event.is_set():
+                remaining_time = (end_time - datetime.now()).total_seconds()
+                sleep_time = min(remaining_time, 60)  # remaining_timeが60秒よりも小さかったらminで選ばれる
+                self.logger.debug(f'終了まで {remaining_time:.2f} 秒（次のチェックまで {sleep_time:.2f} 秒）')
+                finish_event.wait(sleep_time)  # 待機する
+
+            if not finish_event.is_set():
+                self.logger.debug("終了時間に到達！ `_end_time_task()` を実行")
+                self._end_time_task(finish_event=finish_event, stop_event=stop_event, main_thread=main_thread)
+
         except Exception as e:
             comment = f"終了時間の設定などによるエラー: {e}"
             self.logger.error(comment)
@@ -347,21 +330,50 @@ class LoopProcessOrder(QObject):
             self.update_label_signal.emit(comment)
 
         try:
-            # threadにあるmain_threadがあったら終わるまで待機する
+            # main_thread の終了処理
             if main_thread and main_thread.is_alive():
-                self.logger.info('`main_task` の処理が完了するまで待機中...: ')
-                main_thread.join()  # main_threadが終了するまで待機
+                self.logger.info('`main_task` の処理が完了するまで待機中...')
+                main_thread.join(timeout=3)
 
+                if main_thread.is_alive():
+                    self.logger.warning(f'{self.__class__.__name__} メインスレッドが終了しないため、強制終了します。')
+                    self._async_raise(main_thread.ident, SystemExit)
+                    time.sleep(1)
+
+            for thread in threading.enumerate():
+                if thread is main_thread and thread.is_alive():
+                    self.logger.warning("🚨 メインスレッドが完全に終了していないため、強制終了を試みます。")
+                    self._async_raise(thread.ident, SystemExit)
+                    time.sleep(1)
+                    if not thread.is_alive():
+                        del main_thread
+                        self.logger.info("✅ メインスレッドを完全に削除しました")
+
+            # new_main_task_thread の終了処理
             if self.new_main_task_thread and self.new_main_task_thread.is_alive():
-                self.logger.info(f'`new_main_task_thread` の処理が完了するまで待機中...{self.new_main_task_thread}')
-                self.new_main_task_thread.join()
-                self.logger.info('最後の`new_main_task_thread` が終了しました')
+                self.logger.info(f'`new_main_task_thread` の処理が完了するまで待機中...')
+                self.new_main_task_thread.join(timeout=3)
+
+                if self.new_main_task_thread.is_alive():
+                    self.logger.warning(f'{self.__class__.__name__} `new_main_task_thread` が終了しないため、強制終了します。')
+                    self._async_raise(self.new_main_task_thread.ident, SystemExit)
+                    time.sleep(1)
+
+            for thread in threading.enumerate():
+                if thread is self.new_main_task_thread and thread.is_alive():
+                    self.logger.warning("🚨 `new_main_task_thread` が完全に終了していないため、強制終了を試みます。")
+                    self._async_raise(thread.ident, SystemExit)
+                    time.sleep(1)
+                    if not thread.is_alive():
+                        del self.new_main_task_thread
+                        self.logger.info("✅ `new_main_task_thread` を完全に削除しました")
 
         except AssertionError:
             self.logger.warning("AssertionError をキャッチしましたが、処理を継続します。")
 
         # 処理完了後に「待機中...」を設定
         self.update_label_signal.emit("待機中...")
+
 
     # ----------------------------------------------------------------------------------
 # **********************************************************************************
