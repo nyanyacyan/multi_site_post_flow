@@ -7,6 +7,7 @@
 # import
 from typing import List
 from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.chrome.webdriver import WebDriver
 
 
 # 自作モジュール
@@ -34,16 +35,7 @@ class FlowGameClubUpdate:
         self.getLogger = Logger()
         self.logger = self.getLogger.getLogger()
 
-        # chrome
-        self.chromeManager = ChromeManager()
-        self.chrome = self.chromeManager.flowSetupChrome()
 
-        # インスタンス
-        self.login = SingleSiteIDLogin(chrome=self.chrome)
-        self.random_sleep = SeleniumBasicOperations(chrome=self.chrome)
-        self.element = ElementManager(chrome=self.chrome)
-        self.time_manager = TimeManager()
-        self.jump_target_page = JumpTargetPage(chrome=self.chrome)
 
 
         # 必要info
@@ -57,6 +49,18 @@ class FlowGameClubUpdate:
 
     @deco.funcBase
     def process(self, id_text: str, pass_text: str):
+
+        # chrome
+        chromeManager = ChromeManager()
+        chrome = chromeManager.flowSetupChrome()
+
+        # インスタンス
+        self.login = SingleSiteIDLogin(chrome=chrome)
+        self.random_sleep = SeleniumBasicOperations(chrome=chrome)
+        self.element = ElementManager(chrome=chrome)
+        self.time_manager = TimeManager()
+        self.jump_target_page = JumpTargetPage(chrome=chrome)
+
         # idログイン
         self._id_login(id_text=id_text, pass_text=pass_text)
 
@@ -67,7 +71,7 @@ class FlowGameClubUpdate:
         link_list = self._get_title_link()
 
         # すべてのリンク先にジャンプして更新を実行
-        self._update_all_process(link_list=link_list)
+        self._update_all_process(link_list=link_list, max_num=2, chrome=chrome)
 
         self._random_sleep()
 
@@ -174,28 +178,28 @@ class FlowGameClubUpdate:
     # ----------------------------------------------------------------------------------
     # すべてのリンク先にアップデートプロセスを実施
 
-    def _update_all_process(self, link_list: List):
+    def _update_all_process(self, link_list: List, max_num: int, chrome: WebDriver):
         if link_list:
             try:
-                for i, link in enumerate(link_list):
+                for i, link in enumerate(link_list[:max_num]):
                     self.logger.info(f'{i +1} 個目の更新作業実施')
                     self._update_process(targetUrl=link)
 
                 self.logger.info(f'すべての更新完了')
-                return self.chrome.quit()
+                return chrome.quit()
 
             # 更新ボタンが押せなくなった処理
             except NoSuchElementException:
                 self.logger.info(f'更新の上限に達しました: 実施回数 {i + 1}回、Update実施')
-                return self.chrome.quit()
+                return chrome.quit()
 
             except Exception as e:
                 self.logger.error(f"アップデート実施中になにかしらのエラー発生(止めずにそのまま処理を続行): {e}")
-                return self.chrome.quit()
+                return chrome.quit()
 
         else:
             self.logger.warning(f'【更新処理スキップ】ウォッチリストに出品中のものが登録されていません。')
-            return self.chrome.quit()
+            return chrome.quit()
 
 
     # ----------------------------------------------------------------------------------
@@ -217,7 +221,7 @@ class FlowGameClubUpdate:
         self.logger.debug(f"value: {value}")
         disable_element_bool = self.element._disable_element_check(value=value)
 
-        max_count = 15
+        max_count = 2
         count = 0
         while count < max_count:
             if not disable_element_bool:

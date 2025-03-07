@@ -184,7 +184,7 @@ class LoopProcessOrder(QObject):
                 for thread in threading.enumerate():
                     if thread is main_thread and thread.is_alive():
                         self.logger.warning("🚨 メインスレッドが完全に終了していないため、参照を解除します。")
-                        del main_thread
+                        main_thread = None
                         break
 
                 # 2回目以降のスレッドも完了するまで待機
