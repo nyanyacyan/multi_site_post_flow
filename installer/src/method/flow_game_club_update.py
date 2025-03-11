@@ -36,8 +36,6 @@ class FlowGameClubUpdate:
         self.logger = self.getLogger.getLogger()
 
 
-
-
         # 必要info
         self.login_info = LoginInfo.SITE_PATTERNS.value["GAME_CLUB"]
         self.update_info = UpdateInfo.GAME_CLUB.value
@@ -214,39 +212,6 @@ class FlowGameClubUpdate:
 
 
     # ----------------------------------------------------------------------------------
-    # 更新ボタンが無効化されているか確認
-
-    def _disable_element_check_process(self):
-        value = self.update_info["DISABLE_ELEMENT_VALUE"]
-        self.logger.debug(f"value: {value}")
-        disable_element_bool = self.element._disable_element_check(value=value)
-
-        max_count = 1
-        count = 0
-        while count < max_count:
-            if not disable_element_bool:
-                self.logger.debug(f"クリック試行: {count + 1}回目")
-                try:
-                    self._click_update_btn()
-                    self._random_sleep()
-
-                except NoSuchElementException as e:
-                    self.logger.info(f'更新の上限に達しました: 実施回数 {count}回、Update実施')
-                    break
-
-                count += 1
-                self._random_sleep()
-
-            else:
-                if count == 0:
-                    self.logger.debug(f'本日の更新処理は実施済')
-                else:
-                    self.logger.info(f'更新の上限に達しました: 実施回数 {count}回、Update実施')
-                self.chrome.quit()
-                break
-
-
-    # ----------------------------------------------------------------------------------
     # 更新処理
 
     def _click_update_btn(self):
@@ -286,4 +251,3 @@ if __name__ == "__main__":
 
     test_flow = FlowGameClubUpdate()
     test_flow.process(id_text=id_text, pass_text=pass_text)
-
