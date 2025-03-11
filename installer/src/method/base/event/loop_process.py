@@ -148,7 +148,7 @@ class LoopProcessOrder(QObject):
             while not finish_event.is_set():
                 now = datetime.now()
                 if self.TEST_MODE:
-                    next_day = now + timedelta(seconds=180)  # ✅ テスト用：30秒後に処理
+                    next_day = now + timedelta(seconds=300)  # ✅ テスト用：30秒後に処理
                 else:
                     next_day = (now + timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)  # ✅ 本番用
 
@@ -170,13 +170,13 @@ class LoopProcessOrder(QObject):
                 self.logger.critical(f'{self.__class__.__name__} 日付が変わりました。main_taskを再起動します')
 
                 # メインスレッドの終了処理
-                if main_thread.is_alive():
+                if main_thread and main_thread.is_alive():
                     self.logger.info(f'`main_task_thread` の処理が完了するまで待機中...')
                     self.update_label_signal.emit("日付が変わったことを検知...最後の処理が完了するまで待機")
                     stop_event.set()
                     main_thread.join(timeout=2)
 
-                if main_thread.is_alive():
+                if main_thread and main_thread.is_alive():
                     self.logger.warning(f'{self.__class__.__name__} メインスレッドが終了しないため、強制終了します。')
                     self._async_raise(main_thread.ident, SystemExit)
 
@@ -519,7 +519,7 @@ class LoopProcessOrderNoUpdate(QObject):
                 self.logger.critical(f'{self.__class__.__name__} 日付が変わりました。main_taskを再起動します')
 
                 # 🔹 メインスレッドが生きている場合、完了を待機
-                if main_thread.is_alive():
+                if main_thread and main_thread.is_alive():
                     self.logger.info(f'`main_task_thread` の処理が完了するまで待機中...{main_thread}')
                     self.update_label_signal.emit("日付が変わったことを検知...最後の処理が完了するまで待機")
                     stop_event.set()

@@ -71,7 +71,7 @@ class FlowGameClubUpdate:
         link_list = self._get_title_link()
 
         # すべてのリンク先にジャンプして更新を実行
-        self._update_all_process(link_list=link_list, max_num=2, chrome=chrome)
+        self._update_all_process(link_list=link_list, max_num=1, chrome=chrome)
 
         self._random_sleep()
 
@@ -80,7 +80,7 @@ class FlowGameClubUpdate:
     # idログイン
 
     def _id_login(self, id_text: str, pass_text: str):
-            self.login._flow_recapcha_handle_id_login( login_info=self.login_info, id_text=id_text, pass_text=pass_text, timeout=120, )
+        self.login._flow_recapcha_handle_id_login( login_info=self.login_info, id_text=id_text, pass_text=pass_text, timeout=120, )
 
 
     # ----------------------------------------------------------------------------------
@@ -221,7 +221,7 @@ class FlowGameClubUpdate:
         self.logger.debug(f"value: {value}")
         disable_element_bool = self.element._disable_element_check(value=value)
 
-        max_count = 2
+        max_count = 1
         count = 0
         while count < max_count:
             if not disable_element_bool:
@@ -229,8 +229,6 @@ class FlowGameClubUpdate:
                 try:
                     self._click_update_btn()
                     self._random_sleep()
-
-
 
                 except NoSuchElementException as e:
                     self.logger.info(f'更新の上限に達しました: 実施回数 {count}回、Update実施')
