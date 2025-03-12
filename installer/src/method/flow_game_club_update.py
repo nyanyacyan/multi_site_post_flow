@@ -69,7 +69,7 @@ class FlowGameClubUpdate:
         link_list = self._get_title_link()
 
         # すべてのリンク先にジャンプして更新を実行
-        self._update_all_process(link_list=link_list, max_num=1, chrome=chrome)
+        self._update_all_process(link_list=link_list, max_num=15, chrome=chrome)
 
         self._random_sleep()
 
