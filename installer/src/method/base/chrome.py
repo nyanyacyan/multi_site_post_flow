@@ -96,7 +96,7 @@ class ChromeManager:
     # ----------------------------------------------------------------------------------
 
 
-    @decoInstance.chromeSetup
+    # @decoInstance.chromeSetup
     def flow_setup_chromedriver(self):
         driver_path = self._get_driver_path()
 
