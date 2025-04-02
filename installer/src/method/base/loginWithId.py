@@ -92,49 +92,31 @@ class SingleSiteIDLogin:
     # IDログイン
     # reCAPTCHA OK
 
-    def flow_login_id_input_gui( self, login_info: dict, id_text: str, pass_text: str, timeout: int = 10, max_count: int=3 ):
-        retry_count = 0
-        start_time = time.time()
-        while retry_count < max_count:
-            # 経過時間
-            elapsed_time = time.time() - start_time
-            self.logger.debug(f"経過時間: {elapsed_time}秒")
-            if elapsed_time > timeout:
-                self.logger.error(f"タイムアウト: {timeout}秒")
-                self.chrome.quit()
-                return
+    def flow_login_id_input_gui( self, login_info: dict, id_text: str, pass_text: str, timeout: int = 10):
+        try:
+            self.logger.debug(f"login_info: {login_info}")
 
-            try:
-                self.logger.debug(f"login_info: {login_info}")
+            # サイトを開いてCookieを追加
+            self.openSite(login_url=login_info["LOGIN_URL"])
 
-                # サイトを開いてCookieを追加
-                self.openSite(login_url=login_info["LOGIN_URL"])
+            self.inputId( by=login_info["ID_BY"], value=login_info["ID_VALUE"], inputText=id_text, )
 
-                self.inputId( by=login_info["ID_BY"], value=login_info["ID_VALUE"], inputText=id_text, )
+            self.inputPass( by=login_info["PASS_BY"], value=login_info["PASS_VALUE"], inputText=pass_text, )
 
-                self.inputPass( by=login_info["PASS_BY"], value=login_info["PASS_VALUE"], inputText=pass_text, )
+            # クリックを繰り返しPOPUPがなくなるまで繰り返す
+            self.click_login_btn_in_recaptcha( by=login_info["BTN_BY"], value=login_info["BTN_VALUE"], home_url=login_info["HOME_URL"], check_element_by=login_info["LOGIN_AFTER_ELEMENT_BY"], check_element_value=login_info["LOGIN_AFTER_ELEMENT_VALUE"], )
 
-                # クリックを繰り返しPOPUPがなくなるまで繰り返す
-                self.click_login_btn_in_recaptcha( by=login_info["BTN_BY"], value=login_info["BTN_VALUE"], home_url=login_info["HOME_URL"], check_element_by=login_info["LOGIN_AFTER_ELEMENT_BY"], check_element_value=login_info["LOGIN_AFTER_ELEMENT_VALUE"], )
+            self.wait.jsPageChecker(chrome=self.chrome, timeout=10)
 
-                self.wait.jsPageChecker(chrome=self.chrome, timeout=10)
+            # reCAPTCHA対策を完了確認
+            self.login_element_check( by=login_info["LOGIN_AFTER_ELEMENT_BY"], value=login_info["LOGIN_AFTER_ELEMENT_VALUE"], timeout=timeout, )
+            return
 
-                # reCAPTCHA対策を完了確認
-                self.login_element_check( by=login_info["LOGIN_AFTER_ELEMENT_BY"], value=login_info["LOGIN_AFTER_ELEMENT_VALUE"], timeout=timeout, )
-                return
+        except TimeoutError:
+            self.logger.critical(f'{self.__class__.__name__} reCAPTCHAの処理時間に {timeout} 秒以上 かかってしまいましたためtimeout')
+            self.chrome.quit()
+            time.sleep(5)  # 少し待って次へ
 
-            except TimeoutError:
-                self.logger.critical(f'{self.__class__.__name__} エラー発生、リトライ実施: {retry_count + 1}/{max_count}')
-                retry_count += 1
-                self.chrome.refresh()
-                time.sleep(5)  # 少し待って再取得
-
-
-        # `max_count` に達した場合、エラーを記録
-        self.logger.error(f'{self.__class__.__name__} 最大リトライ回数 {max_count} 回を超過。処理を中断')
-        self.chrome.quit()
-
-        raise TimeoutError(f"最大リトライ回数 {max_count} 回を超過しました。")
     # ----------------------------------------------------------------------------------
     # IDログイン reCAPTCHA での例外処理込
 

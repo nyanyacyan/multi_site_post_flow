@@ -391,6 +391,7 @@ class ElementManager:
                 continue
 
         self.logger.error(f'reCAPTCHA処理が{delay * max_retry}秒を超えましたため終了')
+        raise TimeoutException("reCAPTCHA処理がタイムアウトしました。")
 
 
     # ----------------------------------------------------------------------------------

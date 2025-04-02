@@ -152,12 +152,12 @@ class FlowRMTClubNewItem:
 
             # インスタンス
             self.login = SingleSiteIDLogin(chrome=self.chrome)
-            self.random_sleep = SeleniumBasicOperations( chrome=self.chrome, )
+            self.random_sleep = SeleniumBasicOperations(chrome=self.chrome)
             self.element = ElementManager(chrome=self.chrome)
             self.jump_target_page = JumpTargetPage(chrome=self.chrome)
 
             # idログイン
-            self.login.flow_login_id_input_gui( login_info=self.login_info, id_text=id_text, pass_text=pass_text, timeout=120, )
+            self.login.flow_login_id_input_gui( login_info=self.login_info, id_text=id_text, pass_text=pass_text)
 
             # 出品処理
             self.sell_process(sell_data=sell_data)
