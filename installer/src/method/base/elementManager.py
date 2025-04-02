@@ -356,7 +356,7 @@ class ElementManager:
 
 
     def recaptcha_click_element(
-        self, by: str, value: str, home_url: str, check_element_by: str, check_element_value: str, max_retry: int = 40, delay: int = 5
+        self, by: str, value: str, home_url: str, check_element_by: str, check_element_value: str, max_retry: int = 15, delay: int = 5
     ):
         self.clickWait.canWaitClick(chrome=self.chrome, by=by, value=value, timeout=3)
         element = self.getElement(by=by, value=value)

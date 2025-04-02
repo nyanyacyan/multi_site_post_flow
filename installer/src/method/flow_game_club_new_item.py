@@ -8,6 +8,7 @@ import time
 from typing import Dict
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+import concurrent.futures
 
 # 自作モジュール
 from method.base.utils import Logger
@@ -79,12 +80,8 @@ class FlowGameClubProcess:
                     time.sleep(random_wait_time)
                     self.logger.info(f" {random_wait_time} 秒間待機完了 ")
 
-                # ✅ 新しいブラウザを立ち上げ（try内で定義する）
-                chrome_manager = ChromeManager()
-                chrome = chrome_manager.flowSetupChrome()
-
                 # ✅ インスタンス
-                item_processor = FlowGameClubNewItem(chrome=chrome)
+                item_processor = FlowGameClubNewItem()
 
                 # ✅ ログイン〜処理実施まで
                 item_processor.row_process(index=i, id_text=id_text, pass_text=pass_text, sell_data=sell_data)
@@ -97,14 +94,6 @@ class FlowGameClubProcess:
             except Exception as e:
                 self.logger.error(f"{i + 1}/{df_row_num} ❌ 予期しないエラーが発生: {e}")
 
-            finally:
-                # ✅ 例外が発生しても `chrome.quit()` を確実に実行
-                if chrome is not None:
-                    try:
-                        self.logger.info(f"{i + 1}/{df_row_num} 🔴 Chrome を終了します")
-                        chrome.quit()
-                    except Exception as e:
-                        self.logger.error(f"{i + 1}/{df_row_num} ⚠️ Chrome を閉じる際にエラー: {e}")
 
         self.logger.info(f"すべての処理完了")
 
@@ -113,22 +102,12 @@ class FlowGameClubProcess:
 # 一連の流れ
 
 class FlowGameClubNewItem:
-    def __init__(self, chrome: webdriver):
+    def __init__(self):
         # logger
         self.getLogger = Logger()
         self.logger = self.getLogger.getLogger()
 
-        # chrome
-        self.chrome = chrome
 
-        # インスタンス
-        self.login = SingleSiteIDLogin(chrome=self.chrome)
-        self.random_sleep = SeleniumBasicOperations(
-            chrome=self.chrome,
-        )
-
-        self.element = ElementManager(chrome=self.chrome)
-        self.jump_target_page = JumpTargetPage(chrome=self.chrome)
         self.time_manager = TimeManager()
 
         # 必要info
@@ -137,16 +116,64 @@ class FlowGameClubNewItem:
 
 
     ####################################################################################
+
+
+    def row_process(self, index: int, id_text: str, pass_text: str, sell_data: Dict, max_retry: int = 3):
+        for i in range(max_retry):
+            self.logger.info(f"リトライ: {i + 1}回目 出品開始")
+            try:
+                with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+                    future = executor.submit(self._internal_row_process, index, id_text, pass_text, sell_data)
+                    future.result(timeout=300)  # タイムアウトを300秒に設定
+
+                self.logger.info(f"{index} 回目の出品処理が成功しました")
+                return  # 成功したらループを抜ける
+
+            except concurrent.futures.TimeoutError:
+                self.logger.warning(f"⚠️ 出品処理がタイムアウトしました。リトライします ({i + 1}/{max_retry})")
+
+            except Exception as e:
+                self.logger.error(f"❌ 出品処理中にエラーが発生:念の為リトライ {e}")
+
+        self.logger.error(f'❌【処理失敗】 リトライの上限に達しました: ({i + 1}/{max_retry})')
+        return
+
+    # ----------------------------------------------------------------------------------
     # ログイン〜出品処理
 
     @deco.funcBase
-    def row_process(self, index: int, id_text: str, pass_text: str, sell_data: Dict):
-        self.logger.debug(f"index: {index}")
+    def _internal_row_process(self, index: int, id_text: str, pass_text: str, sell_data: Dict):
+        try:
+            self.logger.debug(f"row_processを開始: {index}")
 
-        self.login.flow_login_id_input_gui( login_info=self.login_info, id_text=id_text, pass_text=pass_text, timeout=120, )
+            # chrome
+            chrome_manager = ChromeManager()
+            self.chrome = chrome_manager.flowSetupChrome()
 
-        # 出品処理
-        self.sell_process(sell_data=sell_data)
+            # インスタンス
+            self.login = SingleSiteIDLogin(chrome=self.chrome)
+            self.random_sleep = SeleniumBasicOperations( chrome=self.chrome, )
+            self.element = ElementManager(chrome=self.chrome)
+            self.jump_target_page = JumpTargetPage(chrome=self.chrome)
+
+            # idログイン
+            self.login.flow_login_id_input_gui( login_info=self.login_info, id_text=id_text, pass_text=pass_text, timeout=120, )
+
+            # 出品処理
+            self.sell_process(sell_data=sell_data)
+            self.logger.info(f"出品処理を完了: {index}")
+
+        except Exception as e:
+            self.logger.error(f"出品処理中にエラーが発生: {e}")
+
+        finally:
+            # ✅ 例外が発生しても `chrome.quit()` を確実に実行
+            if self.chrome is not None:
+                try:
+                    self.logger.info(f"🔴 Chrome を終了します")
+                    self.chrome.quit()
+                except Exception as e:
+                    self.logger.error(f"⚠️ Chrome を閉じる際にエラー: {e}")
 
     # ----------------------------------------------------------------------------------
     # 出品処理

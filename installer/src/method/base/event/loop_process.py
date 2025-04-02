@@ -61,6 +61,9 @@ class LoopProcessOrder(QObject):
             comp_comment = "更新処理が完了しました。"
             self.update_label_signal.emit(comp_comment)
             self.logger.debug(comp_comment)
+
+            self.logger.warning(f'stop_eventの状態: {stop_event.is_set()}')
+            self.logger.warning(f'update_eventの状態: {update_event.is_set()}')
         else:
             self.logger.info("更新処理「なし」のため更新処理なし")
 
@@ -85,6 +88,7 @@ class LoopProcessOrder(QObject):
                     seconds = int(random_wait_time % 60)
 
                     time_str = f"{hours}時間 {minutes}分 {seconds}秒" if hours >= 1 else f"{minutes}分 {seconds}秒"
+                    self.logger.warning(f'stop_eventの状態: {stop_event.is_set()}')
 
                     random_wait_comment = f'出品間隔に合わせて、{time_str} 待機してます'
                     self.logger.info(random_wait_comment)

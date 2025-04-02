@@ -8,6 +8,7 @@ import time
 from typing import Dict
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+import concurrent.futures
 
 # 自作モジュール
 from method.base.utils import Logger
@@ -45,30 +46,23 @@ class FlowMAClubProcess:
     # 各メソッドをまとめる
 
     def process(self, worksheet_name: str, gss_url: str, id_text: str, pass_text: str, interval_info: Dict):
-        # 新しいブラウザを立ち上げ
-        chrome_manager = ChromeManager()
-        chrome = chrome_manager.flowSetupChrome()
-
         gss_read = GetDataGSSAPI()
 
-        try:
-            # スプシの読み込み（辞書でoutput）
-            df = gss_read._get_df_in_gui( gss_info=self.gss_info, worksheet_name=worksheet_name, gss_url=gss_url )
+        # スプシの読み込み（辞書でoutput）
+        df = gss_read._get_df_in_gui(gss_info=self.gss_info, worksheet_name=worksheet_name, gss_url=gss_url)
 
-            # dfの中からチェックがあるものだけ抽出
-            process_df = df[df["チェック"] == "TRUE"].reset_index(drop=True)
-            df_row_num = len(process_df)
-            df_columns = process_df.shape[1]
-            self.logger.debug(process_df.head)
-            self.logger.debug(
-                f"スプシの全行数: {df_row_num}行\nスプシの全column数: {df_columns}"
-            )
+        # dfの中からチェックがあるものだけ抽出
+        process_df = df[df["チェック"] == "TRUE"].reset_index(drop=True)
+        df_row_num = len(process_df)
+        df_columns = process_df.shape[1]
+        self.logger.debug(process_df.head)
+        self.logger.debug( f"スプシの全行数: {df_row_num}行\nスプシの全column数: {df_columns}" )
 
-            # インスタンス
-            item_processor = FlowMAClubNewItem(chrome=chrome)
+        # DFの各行に対して処理を行う
+        for i, row in process_df.iterrows():
+            chrome = None  # ✅ `chrome` を最初に `None` で定義（finally で確実に閉じるため）
 
-            # DFの各行に対して処理を行う
-            for i, row in process_df.iterrows():
+            try:
                 # rowの情報を辞書化
                 sell_data = row.to_dict()
                 self.logger.debug(f"sell_data: {sell_data}")
@@ -78,7 +72,7 @@ class FlowMAClubProcess:
                 self.logger.info(f"{i + 1}/{df_row_num} タイトル: {sell_data['売却価格']}")
                 self.logger.info(f"{i + 1}/{df_row_num} 処理開始")
 
-                # TODO ここに出品感覚時間を挿入
+                # ✅ 出品間隔時間の待機
                 random_wait_time = self.time_manager._random_sleep(random_info=interval_info)
                 self.logger.info(f'スプシ {i + 1}行目開始: 待機時間 {int(random_wait_time)} 秒間待機完了')
 
@@ -86,36 +80,34 @@ class FlowMAClubProcess:
                     time.sleep(random_wait_time)
                     self.logger.info(f" {random_wait_time} 秒間待機完了 ")
 
-                # ログイン〜処理実施まで
-                item_processor.row_process( index=i, id_text=id_text, pass_text=pass_text, sell_data=sell_data )
+                # ✅ インスタンス
+                item_processor = FlowMAClubNewItem()
+
+                # ✅ ログイン〜処理実施まで
+                item_processor.row_process(index=i, id_text=id_text, pass_text=pass_text, sell_data=sell_data)
                 self.logger.info(f"{i + 1}/{df_row_num} 処理完了")
 
-            self.logger.info(f"すべての処理完了")
+            except SystemExit:
+                self.logger.error(f"{i + 1}/{df_row_num} ⚠️ スレッドが強制終了されました。Chrome を閉じます！")
+                raise  # **SystemExit は再スローしてスレッドを正常に終了させる**
 
-        finally:
-                chrome.quit()
+            except Exception as e:
+                self.logger.error(f"{i + 1}/{df_row_num} ❌ 予期しないエラーが発生: {e}")
+
+
+        self.logger.info(f"すべての処理完了")
 
     # ----------------------------------------------------------------------------------
 # **********************************************************************************
 # 一連の流れ
 
 class FlowMAClubNewItem:
-    def __init__(self, chrome: webdriver):
+    def __init__(self):
         # logger
         self.getLogger = Logger()
         self.logger = self.getLogger.getLogger()
 
-        # chrome
-        self.chrome = chrome
 
-        # インスタンス
-        self.login = SingleSiteIDLogin(chrome=self.chrome)
-        self.random_sleep = SeleniumBasicOperations(
-            chrome=self.chrome,
-        )
-
-        self.element = ElementManager(chrome=self.chrome)
-        self.jump_target_page = JumpTargetPage(chrome=self.chrome)
         self.time_manager = TimeManager()
 
         # 必要info
@@ -124,16 +116,64 @@ class FlowMAClubNewItem:
 
 
     ####################################################################################
+
+
+    def row_process(self, index: int, id_text: str, pass_text: str, sell_data: Dict, max_retry: int = 3):
+        for i in range(max_retry):
+            self.logger.info(f"リトライ: {i + 1}回目 出品開始")
+            try:
+                with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+                    future = executor.submit(self._internal_row_process, index, id_text, pass_text, sell_data)
+                    future.result(timeout=300)  # タイムアウトを300秒に設定
+
+                self.logger.info(f"{index} 回目の出品処理が成功しました")
+                return  # 成功したらループを抜ける
+
+            except concurrent.futures.TimeoutError:
+                self.logger.warning(f"⚠️ 出品処理がタイムアウトしました。リトライします ({i + 1}/{max_retry})")
+
+            except Exception as e:
+                self.logger.error(f"❌ 出品処理中にエラーが発生:念の為リトライ {e}")
+
+        self.logger.error(f'❌【処理失敗】 リトライの上限に達しました: ({i + 1}/{max_retry})')
+        return
+
+    # ----------------------------------------------------------------------------------
     # ログイン〜出品処理
 
     @deco.funcBase
-    def row_process(self, index: int, id_text: str, pass_text: str, sell_data: Dict):
-        self.logger.debug(f"index: {index}")
+    def _internal_row_process(self, index: int, id_text: str, pass_text: str, sell_data: Dict):
+        try:
+            self.logger.debug(f"row_processを開始: {index}")
 
-        self.login.flow_login_id_input_gui( login_info=self.login_info, id_text=id_text, pass_text=pass_text, timeout=120, )
+            # chrome
+            chrome_manager = ChromeManager()
+            self.chrome = chrome_manager.flowSetupChrome()
 
-        # 出品処理
-        self.sell_process(sell_data=sell_data)
+            # インスタンス
+            self.login = SingleSiteIDLogin(chrome=self.chrome)
+            self.random_sleep = SeleniumBasicOperations( chrome=self.chrome, )
+            self.element = ElementManager(chrome=self.chrome)
+            self.jump_target_page = JumpTargetPage(chrome=self.chrome)
+
+            # idログイン
+            self.login.flow_login_id_input_gui( login_info=self.login_info, id_text=id_text, pass_text=pass_text, timeout=120, )
+
+            # 出品処理
+            self.sell_process(sell_data=sell_data)
+            self.logger.info(f"出品処理を完了: {index}")
+
+        except Exception as e:
+            self.logger.error(f"出品処理中にエラーが発生: {e}")
+
+        finally:
+            # ✅ 例外が発生しても `chrome.quit()` を確実に実行
+            if self.chrome is not None:
+                try:
+                    self.logger.info(f"🔴 Chrome を終了します")
+                    self.chrome.quit()
+                except Exception as e:
+                    self.logger.error(f"⚠️ Chrome を閉じる際にエラー: {e}")
 
     # ----------------------------------------------------------------------------------
     # 出品処理
